@@ -40,20 +40,24 @@ Route::get('pakiety', PricingController::class)->name('public.pricing');
 Route::get('buy/return', [CheckoutController::class, 'return'])->name('public.checkout.return');
 Route::get('buy/{code}', [CheckoutController::class, 'buy'])->name('public.checkout.buy');
 Route::post('buy/{code}', [CheckoutController::class, 'store'])
-    ->middleware('auth')
+    ->middleware(['auth', 'throttle:checkout'])
     ->name('public.checkout.store');
 
 /* Auth */
 Route::middleware('guest')->group(function (): void {
     Route::get('login', [LoginController::class, 'show'])->name('login');
-    Route::post('login', [LoginController::class, 'store']);
+    Route::post('login', [LoginController::class, 'store'])->middleware('throttle:auth');
     Route::get('register', [RegisterController::class, 'show'])->name('register');
-    Route::post('register', [RegisterController::class, 'store']);
+    Route::post('register', [RegisterController::class, 'store'])->middleware('throttle:signup');
 
     Route::get('password/forgot', [PasswordResetController::class, 'showForgot'])->name('password.request');
-    Route::post('password/forgot', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+    Route::post('password/forgot', [PasswordResetController::class, 'sendResetLink'])
+        ->middleware('throttle:auth')
+        ->name('password.email');
     Route::get('password/reset/{token}', [PasswordResetController::class, 'showReset'])->name('password.reset');
-    Route::post('password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
+    Route::post('password/reset', [PasswordResetController::class, 'reset'])
+        ->middleware('throttle:auth')
+        ->name('password.update');
 });
 Route::post('logout', [LoginController::class, 'destroy'])
     ->middleware('auth')
@@ -116,5 +120,6 @@ Route::middleware(ResolveTenantFromSlug::class)
         Route::get('unlock', [UnlockController::class, 'show'])->name('public.wishlist.unlock');
         Route::post('unlock', [UnlockController::class, 'store']);
         Route::post('gifts/{gift}/reserve', [ReservationController::class, 'store'])
+            ->middleware('throttle:reservation')
             ->name('public.reservations.store');
     });
