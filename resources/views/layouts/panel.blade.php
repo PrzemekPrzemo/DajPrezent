@@ -41,16 +41,27 @@
 </head>
 <body>
     <nav class="nav">
-        <a class="brand" href="{{ route('owner.dashboard') }}">DajPrezent.pl</a>
-        @auth
-            <span class="user">
-                {{ auth()->user()->email }}
+        <a class="brand" href="{{ auth()->check() ? route('owner.dashboard') : route('home') }}">DajPrezent.pl</a>
+        <span class="user">
+            <span style="display:inline-flex;gap:.25rem;align-items:center;font-size:.85rem;">
+                @foreach (\App\Http\Middleware\SetLocale::SUPPORTED as $loc)
+                    <form method="POST" action="{{ route('locale.switch', ['locale' => $loc]) }}" style="margin:0;">
+                        @csrf
+                        <button type="submit" style="background:transparent;border:0;cursor:pointer;font-weight:{{ app()->getLocale() === $loc ? '700' : '400' }};color:{{ app()->getLocale() === $loc ? '#db2777' : '#9ca3af' }};font-size:.85rem;padding:0 .25rem;">
+                            {{ strtoupper($loc) }}
+                        </button>
+                    </form>
+                    @if (! $loop->last)<span style="color:#e5e7eb;">|</span>@endif
+                @endforeach
+            </span>
+            @auth
+                · {{ auth()->user()->email }}
                 <form method="POST" action="{{ route('logout') }}" style="margin:0;">
                     @csrf
-                    <button type="submit" class="btn btn-secondary" style="padding:.35rem .8rem;font-size:.85rem;">Wyloguj</button>
+                    <button type="submit" class="btn btn-secondary" style="padding:.35rem .8rem;font-size:.85rem;">{{ __('messages.nav.logout') }}</button>
                 </form>
-            </span>
-        @endauth
+            @endauth
+        </span>
     </nav>
     <main class="container">
         @if (session('status'))

@@ -53,6 +53,11 @@ final class ResolveTenantFromSlug
         $this->current->set($tenant);
         $request->attributes->set('tenant', $tenant);
 
+        // Public pages render in the tenant's locale — overrides session.
+        if (in_array($tenant->locale, SetLocale::SUPPORTED, true)) {
+            app()->setLocale($tenant->locale);
+        }
+
         return $next($request);
     }
 }

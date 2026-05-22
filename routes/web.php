@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Owner\BookmarkletController;
 use App\Http\Controllers\Owner\DashboardController;
 use App\Http\Controllers\Owner\GiftController;
@@ -20,6 +21,8 @@ use App\Http\Middleware\ResolveTenantFromSlug;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('welcome'))->name('home');
+
+Route::post('locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
 
 /* Pricing + checkout (public) */
 Route::get('pakiety', PricingController::class)->name('public.pricing');
