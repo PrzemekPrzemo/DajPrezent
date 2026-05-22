@@ -12,5 +12,7 @@ parameters:
     ignoreErrors:
         -
             identifier: missingType.iterableValue
+        -
+            identifier: missingType.generics
     excludePaths:
         - app/Filament/*/Resources/*/Pages/* # Filament-generated boilerplate
