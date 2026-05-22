@@ -10,6 +10,23 @@ Master Admin (my) zarządza pakietami, subskrypcjami, konfiguracjami PayU/KSeF i
 
 Repo jest puste — projekt greenfield.
 
+## Ustalenia operacyjne (2026-05-22)
+
+- **Sprzedawca / wystawca FV:** Sendormeco Holding, NIP **525-28-66-457**.
+  Dane scentralizowane w `config/seller.php`, KSeF używa NIP-u sprzedawcy.
+- **Hosting:** własny VPS z panelem **Plesk Obsidian**. Layout
+  releasów + cron + queue worker udokumentowane w
+  [`docs/DEPLOY-PLESK.md`](docs/DEPLOY-PLESK.md).
+- **Branding:** nazwa **DajPrezent.pl** zatwierdzona, logo w
+  przygotowaniu — w widokach używamy na razie wordmarku tekstowego,
+  podmiana bez zmian kodu (`config/app.php` → `name`).
+- **DPA (umowa powierzenia):** draft 1.0 w
+  [`docs/legal/DPA.md`](docs/legal/DPA.md) — gotowy do konsultacji
+  prawnej przed wdrożeniem pakietów weselnych.
+- **Pakiet ślubny:** **w fazie 2** (po wishlist MVP). Schema i flow
+  wesela są zaplanowane, ale nie wchodzą do pierwszego release'u —
+  wycina ok. 3–4 tygodnie z time-to-market.
+
 ## Decyzje już zaakceptowane (z dialogu z użytkownikiem)
 
 - **Backend:** Laravel 11 (PHP 8.3) + MySQL 8
@@ -202,19 +219,33 @@ lang/{pl,en}/
 6. Bookmarklet: testy na 5 popularnych sklepach (Allegro, Empik, Zalando, Media Expert, IKEA) — sprawdzenie czy OpenGraph zwraca poprawne dane.
 7. Lighthouse na publicznej liście i stronie ślubnej — cel ≥ 90 mobile.
 
-## Otwarte tematy do potwierdzenia przed implementacją
+## Otwarte tematy (po ustaleniach z 2026-05-22)
 
-1. **Hosting docelowy** — VPS (Hetzner CX22 ~ 4 €/mc) vs polski hosting (Mydevil/Cloudfind) vs Forge na DO. Mam preferencję Hetzner + Forge dla TCO.
-2. **NIP/REGON wystawiającego FV** — potrzebne do KSeF (Twoja firma).
-3. **Logo / brand book** — czy istnieje, czy projektujemy? Wpływa na motywy default.
-4. **Disclaimer prawny dla pakietu ślubnego** — czy zbieramy dane gości na RSVP w imieniu nowożeńców (powierzenie przetwarzania)? Sugeruję wzór umowy DPA generowany przy zakupie Wedding.
-5. **Polityka zwrotów** — pakiet zużywalny? Sugeruję 14-dniowe odstąpienie tylko jeśli nie utworzono jeszcze listy publicznej.
-6. **Rate budget na e-maile** — Postmark od ~10 USD/mc za 10k maili. OK na start?
-7. **Czy pakiet ślubny ma być sprzedawany od razu, czy w fazie 2?** — Wedding Premium to ~30% pracy MVP. Możemy puścić *wishlist-only* w fazie 1 i wesele w fazie 2 (2 mc później).
+1. ✅ **Hosting docelowy** — własny VPS z Plesk, instrukcja w
+   `docs/DEPLOY-PLESK.md`.
+2. ✅ **Sprzedawca FV** — Sendormeco Holding, NIP 525-28-66-457 w
+   `config/seller.php`. Adres, REGON, KRS, konto bankowe i telefon
+   uzupełnimy w `.env` produkcyjnym (placeholdery są w `.env.example`).
+3. 🟡 **Logo / brand book** — w przygotowaniu. Do czasu otrzymania
+   plików używamy wordmarku tekstowego.
+4. ✅ **DPA dla pakietów weselnych** — szablon w `docs/legal/DPA.md`.
+   **Przed wdrożeniem fazy 2 wymaga weryfikacji przez radcę prawnego.**
+5. 🔲 **Polityka zwrotów** — sugeruję 14-dniowe odstąpienie tylko
+   jeśli lista nie była upubliczniona ani nie odbyła się żadna
+   rezerwacja gościa. Wymaga decyzji + tekstu regulaminu.
+6. 🔲 **Provider transactional e-mail** — Postmark (~10 USD/mc za
+   10k maili) vs Mailgun vs SES. Sugeruję Postmark dla najlepszego
+   deliverability w PL.
+7. ✅ **Wesele w MVP czy fazie 2?** — w fazie 2 (po wishlist).
 
 ## Roadmapa skrócona
 
-- **Faza 0 (1 tydz.)** — repo, CI, Laravel skeleton, Filament, schema, seedery.
-- **Faza 1 — Wishlist MVP (4–6 tyg.)** — pakiety standardowe, PayU, KSeF, rezerwacja z verify, bookmarklet, panel ownera, public lista.
-- **Faza 2 — Wedding (3–4 tyg.)** — Basic + Premium, RSVP, motywy, hasło, eksporty, generator zaproszeń.
-- **Faza 3 — Wzrost (ongoing)** — affiliate, AI sugestie, PWA, marketplace motywów, SMS.
+- ✅ **Faza 0 (1 tydz.)** — repo, CI, Laravel skeleton, Filament, schema, seedery. **Zrobione (commity 5315adf, 2ae8651, 23f1bb8, cb76c90).**
+- 🚧 **Faza 1 — Wishlist MVP (4–6 tyg.)** — pakiety standardowe, PayU,
+  KSeF, rezerwacja z verify (✅), bookmarklet, panel ownera, public
+  lista, master admin (Filament). **W trakcie.**
+- ⏭️ **Faza 2 — Wedding (3–4 tyg.)** — Basic + Premium, RSVP, motywy,
+  hasło, eksporty, generator zaproszeń. Wymaga finalizacji DPA przez
+  prawnika.
+- ⏭️ **Faza 3 — Wzrost (ongoing)** — affiliate, AI sugestie, PWA,
+  marketplace motywów, SMS.
