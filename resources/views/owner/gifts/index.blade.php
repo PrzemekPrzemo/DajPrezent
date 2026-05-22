@@ -16,7 +16,7 @@
 
     <div class="card">
         <h2>Dodaj prezent</h2>
-        <form method="POST" action="{{ route('owner.gifts.store', $tenant) }}">
+        <form method="POST" action="{{ route('owner.gifts.store', $tenant) }}" enctype="multipart/form-data">
             @csrf
             <div class="field">
                 <label for="title">Tytuł*</label>
@@ -39,6 +39,10 @@
                         <option value="3">3 — nice to have</option>
                     </select>
                 </div>
+            </div>
+            <div class="field">
+                <label for="image">Zdjęcie (JPG/PNG/WebP, do 4 MB)</label>
+                <input id="image" type="file" name="image" accept="image/jpeg,image/png,image/webp">
             </div>
             <div class="field">
                 <label for="description">Opis (opcjonalnie)</label>
@@ -69,11 +73,16 @@
                 <tbody>
                 @foreach ($gifts as $gift)
                     <tr>
-                        <td>
-                            <strong>{{ $gift->title }}</strong>
-                            @if ($gift->url)
-                                <div><a href="{{ $gift->url }}" target="_blank" rel="noopener" style="font-size:.85rem;">{{ \Illuminate\Support\Str::limit(parse_url($gift->url, PHP_URL_HOST) ?: $gift->url, 40) }}</a></div>
+                        <td style="display:flex;align-items:center;gap:.75rem;">
+                            @if ($gift->image_path)
+                                <img src="{{ asset('storage/'.$gift->image_path) }}" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:.375rem;flex-shrink:0;">
                             @endif
+                            <div>
+                                <strong>{{ $gift->title }}</strong>
+                                @if ($gift->url)
+                                    <div><a href="{{ $gift->url }}" target="_blank" rel="noopener" style="font-size:.85rem;">{{ \Illuminate\Support\Str::limit(parse_url($gift->url, PHP_URL_HOST) ?: $gift->url, 40) }}</a></div>
+                                @endif
+                            </div>
                         </td>
                         <td>
                             @if ($gift->price_pln_gr)
