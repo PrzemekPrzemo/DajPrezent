@@ -140,7 +140,7 @@ return [
         'polityka-prywatnosci', 'pricing', 'private', 'profile', 'public',
         'r', 'rabat', 'regulamin', 'register', 'rejestracja', 'rsvp',
         'settings', 'shop', 'sklep', 'static', 'storage', 'support',
-        'system', 'tenant', 'tenants', 'terms', 'test', 'u', 'user',
+        'konto', 'system', 'tenant', 'tenants', 'terms', 'test', 'u', 'user',
         'users', 'web', 'webhook', 'webhooks', 'wedding', 'wesele',
         'wishlist', 'www',
     ],

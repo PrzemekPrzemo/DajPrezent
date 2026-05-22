@@ -52,5 +52,6 @@
         </div>
         © {{ date('Y') }} DajPrezent.pl · Sendormeco Holding, NIP 525-28-66-457
     </footer>
+    @include('partials.cookie-banner')
 </body>
 </html>

@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\Owner\AccountController;
 use App\Http\Controllers\Owner\BookmarkletController;
 use App\Http\Controllers\Owner\DashboardController;
 use App\Http\Controllers\Owner\GiftController;
@@ -86,6 +87,10 @@ Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): v
     });
 
     Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+
+    Route::get('konto', [AccountController::class, 'edit'])->name('account.edit');
+    Route::patch('konto/profil', [AccountController::class, 'updateProfile'])->name('account.profile.update');
+    Route::patch('konto/haslo', [AccountController::class, 'updatePassword'])->name('account.password.update');
 
     Route::prefix('bookmarklet')->name('bookmarklet.')->controller(BookmarkletController::class)->group(function (): void {
         Route::get('/', 'show')->name('show');

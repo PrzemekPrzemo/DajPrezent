@@ -55,7 +55,7 @@
                 @endforeach
             </span>
             @auth
-                · {{ auth()->user()->email }}
+                · <a href="{{ route('owner.account.edit') }}" style="color:#6b7280;text-decoration:none;">{{ auth()->user()->email }}</a>
                 <form method="POST" action="{{ route('logout') }}" style="margin:0;">
                     @csrf
                     <button type="submit" class="btn btn-secondary" style="padding:.35rem .8rem;font-size:.85rem;">{{ __('messages.nav.logout') }}</button>
@@ -83,5 +83,6 @@
         <a href="{{ route('public.faq') }}" style="color:#9ca3af;">FAQ</a> ·
         <a href="{{ route('public.contact') }}" style="color:#9ca3af;">Kontakt</a>
     </footer>
+    @include('partials.cookie-banner')
 </body>
 </html>
