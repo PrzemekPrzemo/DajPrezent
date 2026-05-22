@@ -10,6 +10,8 @@ use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Owner\BookmarkletController;
 use App\Http\Controllers\Owner\DashboardController;
 use App\Http\Controllers\Owner\GiftController;
+use App\Http\Controllers\Owner\GiftExportController;
+use App\Http\Controllers\Owner\InvoiceController;
 use App\Http\Controllers\Owner\TenantSettingsController;
 use App\Http\Controllers\Public\CheckoutController;
 use App\Http\Controllers\Public\PricingController;
@@ -69,10 +71,13 @@ Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): v
         Route::patch('gifts/{gift}', [GiftController::class, 'update'])->name('gifts.update');
         Route::delete('gifts/{gift}', [GiftController::class, 'destroy'])->name('gifts.destroy');
         Route::post('gifts/{gift}/received', [GiftController::class, 'markReceived'])->name('gifts.received');
+        Route::get('gifts/export.csv', [GiftExportController::class, 'csv'])->name('gifts.export.csv');
 
         Route::get('settings', [TenantSettingsController::class, 'edit'])->name('tenant.settings.edit');
         Route::patch('settings', [TenantSettingsController::class, 'update'])->name('tenant.settings.update');
     });
+
+    Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
 
     Route::prefix('bookmarklet')->name('bookmarklet.')->controller(BookmarkletController::class)->group(function (): void {
         Route::get('/', 'show')->name('show');

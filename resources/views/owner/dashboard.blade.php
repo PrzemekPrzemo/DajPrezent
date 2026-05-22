@@ -5,7 +5,10 @@
 @section('content')
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
         <h1 style="margin:0;">Moje listy prezentów</h1>
-        <a href="{{ route('owner.bookmarklet.show') }}" class="btn btn-secondary">⚡ Bookmarklet</a>
+        <div style="display:flex;gap:.5rem;">
+            <a href="{{ route('owner.invoices.index') }}" class="btn btn-secondary">Faktury</a>
+            <a href="{{ route('owner.bookmarklet.show') }}" class="btn btn-secondary">⚡ Bookmarklet</a>
+        </div>
     </div>
 
     @if ($tenants->isEmpty())

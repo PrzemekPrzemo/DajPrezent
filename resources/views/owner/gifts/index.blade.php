@@ -54,8 +54,19 @@
         </form>
     </div>
 
+    @php
+        $activeSub = $tenant->subscriptions->where('status', 'active')->sortByDesc('paid_at')->first()
+            ?? $tenant->subscriptions()->where('status', 'active')->with('package')->orderByDesc('paid_at')->first();
+        $canExport = $activeSub?->package?->hasFeature('export') ?? false;
+    @endphp
+
     <div class="card">
-        <h2>Lista prezentów ({{ $gifts->count() }})</h2>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;">
+            <h2 style="margin:0;">Lista prezentów ({{ $gifts->count() }})</h2>
+            @if ($canExport)
+                <a href="{{ route('owner.gifts.export.csv', $tenant) }}" class="btn btn-secondary">⬇ Eksport CSV</a>
+            @endif
+        </div>
 
         @if ($gifts->isEmpty())
             <p style="color:#6b7280;">Brak prezentów. Dodaj pierwszy formularzem powyżej.</p>
