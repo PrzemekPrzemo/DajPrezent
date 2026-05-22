@@ -36,6 +36,8 @@ final class RegisterController extends Controller
             'password' => $data['password'], // hashed via $casts on model
         ]);
 
+        $user->sendEmailVerificationNotification();
+
         Auth::login($user, remember: true);
         $request->session()->regenerate();
 

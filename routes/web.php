@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Owner\BookmarkletController;
 use App\Http\Controllers\Owner\DashboardController;
@@ -33,10 +35,26 @@ Route::middleware('guest')->group(function (): void {
     Route::post('login', [LoginController::class, 'store']);
     Route::get('register', [RegisterController::class, 'show'])->name('register');
     Route::post('register', [RegisterController::class, 'store']);
+
+    Route::get('password/forgot', [PasswordResetController::class, 'showForgot'])->name('password.request');
+    Route::post('password/forgot', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+    Route::get('password/reset/{token}', [PasswordResetController::class, 'showReset'])->name('password.reset');
+    Route::post('password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
 });
 Route::post('logout', [LoginController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
+
+/* Email verification */
+Route::middleware('auth')->group(function (): void {
+    Route::get('email/verify', [EmailVerificationController::class, 'notice'])->name('verification.notice');
+    Route::get('email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
+    Route::post('email/verification-notification', [EmailVerificationController::class, 'resend'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+});
 
 /* Owner panel */
 Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): void {
