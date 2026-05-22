@@ -19,5 +19,16 @@
     <main class="container">
         @yield('content')
     </main>
+
+    <footer style="text-align:center;color:#9ca3af;font-size:.85rem;padding:1rem 1rem 3rem;max-width:720px;margin:0 auto;">
+        <div style="display:flex;gap:1.25rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem;">
+            <a href="{{ route('public.pricing') }}" style="color:#9ca3af;">Pakiety</a>
+            <a href="{{ route('public.faq') }}" style="color:#9ca3af;">FAQ</a>
+            <a href="{{ route('public.contact') }}" style="color:#9ca3af;">Kontakt</a>
+            <a href="{{ route('public.legal.terms') }}" style="color:#9ca3af;">Regulamin</a>
+            <a href="{{ route('public.legal.privacy') }}" style="color:#9ca3af;">Polityka prywatności</a>
+        </div>
+        © {{ date('Y') }} DajPrezent.pl · Sendormeco Holding, NIP 525-28-66-457
+    </footer>
 </body>
 </html>

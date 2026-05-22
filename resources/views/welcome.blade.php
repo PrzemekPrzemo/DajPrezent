@@ -25,6 +25,15 @@
             <a href="/login" style="display:inline-block;color:#6b7280;padding:.75rem 1rem;text-decoration:none;">Mam już konto</a>
         </p>
     </main>
-    <footer>© {{ date('Y') }} DajPrezent.pl</footer>
+    <footer style="text-align:center;color:#9ca3af;font-size:.85rem;padding:0 1rem 2.5rem;">
+        <div style="margin-bottom:.5rem;">
+            <a href="/pakiety" style="color:#9ca3af;">Pakiety</a> ·
+            <a href="/faq" style="color:#9ca3af;">FAQ</a> ·
+            <a href="/kontakt" style="color:#9ca3af;">Kontakt</a> ·
+            <a href="/regulamin" style="color:#9ca3af;">Regulamin</a> ·
+            <a href="/polityka-prywatnosci" style="color:#9ca3af;">Polityka prywatności</a>
+        </div>
+        © {{ date('Y') }} DajPrezent.pl · Sendormeco Holding, NIP 525-28-66-457
+    </footer>
 </body>
 </html>

@@ -26,6 +26,12 @@ Route::get('/', fn () => view('welcome'))->name('home');
 
 Route::post('locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
 
+/* Static + legal pages */
+Route::view('regulamin', 'public.legal.regulamin')->name('public.legal.terms');
+Route::view('polityka-prywatnosci', 'public.legal.privacy')->name('public.legal.privacy');
+Route::view('faq', 'public.static.faq')->name('public.faq');
+Route::view('kontakt', 'public.static.contact')->name('public.contact');
+
 /* Pricing + checkout (public) */
 Route::get('pakiety', PricingController::class)->name('public.pricing');
 Route::get('buy/return', [CheckoutController::class, 'return'])->name('public.checkout.return');

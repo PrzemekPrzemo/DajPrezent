@@ -131,13 +131,14 @@ return [
     |---------------------------------------------------------------------
     */
     'reserved_slugs' => [
-        'admin', 'api', 'app', 'auth', 'billing', 'blog', 'cart',
+        'admin', 'api', 'app', 'auth', 'billing', 'blog', 'buy', 'cart',
         'checkout', 'contact', 'dashboard', 'docs', 'download', 'edit',
-        'faq', 'help', 'home', 'image', 'images', 'invoice', 'invoices',
-        'kontakt', 'ksef', 'login', 'logout', 'master', 'me', 'mobile',
-        'new', 'oauth', 'panel', 'pay', 'payment', 'payments', 'payu',
-        'pl', 'en', 'plan', 'pliki', 'pomoc', 'pricing', 'private',
-        'profile', 'public', 'rabat', 'register', 'rejestracja', 'rsvp',
+        'email', 'faq', 'help', 'home', 'image', 'images', 'invoice', 'invoices',
+        'kontakt', 'ksef', 'locale', 'login', 'logout', 'master', 'me', 'mobile',
+        'new', 'oauth', 'pakiety', 'panel', 'password', 'pay', 'payment',
+        'payments', 'payu', 'pl', 'en', 'plan', 'pliki', 'pomoc',
+        'polityka-prywatnosci', 'pricing', 'private', 'profile', 'public',
+        'r', 'rabat', 'regulamin', 'register', 'rejestracja', 'rsvp',
         'settings', 'shop', 'sklep', 'static', 'storage', 'support',
         'system', 'tenant', 'tenants', 'terms', 'test', 'u', 'user',
         'users', 'web', 'webhook', 'webhooks', 'wedding', 'wesele',

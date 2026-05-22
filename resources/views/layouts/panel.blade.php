@@ -76,5 +76,12 @@
         @endif
         @yield('content')
     </main>
+
+    <footer style="text-align:center;color:#9ca3af;font-size:.8rem;padding:1.5rem 1rem 2rem;">
+        <a href="{{ route('public.legal.terms') }}" style="color:#9ca3af;">Regulamin</a> ·
+        <a href="{{ route('public.legal.privacy') }}" style="color:#9ca3af;">Polityka prywatności</a> ·
+        <a href="{{ route('public.faq') }}" style="color:#9ca3af;">FAQ</a> ·
+        <a href="{{ route('public.contact') }}" style="color:#9ca3af;">Kontakt</a>
+    </footer>
 </body>
 </html>
