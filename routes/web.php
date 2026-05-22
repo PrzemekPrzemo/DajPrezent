@@ -7,9 +7,11 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Owner\BookmarkletController;
 use App\Http\Controllers\Owner\DashboardController;
 use App\Http\Controllers\Owner\GiftController;
+use App\Http\Controllers\Owner\TenantSettingsController;
 use App\Http\Controllers\Public\CheckoutController;
 use App\Http\Controllers\Public\PricingController;
 use App\Http\Controllers\Public\ReservationController;
+use App\Http\Controllers\Public\UnlockController;
 use App\Http\Controllers\Public\WishlistController;
 use App\Http\Controllers\Webhooks\PayUWebhookController;
 use App\Http\Middleware\ResolveTenantFromSlug;
@@ -46,6 +48,9 @@ Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): v
         Route::patch('gifts/{gift}', [GiftController::class, 'update'])->name('gifts.update');
         Route::delete('gifts/{gift}', [GiftController::class, 'destroy'])->name('gifts.destroy');
         Route::post('gifts/{gift}/received', [GiftController::class, 'markReceived'])->name('gifts.received');
+
+        Route::get('settings', [TenantSettingsController::class, 'edit'])->name('tenant.settings.edit');
+        Route::patch('settings', [TenantSettingsController::class, 'update'])->name('tenant.settings.update');
     });
 
     Route::prefix('bookmarklet')->name('bookmarklet.')->controller(BookmarkletController::class)->group(function (): void {
@@ -69,6 +74,8 @@ Route::middleware(ResolveTenantFromSlug::class)
     ->prefix('{slug}')
     ->group(function (): void {
         Route::get('/', [WishlistController::class, 'show'])->name('public.wishlist.show');
+        Route::get('unlock', [UnlockController::class, 'show'])->name('public.wishlist.unlock');
+        Route::post('unlock', [UnlockController::class, 'store']);
         Route::post('gifts/{gift}/reserve', [ReservationController::class, 'store'])
             ->name('public.reservations.store');
     });

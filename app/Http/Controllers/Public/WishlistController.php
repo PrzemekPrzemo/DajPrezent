@@ -8,18 +8,18 @@ use App\Domain\Tenancy\Models\Tenant;
 use App\Domain\Wishlist\Models\Gift;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 final class WishlistController extends Controller
 {
-    public function show(Request $request): View
+    public function show(Request $request): View|RedirectResponse
     {
         /** @var Tenant $tenant */
         $tenant = $request->attributes->get('tenant');
 
         if ($tenant->isPasswordProtected() && ! $this->isUnlocked($request, $tenant)) {
-            throw new HttpException(423, 'Lista chroniona hasłem.');
+            return redirect('/'.$tenant->slug.'/unlock');
         }
 
         $gifts = Gift::query()

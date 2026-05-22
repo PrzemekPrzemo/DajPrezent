@@ -3,9 +3,12 @@
 @section('title', $tenant->name.' — prezenty')
 
 @section('content')
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;flex-wrap:wrap;gap:.5rem;">
         <h1 style="margin:0;">{{ $tenant->name }}</h1>
-        <a href="{{ route('owner.dashboard') }}" class="btn btn-secondary">← Wszystkie listy</a>
+        <div style="display:flex;gap:.5rem;">
+            <a href="{{ route('owner.tenant.settings.edit', $tenant) }}" class="btn btn-secondary">Ustawienia</a>
+            <a href="{{ route('owner.dashboard') }}" class="btn btn-secondary">← Wszystkie listy</a>
+        </div>
     </div>
     <p style="color:#6b7280;margin-top:0;">
         Publiczny adres: <a href="/{{ $tenant->slug }}" target="_blank">dajprezent.pl/{{ $tenant->slug }}</a>

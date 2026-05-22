@@ -29,14 +29,14 @@ it('returns 410 Gone for an expired tenant', function (): void {
     $this->get('/'.$tenant->slug)->assertStatus(410);
 });
 
-it('returns 423 Locked for a password-protected tenant before unlock', function (): void {
+it('redirects a password-protected tenant to the unlock form before unlock', function (): void {
     $tenant = Tenant::factory()->create([
         'is_public' => true,
         'password_hash' => Hash::make('sekret'),
         'slug' => 'chroniona',
     ]);
 
-    $this->get('/'.$tenant->slug)->assertStatus(423);
+    $this->get('/'.$tenant->slug)->assertRedirect('/'.$tenant->slug.'/unlock');
 });
 
 it('renders the public list with gift titles', function (): void {
