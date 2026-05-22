@@ -4,6 +4,28 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title') — DajPrezent.pl</title>
+    <meta name="description" content="@yield('meta_description', 'Stwórz wymarzoną listę prezentów lub stronę ślubną z RSVP. Bliscy zarezerwują anonimowo.')">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    {{-- Open Graph + Twitter --}}
+    <meta property="og:site_name" content="DajPrezent.pl">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:title" content="@yield('og_title', View::getSection('title') ?? 'DajPrezent.pl')">
+    <meta property="og:description" content="@yield('og_description', 'Stwórz wymarzoną listę prezentów i podziel się nią z bliskimi.')">
+    <meta property="og:url" content="{{ url()->current() }}">
+    @hasSection('og_image')
+        <meta property="og:image" content="@yield('og_image')">
+        <meta name="twitter:card" content="summary_large_image">
+    @else
+        <meta name="twitter:card" content="summary">
+    @endif
+
+    {{-- Bots (overridable per page) --}}
+    @hasSection('robots')
+        @yield('robots')
+    @else
+        <meta name="robots" content="index,follow">
+    @endif
     <style>
         :root { color-scheme: light; }
         * { box-sizing: border-box; }

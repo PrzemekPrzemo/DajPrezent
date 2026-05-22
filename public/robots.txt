@@ -1,2 +1,14 @@
 User-agent: *
-Disallow:
+Disallow: /panel/
+Disallow: /admin/
+Disallow: /buy/
+Disallow: /r/
+Disallow: /email/
+Disallow: /password/
+Disallow: /webhooks/
+Disallow: /login
+Disallow: /register
+Disallow: /logout
+Allow: /
+
+Sitemap: https://dajprezent.pl/sitemap.xml

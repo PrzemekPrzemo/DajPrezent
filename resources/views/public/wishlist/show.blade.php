@@ -1,6 +1,19 @@
 @extends('layouts.public')
 
 @section('title', $tenant->name)
+@section('meta_description', 'Lista prezentów: '.$tenant->name.' — zarezerwuj anonimowo na DajPrezent.pl.')
+@section('og_title', $tenant->name.' — lista prezentów')
+@section('og_description', 'Zarezerwuj prezent dla '.$tenant->name.'. Bez konta, anonimowo.')
+@php
+    $coverGift = $gifts->whereNotNull('image_path')->first();
+@endphp
+@if ($coverGift)
+    @section('og_image', asset('storage/'.$coverGift->image_path))
+@endif
+{{-- Personal lists default to noindex — owners share the link directly. --}}
+@section('robots')
+<meta name="robots" content="noindex,follow">
+@endsection
 
 @section('content')
     <header style="text-align:center; margin-bottom: 2.5rem;">

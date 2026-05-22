@@ -18,6 +18,7 @@ use App\Http\Controllers\Public\PricingController;
 use App\Http\Controllers\Public\ReservationController;
 use App\Http\Controllers\Public\UnlockController;
 use App\Http\Controllers\Public\WishlistController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\Webhooks\PayUWebhookController;
 use App\Http\Middleware\ResolveTenantFromSlug;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,7 @@ Route::view('regulamin', 'public.legal.regulamin')->name('public.legal.terms');
 Route::view('polityka-prywatnosci', 'public.legal.privacy')->name('public.legal.privacy');
 Route::view('faq', 'public.static.faq')->name('public.faq');
 Route::view('kontakt', 'public.static.contact')->name('public.contact');
+Route::get('sitemap.xml', SitemapController::class)->name('public.sitemap');
 
 /* Pricing + checkout (public) */
 Route::get('pakiety', PricingController::class)->name('public.pricing');
