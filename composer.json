@@ -2,8 +2,14 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "dajprezent/dajprezent",
     "type": "project",
-    "description": "DajPrezent.pl — multi-tenant gift list & wedding registry SaaS.",
-    "keywords": ["dajprezent", "wishlist", "wedding", "laravel", "saas"],
+    "description": "DajPrezent.pl \u2014 multi-tenant gift list & wedding registry SaaS.",
+    "keywords": [
+        "dajprezent",
+        "wishlist",
+        "wedding",
+        "laravel",
+        "saas"
+    ],
     "license": "proprietary",
     "require": {
         "php": "^8.3",
@@ -40,7 +46,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

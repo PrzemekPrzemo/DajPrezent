@@ -24,3 +24,7 @@ yarn-error.log
 /.phpstan-cache
 /coverage
 *.log
+# Filament publishes its compiled assets here. Re-emitted by `composer install`
+# via the `filament:upgrade` post-autoload-dump hook, so we keep them out of git.
+/public/css/filament
+/public/js/filament

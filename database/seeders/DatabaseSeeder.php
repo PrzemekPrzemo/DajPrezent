@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Master Admin',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
+                'is_master_admin' => true,
             ]
         );
     }
