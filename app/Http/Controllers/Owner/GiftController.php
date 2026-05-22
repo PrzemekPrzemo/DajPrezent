@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Owner;
 
 use App\Domain\Tenancy\CurrentTenant;
 use App\Domain\Tenancy\Models\Tenant;
+use App\Domain\Wishlist\Images\ImageOptimizer;
 use App\Domain\Wishlist\Models\Gift;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
@@ -16,7 +17,10 @@ use Illuminate\Support\Facades\Storage;
 
 final class GiftController extends Controller
 {
-    public function __construct(private readonly CurrentTenant $current) {}
+    public function __construct(
+        private readonly CurrentTenant $current,
+        private readonly ImageOptimizer $optimizer,
+    ) {}
 
     public function index(Request $request, Tenant $tenant): View
     {
@@ -126,9 +130,10 @@ final class GiftController extends Controller
             return null;
         }
 
-        // tenant_id namespaced path so a stray Storage::deleteDirectory(gifts/{id})
-        // can only blow up that tenant's images.
-        return $file->store('gifts/'.$tenant->id, ['disk' => $this->disk()]) ?: null;
+        // ImageOptimizer downsizes to 1200px longest edge and re-encodes
+        // as WebP at quality 85; path is tenant-namespaced so a stray
+        // Storage::deleteDirectory only affects this tenant.
+        return $this->optimizer->storeForTenant($file, $tenant->id, $this->disk());
     }
 
     private function deleteImage(?string $path): void
