@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Domain\Billing\Models\Package;
+use App\Domain\Billing\Models\Subscription;
 use App\Domain\Tenancy\Models\Tenant;
 use App\Domain\Wishlist\Models\Gift;
 use App\Models\User;
@@ -12,6 +14,14 @@ beforeEach(function (): void {
     Storage::fake('public');
     $this->owner = User::factory()->create();
     $this->tenant = Tenant::factory()->create(['owner_user_id' => $this->owner->id]);
+
+    Subscription::factory()->create([
+        'tenant_id' => $this->tenant->id,
+        'package_id' => Package::factory()->create(['gift_limit' => 200])->id,
+        'status' => 'active',
+        'paid_at' => now(),
+        'expires_at' => now()->addMonths(9),
+    ]);
 });
 
 it('uploads an image when creating a gift', function (): void {
@@ -111,6 +121,13 @@ it('deletes the image when the gift is deleted', function (): void {
 
 it('namespaces uploads by tenant_id so blast radius is contained', function (): void {
     $other = Tenant::factory()->create(['owner_user_id' => $this->owner->id]);
+    Subscription::factory()->create([
+        'tenant_id' => $other->id,
+        'package_id' => Package::factory()->create(['gift_limit' => 50])->id,
+        'status' => 'active',
+        'paid_at' => now(),
+        'expires_at' => now()->addMonths(9),
+    ]);
 
     $this->actingAs($this->owner)
         ->post("/panel/lists/{$other->id}/gifts", [

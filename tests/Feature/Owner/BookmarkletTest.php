@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Domain\Billing\Models\Package;
+use App\Domain\Billing\Models\Subscription;
 use App\Domain\Tenancy\Models\Tenant;
 use App\Domain\Wishlist\Models\Gift;
 use App\Models\User;
@@ -10,6 +12,14 @@ beforeEach(function (): void {
     $this->owner = User::factory()->create();
     $this->tenant = Tenant::factory()->create(['owner_user_id' => $this->owner->id]);
     $this->stranger = User::factory()->create();
+
+    Subscription::factory()->create([
+        'tenant_id' => $this->tenant->id,
+        'package_id' => Package::factory()->create(['gift_limit' => 200])->id,
+        'status' => 'active',
+        'paid_at' => now(),
+        'expires_at' => now()->addMonths(9),
+    ]);
 });
 
 it('renders the bookmarklet landing page with a javascript: snippet', function (): void {

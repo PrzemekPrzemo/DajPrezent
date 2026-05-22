@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Owner;
 
 use App\Domain\Tenancy\CurrentTenant;
 use App\Domain\Tenancy\Models\Tenant;
+use App\Domain\Wishlist\GiftLimitGuard;
 use App\Domain\Wishlist\Images\ImageOptimizer;
 use App\Domain\Wishlist\Models\Gift;
 use App\Http\Controllers\Controller;
@@ -20,6 +21,7 @@ final class GiftController extends Controller
     public function __construct(
         private readonly CurrentTenant $current,
         private readonly ImageOptimizer $optimizer,
+        private readonly GiftLimitGuard $limit,
     ) {}
 
     public function index(Request $request, Tenant $tenant): View
@@ -44,6 +46,10 @@ final class GiftController extends Controller
         $this->current->set($tenant);
 
         $data = $this->validateForm($request);
+
+        if (! $this->limit->canAdd($tenant)) {
+            return back()->withErrors(['limit' => $this->limit->errorFor($tenant)])->withInput();
+        }
 
         Gift::create([
             'title' => $data['title'],

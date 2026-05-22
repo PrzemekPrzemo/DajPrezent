@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Owner;
 
 use App\Domain\Tenancy\CurrentTenant;
 use App\Domain\Tenancy\Models\Tenant;
+use App\Domain\Wishlist\GiftLimitGuard;
 use App\Domain\Wishlist\Models\Gift;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
@@ -22,7 +23,10 @@ use Illuminate\Http\Request;
  */
 final class BookmarkletController extends Controller
 {
-    public function __construct(private readonly CurrentTenant $current) {}
+    public function __construct(
+        private readonly CurrentTenant $current,
+        private readonly GiftLimitGuard $limit,
+    ) {}
 
     /**
      * Landing page with the bookmarklet "drag me to your bookmarks" button.
@@ -84,6 +88,10 @@ final class BookmarkletController extends Controller
         }
 
         $this->current->set($tenant);
+
+        if (! $this->limit->canAdd($tenant)) {
+            return back()->withErrors(['limit' => $this->limit->errorFor($tenant)])->withInput();
+        }
 
         Gift::create([
             'title' => $data['title'],
