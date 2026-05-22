@@ -6,6 +6,7 @@ namespace App\Domain\Billing;
 
 use App\Domain\Billing\Models\Subscription;
 use App\Domain\Tenancy\Models\Tenant;
+use App\Jobs\IssueInvoiceJob;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -23,7 +24,7 @@ final class SubscriptionActivator
      */
     public function activate(Subscription $subscription): bool
     {
-        return DB::transaction(function () use ($subscription): bool {
+        $changed = DB::transaction(function () use ($subscription): bool {
             $sub = Subscription::query()->lockForUpdate()->findOrFail($subscription->id);
 
             if ($sub->status === 'active') {
@@ -49,6 +50,15 @@ final class SubscriptionActivator
 
             return true;
         });
+
+        // Only queue the invoice job for paid subscriptions whose first
+        // transition we actually performed — keeps idempotent webhook
+        // replays from spawning duplicate invoices.
+        if ($changed && $subscription->fresh()->amount_pln_gr > 0) {
+            IssueInvoiceJob::dispatch($subscription->fresh());
+        }
+
+        return $changed;
     }
 
     public function markCancelled(Subscription $subscription): bool
