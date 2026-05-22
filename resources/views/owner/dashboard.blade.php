@@ -3,7 +3,10 @@
 @section('title', 'Moje listy')
 
 @section('content')
-    <h1>Moje listy prezentów</h1>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <h1 style="margin:0;">Moje listy prezentów</h1>
+        <a href="{{ route('owner.bookmarklet.show') }}" class="btn btn-secondary">⚡ Bookmarklet</a>
+    </div>
 
     @if ($tenants->isEmpty())
         <div class="card">

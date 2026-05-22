@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Owner\BookmarkletController;
 use App\Http\Controllers\Owner\DashboardController;
 use App\Http\Controllers\Owner\GiftController;
 use App\Http\Controllers\Public\ReservationController;
@@ -31,6 +32,12 @@ Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): v
         Route::patch('gifts/{gift}', [GiftController::class, 'update'])->name('gifts.update');
         Route::delete('gifts/{gift}', [GiftController::class, 'destroy'])->name('gifts.destroy');
         Route::post('gifts/{gift}/received', [GiftController::class, 'markReceived'])->name('gifts.received');
+    });
+
+    Route::prefix('bookmarklet')->name('bookmarklet.')->controller(BookmarkletController::class)->group(function (): void {
+        Route::get('/', 'show')->name('show');
+        Route::get('import', 'import')->name('import');
+        Route::post('import', 'store')->name('store');
     });
 });
 
