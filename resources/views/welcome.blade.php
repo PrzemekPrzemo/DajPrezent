@@ -18,9 +18,12 @@
 </head>
 <body>
     <main class="wrap">
-        <span class="badge">w budowie</span>
         <h1>DajPrezent.pl</h1>
-        <p class="lead">Twoja wymarzona lista prezentów oraz strona ślubna z RSVP. Wkrótce dostępne.</p>
+        <p class="lead">Stwórz wymarzoną listę prezentów i podziel się nią z bliskimi. Bliscy zarezerwują anonimowo, Ty zobaczysz tylko status — kto, dowiesz się dopiero przy rozpakowywaniu.</p>
+        <p>
+            <a href="/pakiety" style="display:inline-block;background:#ec4899;color:#fff;padding:.75rem 1.5rem;border-radius:.5rem;text-decoration:none;font-weight:600;font-size:1.05rem;">Wybierz pakiet</a>
+            <a href="/login" style="display:inline-block;color:#6b7280;padding:.75rem 1rem;text-decoration:none;">Mam już konto</a>
+        </p>
     </main>
     <footer>© {{ date('Y') }} DajPrezent.pl</footer>
 </body>

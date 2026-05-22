@@ -3,9 +3,12 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Owner\BookmarkletController;
 use App\Http\Controllers\Owner\DashboardController;
 use App\Http\Controllers\Owner\GiftController;
+use App\Http\Controllers\Public\CheckoutController;
+use App\Http\Controllers\Public\PricingController;
 use App\Http\Controllers\Public\ReservationController;
 use App\Http\Controllers\Public\WishlistController;
 use App\Http\Controllers\Webhooks\PayUWebhookController;
@@ -14,10 +17,20 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('welcome'))->name('home');
 
+/* Pricing + checkout (public) */
+Route::get('pakiety', PricingController::class)->name('public.pricing');
+Route::get('buy/return', [CheckoutController::class, 'return'])->name('public.checkout.return');
+Route::get('buy/{code}', [CheckoutController::class, 'buy'])->name('public.checkout.buy');
+Route::post('buy/{code}', [CheckoutController::class, 'store'])
+    ->middleware('auth')
+    ->name('public.checkout.store');
+
 /* Auth */
 Route::middleware('guest')->group(function (): void {
     Route::get('login', [LoginController::class, 'show'])->name('login');
     Route::post('login', [LoginController::class, 'store']);
+    Route::get('register', [RegisterController::class, 'show'])->name('register');
+    Route::post('register', [RegisterController::class, 'store']);
 });
 Route::post('logout', [LoginController::class, 'destroy'])
     ->middleware('auth')
