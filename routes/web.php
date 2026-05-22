@@ -8,6 +8,7 @@ use App\Http\Controllers\Owner\DashboardController;
 use App\Http\Controllers\Owner\GiftController;
 use App\Http\Controllers\Public\ReservationController;
 use App\Http\Controllers\Public\WishlistController;
+use App\Http\Controllers\Webhooks\PayUWebhookController;
 use App\Http\Middleware\ResolveTenantFromSlug;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +47,9 @@ Route::prefix('r')->name('public.reservations.')->controller(ReservationControll
     Route::get('verify/{token}', 'verify')->name('verify');
     Route::get('cancel/{token}', 'cancel')->name('cancel');
 });
+
+/* Webhooks (CSRF exempt — see bootstrap/app.php) */
+Route::post('webhooks/payu', PayUWebhookController::class)->name('webhooks.payu');
 
 /* Public list under tenant slug — MUST come last so it doesn't shadow /login etc. */
 Route::middleware(ResolveTenantFromSlug::class)
