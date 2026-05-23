@@ -29,7 +29,7 @@ final class ReservationController extends Controller
         $giftModel = Gift::query()->findOrFail($gift);
 
         try {
-            $this->reservations->request(
+            $reservation = $this->reservations->request(
                 gift: $giftModel,
                 guestEmail: $validated['email'],
                 guestName: $validated['name'] ?? null,
@@ -40,7 +40,14 @@ final class ReservationController extends Controller
             return back()->withErrors(['gift' => $e->getMessage()]);
         }
 
-        return back()->with('status', 'Wysłaliśmy link aktywacyjny na podany adres e-mail. Sprawdź skrzynkę (i folder Spam) w ciągu 60 minut.');
+        return back()->with([
+            'status' => 'Wysłaliśmy link aktywacyjny na podany adres e-mail. Sprawdź skrzynkę (i folder Spam) w ciągu 60 minut.',
+            // Browser-side per-guest tracking so the wishlist page can show
+            // "your reservation" badges and offer a self-service cancel
+            // without re-checking the e-mail — UX z dokumentu MD.
+            'just_reserved_gift' => $giftModel->id,
+            'just_reserved_token' => $reservation->verification_token,
+        ]);
     }
 
     public function verify(string $token): View
