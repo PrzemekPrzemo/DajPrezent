@@ -7,6 +7,8 @@ namespace App\Http\Controllers\Public;
 use App\Domain\Billing\Checkout\CheckoutOrderData;
 use App\Domain\Billing\Checkout\CheckoutService;
 use App\Domain\Billing\Models\Package;
+use App\Domain\Billing\PolishNip;
+use App\Domain\Billing\ValidNip;
 use App\Domain\Tenancy\Rules\AllowedSlug;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
@@ -38,11 +40,24 @@ final class CheckoutController extends Controller
         $user = $request->user();
         abort_if($user === null, 401);
 
+        $isCompany = $request->boolean('is_company');
+
         $data = $request->validate([
             'slug' => ['required', 'string', new AllowedSlug, Rule::unique('tenants', 'slug')],
             'name' => ['required', 'string', 'max:120'],
             'locale' => ['required', 'in:pl,en'],
             'terms' => ['accepted'],
+
+            // Buyer billing — required for every FV (B2C also gets an
+            // imienna FV with full name + address).
+            'buyer_name' => ['required', 'string', 'max:120'],
+            'buyer_street' => ['required', 'string', 'max:150'],
+            'buyer_postal_code' => ['required', 'string', 'regex:/^\d{2}-\d{3}$/'],
+            'buyer_city' => ['required', 'string', 'max:80'],
+
+            // Company-specific:
+            'buyer_company' => [$isCompany ? 'required' : 'nullable', 'string', 'max:160'],
+            'buyer_nip' => [$isCompany ? 'required' : 'nullable', 'string', new ValidNip],
         ]);
 
         $result = $this->checkout->start(
@@ -53,6 +68,12 @@ final class CheckoutController extends Controller
                 tenantName: $data['name'],
                 locale: $data['locale'],
                 customerIp: (string) $request->ip(),
+                buyerName: $data['buyer_name'],
+                buyerCompany: $isCompany ? $data['buyer_company'] : null,
+                buyerNip: $isCompany ? PolishNip::normalize($data['buyer_nip']) : null,
+                buyerStreet: $data['buyer_street'],
+                buyerPostalCode: $data['buyer_postal_code'],
+                buyerCity: $data['buyer_city'],
             ),
         );
 

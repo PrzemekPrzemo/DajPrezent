@@ -51,6 +51,13 @@ final class CheckoutService
                 'package_id' => $package->id,
                 'status' => 'pending',
                 'amount_pln_gr' => $package->price_pln_gr,
+                'buyer_name' => $data->buyerName,
+                'buyer_company' => $data->buyerCompany,
+                'buyer_nip' => $data->buyerNip,
+                'buyer_street' => $data->buyerStreet,
+                'buyer_postal_code' => $data->buyerPostalCode,
+                'buyer_city' => $data->buyerCity,
+                'buyer_country' => $data->buyerCountry,
             ]);
 
             return [$tenant, $subscription];

@@ -64,14 +64,34 @@ final class InvoiceGenerator
                 throw new RuntimeException('Subscription tenant has no owner — cannot issue an invoice.');
             }
 
+            // Subscription carries the buyer billing snapshot captured at
+            // checkout (B2C name+address, or company+NIP for B2B). For
+            // legacy rows where those fields are still null (pre-billing
+            // migration), fall back to the owner's account name + email.
+            $isB2B = $subscription->isB2B();
+            $buyerName = $isB2B
+                ? ($subscription->buyer_company ?? $subscription->buyer_name ?? $owner->name)
+                : ($subscription->buyer_name ?? $owner->name);
+
+            $address = [
+                'email' => $owner->email,
+            ];
+            if ($subscription->buyer_street !== null) {
+                $address['street'] = $subscription->buyer_street;
+            }
+            if ($subscription->buyer_postal_code !== null && $subscription->buyer_city !== null) {
+                $address['city_line'] = $subscription->buyer_postal_code.' '.$subscription->buyer_city;
+            }
+            if ($subscription->buyer_country !== '') {
+                $address['country'] = $subscription->buyer_country;
+            }
+
             return Invoice::create([
                 'tenant_id' => $tenant->id,
                 'number' => $number,
-                'buyer_name' => $owner->name,
-                'buyer_nip' => null, // B2C by default; pakiet B2B doda się w follow-upie
-                'buyer_address' => [
-                    'email' => $owner->email,
-                ],
+                'buyer_name' => $buyerName,
+                'buyer_nip' => $isB2B ? $subscription->buyer_nip : null,
+                'buyer_address' => $address,
                 'items' => [[
                     'name' => 'DajPrezent.pl — '.$package->name,
                     'qty' => 1,
