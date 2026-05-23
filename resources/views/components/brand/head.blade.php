@@ -17,6 +17,7 @@
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>{{ $displayTitle }}</title>
 <meta name="description" content="{{ $meta }}">
 <meta name="theme-color" content="#4F46E5">
