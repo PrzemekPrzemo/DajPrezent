@@ -60,6 +60,10 @@ final class CheckoutService
                 'buyer_country' => $data->buyerCountry,
             ]);
 
+            // The "primary" tenant also points back at its own subscription
+            // so AddSiblingListService can count it toward `multiple_lists`.
+            $tenant->update(['parent_subscription_id' => $subscription->id]);
+
             return [$tenant, $subscription];
         });
 

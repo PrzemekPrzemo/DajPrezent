@@ -6,10 +6,49 @@
     <header class="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 class="font-display text-2xl sm:text-3xl font-bold m-0">Moje listy prezentów</h1>
         <div class="flex flex-wrap gap-2">
+            @if ($siblingSlots !== null && $siblingSlots['free'] > 0)
+                <button type="button" @click="$dispatch('open-add-list')"
+                        class="dp-btn-primary">
+                    + Dodaj kolejną listę
+                    <span class="ml-1 text-xs opacity-90">({{ $siblingSlots['free'] }}/{{ $siblingSlots['limit'] }} wolne)</span>
+                </button>
+            @endif
             <a href="{{ route('owner.invoices.index') }}" class="dp-btn-secondary">Faktury</a>
             <a href="{{ route('owner.bookmarklet.show') }}" class="dp-btn-secondary">⚡ Bookmarklet</a>
         </div>
     </header>
+
+    @if ($siblingSlots !== null && $siblingSlots['free'] > 0)
+        <div x-data="{ open: false }"
+             x-on:open-add-list.window="open = true; $nextTick(() => $refs.nameField?.focus())"
+             x-show="open" x-cloak x-transition
+             class="dp-card mb-4 ring-2 ring-dp-purple-200">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="font-display font-semibold text-lg m-0">Dodaj kolejną listę w pakiecie {{ $siblingSlots['package'] }}</h2>
+                <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-700" aria-label="Zamknij">✕</button>
+            </div>
+            <form method="POST" action="{{ route('owner.lists.store') }}" class="grid sm:grid-cols-[1fr,1fr,auto] gap-3 items-end">
+                @csrf
+                <div class="dp-field">
+                    <label class="dp-label" for="add-list-name">Nazwa listy</label>
+                    <input id="add-list-name" name="name" x-ref="nameField" required maxlength="80"
+                           class="dp-input" placeholder="np. Lista urodzinowa Ani">
+                </div>
+                <div class="dp-field">
+                    <label class="dp-label" for="add-list-slug">Adres listy</label>
+                    <div class="flex items-center gap-1 text-sm">
+                        <span class="text-dp-muted">dajprezent.pl/</span>
+                        <input id="add-list-slug" name="slug" required maxlength="40" pattern="[a-z0-9][a-z0-9\-]{0,38}[a-z0-9]"
+                               class="dp-input" placeholder="ania-urodziny">
+                    </div>
+                </div>
+                <button type="submit" class="dp-btn-primary h-fit">Dodaj listę</button>
+            </form>
+            <p class="text-xs text-dp-muted mt-2">
+                Nowa lista dziedziczy ważność i limit prezentów z pakietu {{ $siblingSlots['package'] }}.
+            </p>
+        </div>
+    @endif
 
     @if (session('status'))
         <div role="status" class="bg-emerald-50 text-emerald-800 rounded-dp px-4 py-3 text-sm mb-4">{{ session('status') }}</div>

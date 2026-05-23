@@ -56,6 +56,17 @@ final class GiftLimitGuard
 
     public function activePackage(Tenant $tenant): ?Package
     {
+        // Sibling tenants (multi-list pakiety) wskazują na rodzicielską
+        // subskrypcję — gift limit dziedziczą z jej pakietu (per-tenant,
+        // nie współdzielony pomiędzy rodzeństwem).
+        if ($tenant->parent_subscription_id !== null) {
+            $parent = $tenant->parentSubscription()->with('package')->first();
+            if ($parent !== null && $parent->status === 'active'
+                && ($parent->expires_at === null || $parent->expires_at->isFuture())) {
+                return $parent->package;
+            }
+        }
+
         $sub = $tenant->subscriptions()
             ->where('status', 'active')
             ->where(function (Builder $q): void {

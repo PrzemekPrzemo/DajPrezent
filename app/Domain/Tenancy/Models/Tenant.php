@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $owner_user_id
+ * @property ?int $parent_subscription_id
  * @property string $slug
  * @property string $name
  * @property string $kind
@@ -33,7 +34,7 @@ final class Tenant extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'owner_user_id', 'slug', 'name', 'kind', 'locale',
+        'owner_user_id', 'parent_subscription_id', 'slug', 'name', 'kind', 'locale',
         'password_hash', 'cover_image_path', 'theme',
         'expires_at', 'is_public',
     ];
@@ -55,6 +56,11 @@ final class Tenant extends Model
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);
+    }
+
+    public function parentSubscription(): BelongsTo
+    {
+        return $this->belongsTo(Subscription::class, 'parent_subscription_id');
     }
 
     public function gifts(): HasMany

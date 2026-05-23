@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Owner\AccountController;
+use App\Http\Controllers\Owner\AddListController;
 use App\Http\Controllers\Owner\BookmarkletController;
 use App\Http\Controllers\Owner\DashboardController;
 use App\Http\Controllers\Owner\GiftController;
@@ -102,6 +103,7 @@ Route::middleware('auth')->group(function (): void {
 /* Owner panel */
 Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): void {
     Route::get('/', DashboardController::class)->name('dashboard');
+    Route::post('lists', [AddListController::class, 'store'])->name('lists.store');
 
     Route::prefix('lists/{tenant}')->group(function (): void {
         Route::get('gifts', [GiftController::class, 'index'])->name('gifts.index');
