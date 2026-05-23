@@ -54,6 +54,17 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install npm + build assets
+        run: |
+          npm ci
+          npm run build
+
       - name: Copy .env and generate app key
         run: |
           cp .env.example .env

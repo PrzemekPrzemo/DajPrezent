@@ -1,3 +1,109 @@
+/* DajPrezent.pl — Tailwind base + brand tokens.
+ *
+ * Brand identity sourced from plansze brandingowe (Sprint 0).
+ * Composed in the order: base → components → utilities.
+ */
+
+@import '@fontsource/poppins/400.css';
+@import '@fontsource/poppins/500.css';
+@import '@fontsource/poppins/600.css';
+@import '@fontsource/poppins/700.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        color-scheme: light;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-dp-bg text-dp-navy font-sans antialiased;
+    }
+
+    h1, h2, h3, h4 {
+        @apply font-display text-dp-navy;
+    }
+}
+
+@layer components {
+    .dp-btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-dp px-5 py-2.5
+               font-semibold text-sm transition duration-200 ease-dp
+               focus:outline-none focus-visible:shadow-dp-focus
+               disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+    .dp-btn-primary {
+        @apply dp-btn bg-dp-gradient text-white shadow-dp-card
+               hover:shadow-dp-card-lg hover:-translate-y-0.5
+               active:translate-y-0;
+    }
+
+    .dp-btn-secondary {
+        @apply dp-btn bg-white text-dp-purple-700 ring-1 ring-dp-purple-200
+               hover:bg-dp-purple-50;
+    }
+
+    .dp-btn-ghost {
+        @apply dp-btn text-dp-muted hover:text-dp-purple-700 hover:bg-dp-purple-50;
+    }
+
+    .dp-btn-danger {
+        @apply dp-btn bg-red-600 text-white hover:bg-red-700;
+    }
+
+    .dp-card {
+        @apply bg-white rounded-dp p-6 shadow-dp-card border border-dp-purple-50;
+    }
+
+    .dp-card + .dp-card { @apply mt-4; }
+
+    .dp-field { @apply space-y-1.5; }
+    .dp-field + .dp-field { @apply mt-4; }
+
+    .dp-label { @apply block text-sm font-semibold text-dp-navy; }
+
+    .dp-input {
+        @apply block w-full rounded-dp border-gray-200 px-3 py-2 text-sm
+               focus:border-dp-purple-500 focus:ring-2 focus:ring-dp-purple-200;
+    }
+
+    .dp-chip {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    }
+    .dp-chip-available { @apply bg-sky-50 text-sky-700; }
+    .dp-chip-reserved  { @apply bg-amber-50 text-amber-800; }
+    .dp-chip-received  { @apply bg-emerald-50 text-emerald-700; }
+    .dp-chip-pink      { @apply bg-pink-50 text-pink-700; }
+
+    .dp-flash-ok  { @apply bg-emerald-50 text-emerald-800 rounded-dp px-4 py-3 text-sm; }
+    .dp-flash-err { @apply bg-red-50 text-red-800 rounded-dp px-4 py-3 text-sm; }
+
+    /* Hero gradient that subtly drifts — eye-catching but not seizure-y. */
+    .dp-hero-bg {
+        background:
+            radial-gradient(1200px 600px at 80% -10%, rgba(124, 108, 247, 0.18), transparent 60%),
+            radial-gradient(900px 500px at 10% 110%, rgba(59, 130, 246, 0.16), transparent 60%),
+            linear-gradient(180deg, #FFFFFF 0%, #F5F3FF 100%);
+    }
+
+    /* Soft animated bloom — pure CSS, 14s loop. */
+    @keyframes dp-bloom {
+        0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.6; }
+        50%      { transform: scale(1.12) translate(2%, -2%); opacity: 0.9; }
+    }
+    .dp-bloom { animation: dp-bloom 14s ease-in-out infinite; }
+}
+
+@layer utilities {
+    [x-cloak] { display: none !important; }
+}

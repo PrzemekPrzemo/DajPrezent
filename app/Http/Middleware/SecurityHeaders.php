@@ -36,7 +36,7 @@ final class SecurityHeaders
             "default-src 'self'",
             "img-src 'self' data: https:",
             "style-src 'self' 'unsafe-inline'",
-            "script-src 'self' 'unsafe-inline' https://unpkg.com",
+            "script-src 'self' 'unsafe-inline'",
             "font-src 'self' data:",
             "connect-src 'self'",
             "frame-ancestors 'self'",

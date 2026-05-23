@@ -99,5 +99,5 @@
         @endforeach
     </div>
 
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    {{-- Alpine is bundled by Vite in app.js — see resources/js/app.js --}}
 @endsection

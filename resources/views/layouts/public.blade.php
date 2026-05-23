@@ -1,58 +1,88 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title') — DajPrezent.pl</title>
-    <meta name="description" content="@yield('meta_description', 'Stwórz wymarzoną listę prezentów lub stronę ślubną z RSVP. Bliscy zarezerwują anonimowo.')">
-    <link rel="canonical" href="{{ url()->current() }}">
-
-    {{-- Open Graph + Twitter --}}
-    <meta property="og:site_name" content="DajPrezent.pl">
-    <meta property="og:type" content="@yield('og_type', 'website')">
-    <meta property="og:title" content="@yield('og_title', View::getSection('title') ?? 'DajPrezent.pl')">
-    <meta property="og:description" content="@yield('og_description', 'Stwórz wymarzoną listę prezentów i podziel się nią z bliskimi.')">
-    <meta property="og:url" content="{{ url()->current() }}">
-    @hasSection('og_image')
-        <meta property="og:image" content="@yield('og_image')">
-        <meta name="twitter:card" content="summary_large_image">
-    @else
-        <meta name="twitter:card" content="summary">
-    @endif
-
-    {{-- Bots (overridable per page) --}}
-    @hasSection('robots')
-        @yield('robots')
-    @else
-        <meta name="robots" content="index,follow">
-    @endif
-    <style>
-        :root { color-scheme: light; }
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #1f2937; background: #fdf2f8; }
-        .container { max-width: 720px; margin: 0 auto; padding: 4rem 1.5rem; }
-        .card { background: #fff; border-radius: 1rem; padding: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,.06); text-align: center; }
-        h1 { margin-top: 0; font-size: 1.75rem; }
-        p { color: #4b5563; line-height: 1.6; }
-        a.button { display:inline-block; margin-top:1rem; padding:.75rem 1.5rem; background:#ec4899; color:#fff; border-radius:.5rem; text-decoration:none; font-weight:600; }
-    </style>
+    @php
+        $robotsRaw = View::hasSection('robots') ? View::getSection('robots') : null;
+        $robots = 'index,follow';
+        if (is_string($robotsRaw) && preg_match('/content="([^"]+)"/', $robotsRaw, $m)) {
+            $robots = $m[1];
+        }
+    @endphp
+    <x-brand.head
+        :title="View::hasSection('title') ? View::getSection('title') : null"
+        :description="View::hasSection('meta_description') ? View::getSection('meta_description') : null"
+        :og-title="View::hasSection('og_title') ? View::getSection('og_title') : null"
+        :og-description="View::hasSection('og_description') ? View::getSection('og_description') : null"
+        :og-image="View::hasSection('og_image') ? View::getSection('og_image') : null"
+        :robots="$robots"
+    />
 </head>
-<body>
-    <main class="container">
+<body class="min-h-screen flex flex-col">
+    <nav class="border-b border-dp-purple-50 bg-white/80 backdrop-blur sticky top-0 z-30">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+            <x-brand.logo size="sm"/>
+            <div class="flex items-center gap-2 text-sm">
+                <a href="{{ route('public.pricing') }}" class="dp-btn-ghost px-3 py-1.5">Pakiety</a>
+                <a href="{{ route('public.faq') }}" class="dp-btn-ghost px-3 py-1.5 hidden sm:inline-flex">FAQ</a>
+                @auth
+                    <a href="{{ route('owner.dashboard') }}" class="dp-btn-secondary px-3 py-1.5">Panel</a>
+                @else
+                    <a href="{{ route('login') }}" class="dp-btn-ghost px-3 py-1.5 hidden sm:inline-flex">Zaloguj</a>
+                    <a href="{{ route('public.pricing') }}" class="dp-btn-primary px-3 py-1.5">Załóż listę</a>
+                @endauth
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1">
+        @if (session('status'))
+            <div class="max-w-3xl mx-auto px-4 mt-4">
+                <div class="dp-flash-ok">{{ session('status') }}</div>
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="max-w-3xl mx-auto px-4 mt-4">
+                <div class="dp-flash-err">
+                    @foreach ($errors->all() as $err)<div>{{ $err }}</div>@endforeach
+                </div>
+            </div>
+        @endif
         @yield('content')
     </main>
 
-    <footer style="text-align:center;color:#9ca3af;font-size:.85rem;padding:1rem 1rem 3rem;max-width:720px;margin:0 auto;">
-        <div style="display:flex;gap:1.25rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem;">
-            <a href="{{ route('public.pricing') }}" style="color:#9ca3af;">Pakiety</a>
-            <a href="{{ route('public.faq') }}" style="color:#9ca3af;">FAQ</a>
-            <a href="{{ route('public.contact') }}" style="color:#9ca3af;">Kontakt</a>
-            <a href="{{ route('public.legal.terms') }}" style="color:#9ca3af;">Regulamin</a>
-            <a href="{{ route('public.legal.privacy') }}" style="color:#9ca3af;">Polityka prywatności</a>
+    <footer class="border-t border-dp-purple-50 bg-dp-purple-50/30 mt-16">
+        <div class="max-w-6xl mx-auto px-4 py-10 grid gap-8 sm:grid-cols-4 text-sm">
+            <div class="sm:col-span-2">
+                <x-brand.logo :tagline="true"/>
+                <p class="text-dp-muted mt-3 text-xs leading-relaxed max-w-xs">
+                    Stwórz wymarzoną listę prezentów lub stronę ślubną z RSVP.
+                    Bliscy zarezerwują anonimowo.
+                </p>
+            </div>
+            <div>
+                <div class="font-semibold text-dp-navy mb-2">Produkt</div>
+                <ul class="space-y-1.5 text-dp-muted">
+                    <li><a href="{{ route('public.pricing') }}" class="hover:text-dp-purple-700">Pakiety</a></li>
+                    <li><a href="{{ route('public.faq') }}" class="hover:text-dp-purple-700">FAQ</a></li>
+                    <li><a href="{{ route('public.contact') }}" class="hover:text-dp-purple-700">Kontakt</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="font-semibold text-dp-navy mb-2">Prawo</div>
+                <ul class="space-y-1.5 text-dp-muted">
+                    <li><a href="{{ route('public.legal.terms') }}" class="hover:text-dp-purple-700">Regulamin</a></li>
+                    <li><a href="{{ route('public.legal.privacy') }}" class="hover:text-dp-purple-700">Polityka prywatności</a></li>
+                </ul>
+            </div>
         </div>
-        © {{ date('Y') }} DajPrezent.pl · Sendormeco Holding sp. z o.o.<br>
-        ul. Złota 75A/7, 00-819 Warszawa · KRS 0000906110 · NIP 5252866457 · REGON 389194801
+        <div class="border-t border-dp-purple-50">
+            <div class="max-w-6xl mx-auto px-4 py-4 text-xs text-dp-muted flex flex-col sm:flex-row sm:justify-between gap-2">
+                <span>© {{ date('Y') }} DajPrezent.pl · Sendormeco Holding sp. z o.o.</span>
+                <span>ul. Złota 75A/7, 00-819 Warszawa · KRS 0000906110 · NIP 5252866457 · REGON 389194801</span>
+            </div>
+        </div>
     </footer>
+
     @include('partials.cookie-banner')
 </body>
 </html>

@@ -31,10 +31,10 @@ it('renders /kontakt', function (): void {
 
 it('exposes footer links from the welcome page', function (): void {
     $this->get('/')->assertOk()
-        ->assertSee('href="/regulamin"', false)
-        ->assertSee('href="/polityka-prywatnosci"', false)
-        ->assertSee('href="/faq"', false)
-        ->assertSee('href="/kontakt"', false);
+        ->assertSee('/regulamin', false)
+        ->assertSee('/polityka-prywatnosci', false)
+        ->assertSee('/faq', false)
+        ->assertSee('/kontakt', false);
 });
 
 it('blacklists slugs that would collide with explicit routes', function (): void {

@@ -19,7 +19,7 @@ it('emits a Content-Security-Policy that permits our own inline scripts', functi
 
     expect($csp)
         ->toContain("default-src 'self'")
-        ->toContain("script-src 'self' 'unsafe-inline' https://unpkg.com")
+        ->toContain("script-src 'self' 'unsafe-inline'")
         ->toContain("form-action 'self' https://secure.snd.payu.com");
 });
 
