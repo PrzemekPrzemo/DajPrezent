@@ -16,6 +16,7 @@ use App\Http\Controllers\Owner\InvoiceController;
 use App\Http\Controllers\Owner\RodoExportController;
 use App\Http\Controllers\Owner\TenantSettingsController;
 use App\Http\Controllers\Public\CheckoutController;
+use App\Http\Controllers\Public\LandingController;
 use App\Http\Controllers\Public\PricingController;
 use App\Http\Controllers\Public\ReservationController;
 use App\Http\Controllers\Public\UnlockController;
@@ -25,7 +26,7 @@ use App\Http\Controllers\Webhooks\PayUWebhookController;
 use App\Http\Middleware\ResolveTenantFromSlug;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => view('welcome'))->name('home');
+Route::get('/', LandingController::class)->name('home');
 
 Route::post('locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
 
