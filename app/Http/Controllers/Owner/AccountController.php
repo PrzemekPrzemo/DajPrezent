@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Owner;
 
+use App\Domain\Tenancy\AccountDeleter;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -22,9 +24,45 @@ use Illuminate\Validation\ValidationException;
  */
 final class AccountController extends Controller
 {
+    public function __construct(private readonly AccountDeleter $deleter) {}
+
     public function edit(Request $request): View
     {
         return view('owner.account.edit', ['user' => $request->user()]);
+    }
+
+    public function destroy(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        assert($user !== null);
+
+        $request->validate([
+            'current_password' => ['required', 'string'],
+            'confirm_email' => ['required', 'string'],
+        ]);
+
+        if (! Hash::check($request->string('current_password')->value(), $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => 'Aktualne hasło jest nieprawidłowe.',
+            ]);
+        }
+
+        if ($request->string('confirm_email')->trim()->lower()->value() !== $user->email) {
+            throw ValidationException::withMessages([
+                'confirm_email' => 'Wpisany adres nie zgadza się z adresem konta.',
+            ]);
+        }
+
+        // Auth::logout() refreshes the remember_token via $user->save(),
+        // which would re-INSERT the user row if delete() ran first.
+        // Log out the session BEFORE touching the user row.
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        $this->deleter->delete($user);
+
+        return redirect()->route('home')->with('status', 'Twoje konto zostało usunięte. Listy są zamknięte, dane gości usunięte. Faktury zachowano przez 5 lat zgodnie z ustawą o rachunkowości.');
     }
 
     public function updateProfile(Request $request): RedirectResponse

@@ -100,6 +100,7 @@ Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): v
     Route::get('konto', [AccountController::class, 'edit'])->name('account.edit');
     Route::patch('konto/profil', [AccountController::class, 'updateProfile'])->name('account.profile.update');
     Route::patch('konto/haslo', [AccountController::class, 'updatePassword'])->name('account.password.update');
+    Route::delete('konto', [AccountController::class, 'destroy'])->name('account.destroy');
 
     Route::prefix('bookmarklet')->name('bookmarklet.')->controller(BookmarkletController::class)->group(function (): void {
         Route::get('/', 'show')->name('show');
