@@ -48,13 +48,19 @@ export default {
                 'dp-gradient-soft': 'linear-gradient(135deg, #F5F3FF 0%, #EFF6FF 100%)',
             },
             boxShadow: {
-                'dp-card': '0 16px 32px -16px rgba(79, 70, 229, 0.18)',
-                'dp-card-lg': '0 24px 48px -16px rgba(79, 70, 229, 0.28)',
-                'dp-focus': '0 0 0 4px rgba(79, 70, 229, 0.18)',
+                // From dokument UX/UI: soft, low-opacity slate shadow
+                // (`0 4px 20px -2px rgba(30, 41, 59, 0.05)`) for everyday
+                // surfaces; deeper brand-tinted lift for hero cards.
+                'dp-soft':    '0 4px 20px -2px rgba(30, 41, 59, 0.05)',
+                'dp-card':    '0 4px 20px -2px rgba(30, 41, 59, 0.06)',
+                'dp-card-lg': '0 24px 48px -16px rgba(79, 70, 229, 0.22)',
+                'dp-focus':   '0 0 0 4px rgba(79, 70, 229, 0.12)',
             },
             borderRadius: {
-                'dp': '12px',
-                'dp-lg': '20px',
+                // Dokument: 12px (small/buttons/inputs) + 16px (large cards/modals).
+                'dp':    '12px',
+                'dp-lg': '16px',
+                'dp-xl': '20px',
             },
             transitionTimingFunction: {
                 'dp': 'cubic-bezier(0.22, 1, 0.36, 1)',

@@ -62,7 +62,7 @@
     }
 
     .dp-card {
-        @apply bg-white rounded-dp p-6 shadow-dp-card border border-dp-purple-50;
+        @apply bg-white rounded-dp-lg p-6 shadow-dp-soft border border-slate-100;
     }
 
     .dp-card + .dp-card { @apply mt-4; }

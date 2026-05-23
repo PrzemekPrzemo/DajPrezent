@@ -12,6 +12,7 @@ use App\Http\Controllers\Owner\BookmarkletController;
 use App\Http\Controllers\Owner\DashboardController;
 use App\Http\Controllers\Owner\GiftController;
 use App\Http\Controllers\Owner\GiftExportController;
+use App\Http\Controllers\Owner\GiftPreviewController;
 use App\Http\Controllers\Owner\InvoiceController;
 use App\Http\Controllers\Owner\RodoExportController;
 use App\Http\Controllers\Owner\TenantSettingsController;
@@ -94,6 +95,10 @@ Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): v
     });
 
     Route::get('rodo/eksport', RodoExportController::class)->name('rodo.export');
+
+    Route::post('api/gift-preview', GiftPreviewController::class)
+        ->middleware('throttle:30,1') // 30 paste-previews per minute per user
+        ->name('api.gift-preview');
 
     Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
     Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
