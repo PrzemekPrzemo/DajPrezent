@@ -142,7 +142,7 @@ return [
         'settings', 'shop', 'sklep', 'static', 'storage', 'support',
         'konto', 'system', 'tenant', 'tenants', 'terms', 'test', 'u', 'user',
         'users', 'web', 'webhook', 'webhooks', 'wedding', 'wesele',
-        'wishlist', 'www',
+        'wishlist', 'wsparcie', 'www',
     ],
 
 ];

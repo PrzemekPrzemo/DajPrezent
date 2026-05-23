@@ -15,12 +15,14 @@ use App\Http\Controllers\Owner\GiftExportController;
 use App\Http\Controllers\Owner\GiftPreviewController;
 use App\Http\Controllers\Owner\InvoiceController;
 use App\Http\Controllers\Owner\RodoExportController;
+use App\Http\Controllers\Owner\SupportController;
 use App\Http\Controllers\Owner\TenantQrController;
 use App\Http\Controllers\Owner\TenantSettingsController;
 use App\Http\Controllers\Owner\WeddingController;
 use App\Http\Controllers\Owner\WeddingExportController;
 use App\Http\Controllers\Owner\WeddingRsvpsController;
 use App\Http\Controllers\Public\CheckoutController;
+use App\Http\Controllers\Public\HelpController;
 use App\Http\Controllers\Public\LandingController;
 use App\Http\Controllers\Public\PricingController;
 use App\Http\Controllers\Public\ReservationController;
@@ -41,6 +43,8 @@ Route::view('regulamin', 'public.legal.regulamin')->name('public.legal.terms');
 Route::view('polityka-prywatnosci', 'public.legal.privacy')->name('public.legal.privacy');
 Route::view('faq', 'public.static.faq')->name('public.faq');
 Route::view('kontakt', 'public.static.contact')->name('public.contact');
+Route::get('pomoc', [HelpController::class, 'index'])->name('public.help.index');
+Route::get('pomoc/{slug}', [HelpController::class, 'show'])->name('public.help.show')->where('slug', '[a-z0-9-]+');
 Route::get('sitemap.xml', SitemapController::class)->name('public.sitemap');
 
 /* Pricing + checkout (public) */
@@ -119,6 +123,11 @@ Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): v
     Route::patch('konto/profil', [AccountController::class, 'updateProfile'])->name('account.profile.update');
     Route::patch('konto/haslo', [AccountController::class, 'updatePassword'])->name('account.password.update');
     Route::delete('konto', [AccountController::class, 'destroy'])->name('account.destroy');
+
+    Route::get('wsparcie', [SupportController::class, 'index'])->name('support.index');
+    Route::get('wsparcie/nowe', [SupportController::class, 'create'])->name('support.create');
+    Route::post('wsparcie', [SupportController::class, 'store'])->middleware('throttle:signup')->name('support.store');
+    Route::get('wsparcie/{ticket}', [SupportController::class, 'show'])->name('support.show');
 
     Route::prefix('bookmarklet')->name('bookmarklet.')->controller(BookmarkletController::class)->group(function (): void {
         Route::get('/', 'show')->name('show');

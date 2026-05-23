@@ -64,6 +64,7 @@
                 <ul class="space-y-1.5 text-dp-muted">
                     <li><a href="{{ route('public.pricing') }}" class="hover:text-dp-purple-700">Pakiety</a></li>
                     <li><a href="{{ route('public.faq') }}" class="hover:text-dp-purple-700">FAQ</a></li>
+                    <li><a href="{{ route('public.help.index') }}" class="hover:text-dp-purple-700">Pomoc</a></li>
                     <li><a href="{{ route('public.contact') }}" class="hover:text-dp-purple-700">Kontakt</a></li>
                 </ul>
             </div>
