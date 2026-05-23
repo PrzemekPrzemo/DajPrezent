@@ -1,6 +1,15 @@
 @extends('layouts.public')
 
 @section('title', 'FAQ — najczęstsze pytania')
+@section('og_image', route('public.og', ['title' => 'Najczęstsze pytania', 'subtitle' => 'DajPrezent.pl FAQ']))
+
+@push('head_extra')
+    <x-seo.jsonld :data="\App\Domain\Seo\JsonLd::faqPage(\App\Http\Controllers\Public\LandingController::FAQ_ITEMS)"/>
+    <x-seo.jsonld :data="\App\Domain\Seo\JsonLd::breadcrumbList([
+        ['name' => 'Strona główna', 'url' => url('/')],
+        ['name' => 'FAQ', 'url' => route('public.faq')],
+    ])"/>
+@endpush
 
 @section('content')
     <article class="card" style="text-align:left;line-height:1.6;">

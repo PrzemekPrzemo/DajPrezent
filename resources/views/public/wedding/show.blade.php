@@ -3,7 +3,14 @@
 @section('title', $event?->couple_names ?: $tenant->name)
 @section('meta_description', ($event?->couple_names ?: $tenant->name).' — RSVP, ceremonia i lista prezentów.')
 @section('og_title', ($event?->couple_names ?: $tenant->name).' — strona ślubna')
+@section('og_image', route('public.og.tenant', ['tenant' => $tenant->slug]))
 @section('robots')<meta name="robots" content="noindex,follow">@endsection
+
+@if ($event !== null)
+    @push('head_extra')
+        <x-seo.jsonld :data="\App\Domain\Seo\JsonLd::weddingEvent($event, url()->current())"/>
+    @endpush
+@endif
 
 @php
     // Per-theme color overlays. Wszystkie używają tych samych komponentów

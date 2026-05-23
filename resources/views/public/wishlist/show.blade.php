@@ -9,6 +9,8 @@
 @endphp
 @if ($coverGift)
     @section('og_image', asset('storage/'.$coverGift->image_path))
+@else
+    @section('og_image', route('public.og.tenant', ['tenant' => $tenant->slug]))
 @endif
 {{-- Personal lists default to noindex — owners share the link directly. --}}
 @section('robots')

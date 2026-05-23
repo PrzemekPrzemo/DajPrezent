@@ -16,6 +16,7 @@
         :og-image="View::hasSection('og_image') ? View::getSection('og_image') : null"
         :robots="$robots"
     />
+    @stack('head_extra')
 </head>
 <body class="min-h-screen flex flex-col">
     <nav class="border-b border-dp-purple-50 bg-white/80 backdrop-blur sticky top-0 z-30">

@@ -24,6 +24,8 @@ use App\Http\Controllers\Owner\WeddingRsvpsController;
 use App\Http\Controllers\Public\CheckoutController;
 use App\Http\Controllers\Public\HelpController;
 use App\Http\Controllers\Public\LandingController;
+use App\Http\Controllers\Public\LandingVariantController;
+use App\Http\Controllers\Public\OgImageController;
 use App\Http\Controllers\Public\PricingController;
 use App\Http\Controllers\Public\ReservationController;
 use App\Http\Controllers\Public\RsvpController;
@@ -46,6 +48,17 @@ Route::view('kontakt', 'public.static.contact')->name('public.contact');
 Route::get('pomoc', [HelpController::class, 'index'])->name('public.help.index');
 Route::get('pomoc/{slug}', [HelpController::class, 'show'])->name('public.help.show')->where('slug', '[a-z0-9-]+');
 Route::get('sitemap.xml', SitemapController::class)->name('public.sitemap');
+
+/* Dynamic OG preview images (1200x630 PNG, cached 24h). */
+Route::get('og.png', [OgImageController::class, 'default'])->name('public.og');
+Route::get('og/list/{tenant:slug}', [OgImageController::class, 'forTenant'])
+    ->where('tenant', '[a-z0-9-]{2,40}')
+    ->name('public.og.tenant');
+
+/* SEO landing variants — per long-tail keyword, all CTA to /pakiety. */
+Route::get('lista-prezentow-na-urodziny', [LandingVariantController::class, 'birthday'])->name('public.landing.birthday');
+Route::get('lista-prezentow-slubnych', [LandingVariantController::class, 'wedding'])->name('public.landing.wedding');
+Route::get('prezent-na-rocznice', [LandingVariantController::class, 'anniversary'])->name('public.landing.anniversary');
 
 /* Pricing + checkout (public) */
 Route::get('pakiety', PricingController::class)->name('public.pricing');

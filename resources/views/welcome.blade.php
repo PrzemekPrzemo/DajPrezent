@@ -2,6 +2,12 @@
 
 @section('title', 'Prezenty od serca, bez stresu')
 @section('meta_description', 'Stwórz wymarzoną listę prezentów lub stronę ślubną z RSVP. Bliscy zarezerwują anonimowo, Ty zobaczysz tylko status — kto, dowiesz się dopiero przy rozpakowywaniu.')
+@section('og_image', route('public.og'))
+
+@push('head_extra')
+    <x-seo.jsonld :data="\App\Domain\Seo\JsonLd::organization()"/>
+    <x-seo.jsonld :data="\App\Domain\Seo\JsonLd::faqPage($faqItems ?? [])"/>
+@endpush
 
 @section('content')
     {{-- Sticky CTA bar po przewinięciu --}}
@@ -200,13 +206,7 @@
     <section class="max-w-3xl mx-auto px-4 py-16" x-data="{ open: null }">
         <h2 class="text-center font-display text-3xl font-bold mb-10">Najczęstsze pytania</h2>
         <div class="space-y-3">
-            @foreach ([
-                ['q' => 'Czy gość rezerwujący prezent będzie widoczny?', 'a' => 'Nie — to centralna obietnica DajPrezent.pl. Widzisz wyłącznie status („zarezerwowany", „otrzymany"). Adres e-mail wymagany jest tylko aby zweryfikować że to nie spam — do Ciebie nigdy nie trafia.'],
-                ['q' => 'Co się dzieje po wygaśnięciu pakietu?', 'a' => 'Lista przechodzi w tryb prywatny. Twoje dane zostają przez 30 dni — w tym czasie możesz przedłużyć pakiet bez utraty zawartości.'],
-                ['q' => 'Czy dostanę fakturę VAT?', 'a' => 'Tak — automatycznie, w Krajowym Systemie e-Faktur (KSeF). Faktura jest dostępna w panelu w sekcji „Faktury". Wystawiamy także faktury z NIP-em firmy (B2B).'],
-                ['q' => 'Czy mogę dodać prezent z dowolnego sklepu?', 'a' => 'Tak — bookmarklet w panelu odczytuje tytuł, cenę i link z otwartej karty sklepu. Działa na Allegro, Empiku, Zalando i każdym sklepie z poprawnymi meta-tagami OpenGraph.'],
-                ['q' => 'Pakiet ślubny — co dostaję dodatkowo?', 'a' => 'Stronę ślubną z RSVP (z preferencjami dietetycznymi w Premium), galerię po-ślubną, mapę dojazdu, ochronę hasłem oraz generator zaproszeń PDF z QR.'],
-            ] as $i => $item)
+            @foreach ($faqItems as $i => $item)
                 <div class="dp-card !p-0 overflow-hidden">
                     <button type="button" @click="open = (open === {{ $i }} ? null : {{ $i }})"
                             class="w-full text-left px-6 py-4 flex items-center justify-between hover:bg-dp-purple-50/50 transition">

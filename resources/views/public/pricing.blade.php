@@ -1,6 +1,15 @@
 @extends('layouts.public')
 
 @section('title', 'Pakiety i ceny')
+@section('og_image', route('public.og', ['title' => 'Pakiety i ceny', 'subtitle' => 'Od 0 zł do 399 zł']))
+
+@push('head_extra')
+    <x-seo.jsonld :data="\App\Domain\Seo\JsonLd::breadcrumbList([
+        ['name' => 'Strona główna', 'url' => url('/')],
+        ['name' => 'Pakiety', 'url' => route('public.pricing')],
+    ])"/>
+    <x-seo.jsonld :data="\App\Domain\Seo\JsonLd::offerCatalog($packages->flatten())"/>
+@endpush
 
 @section('content')
     <header class="text-center max-w-2xl mx-auto px-4 pt-16 pb-8">
