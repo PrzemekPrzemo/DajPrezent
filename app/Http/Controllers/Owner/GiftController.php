@@ -11,6 +11,7 @@ use App\Domain\Wishlist\Images\ImageOptimizer;
 use App\Domain\Wishlist\Models\Gift;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -174,6 +175,36 @@ final class GiftController extends Controller
         return back()
             ->with('status', 'Oznaczono prezent jako otrzymany.')
             ->with('dp_heart', $giftModel->id);
+    }
+
+    /**
+     * Drag-and-drop reorder endpoint. Receives JSON {ids: [int...]} from
+     * the front-end after SortableJS commits a drop. Positions are rewritten
+     * in order so the cheapest one (or "first to show") gets position=1.
+     * Any id that does not belong to the current tenant is silently dropped
+     * — we never trust the client to enumerate other tenants' gifts.
+     */
+    public function reorder(Request $request, Tenant $tenant): JsonResponse
+    {
+        $this->authorizeTenant($request, $tenant);
+        $this->current->set($tenant);
+
+        $data = $request->validate([
+            'ids' => ['required', 'array', 'min:1', 'max:500'],
+            'ids.*' => ['integer', 'min:1'],
+        ]);
+
+        $ids = collect($data['ids'])->map(fn ($n) => (int) $n)->all();
+        $ownIds = Gift::query()->whereIn('id', $ids)->pluck('id')->all();
+        $clean = array_values(array_intersect($ids, $ownIds));
+
+        \DB::transaction(function () use ($clean): void {
+            foreach ($clean as $position => $id) {
+                Gift::query()->whereKey($id)->update(['position' => $position + 1]);
+            }
+        });
+
+        return response()->json(['ok' => true, 'count' => count($clean)]);
     }
 
     private function authorizeTenant(Request $request, Tenant $tenant): void

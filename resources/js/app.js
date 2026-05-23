@@ -13,6 +13,47 @@ import Alpine from 'alpinejs';
 window.Alpine = Alpine;
 Alpine.start();
 
+/**
+ * Wire up drag-and-drop reordering for any [data-dp-sortable]
+ * container. Each child must carry data-id; on reorder we POST
+ * the new order to the URL in data-dp-sortable-url with a JSON
+ * body { ids: [...] } and the CSRF token from <meta>.
+ *
+ * SortableJS is lazy-imported so casual viewers never pay the cost.
+ */
+const initSortables = async () => {
+    const lists = document.querySelectorAll('[data-dp-sortable]');
+    if (lists.length === 0) return;
+    const { default: Sortable } = await import('sortablejs');
+    const token = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+    lists.forEach((el) => {
+        const url = el.dataset.dpSortableUrl;
+        if (!url) return;
+        Sortable.create(el, {
+            handle: '[data-dp-sortable-handle]',
+            animation: 180,
+            ghostClass: 'opacity-40',
+            onEnd: () => {
+                const ids = Array.from(el.children)
+                    .map((row) => Number(row.dataset.id))
+                    .filter((n) => Number.isFinite(n) && n > 0);
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ ids }),
+                }).catch(() => { /* graceful: order rolls back on next reload */ });
+            },
+        });
+    });
+};
+
+if (document.readyState !== 'loading') initSortables();
+else document.addEventListener('DOMContentLoaded', initSortables);
+
 window.dpConfetti = async (options = {}) => {
     const { default: confetti } = await import('canvas-confetti');
     return confetti({

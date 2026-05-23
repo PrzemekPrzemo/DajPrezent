@@ -108,6 +108,7 @@ Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): v
     Route::prefix('lists/{tenant}')->group(function (): void {
         Route::get('gifts', [GiftController::class, 'index'])->name('gifts.index');
         Route::post('gifts', [GiftController::class, 'store'])->name('gifts.store');
+        Route::post('gifts/reorder', [GiftController::class, 'reorder'])->name('gifts.reorder');
         Route::patch('gifts/{gift}', [GiftController::class, 'update'])->name('gifts.update');
         Route::delete('gifts/{gift}', [GiftController::class, 'destroy'])->name('gifts.destroy');
         Route::post('gifts/{gift}/received', [GiftController::class, 'markReceived'])->name('gifts.received');

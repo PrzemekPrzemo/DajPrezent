@@ -65,11 +65,15 @@
                             <th class="py-2 px-2"></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody data-dp-sortable
+                           data-dp-sortable-url="{{ route('owner.gifts.reorder', $tenant) }}">
                     @foreach ($gifts as $gift)
-                        <tr class="border-b border-slate-50 last:border-0">
+                        <tr class="border-b border-slate-50 last:border-0 bg-white" data-id="{{ $gift->id }}">
                             <td class="py-3 px-2">
                                 <div class="flex items-center gap-3">
+                                    <button type="button" data-dp-sortable-handle
+                                            class="cursor-grab active:cursor-grabbing text-slate-300 hover:text-dp-purple-500 select-none"
+                                            aria-label="Przeciągnij aby zmienić kolejność">⋮⋮</button>
                                     @if ($gift->image_path)
                                         <img src="{{ asset('storage/'.$gift->image_path) }}" alt=""
                                              class="w-14 h-14 object-cover rounded-dp flex-shrink-0">
