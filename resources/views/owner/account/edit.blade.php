@@ -39,6 +39,16 @@
     </div>
 
     <div class="card">
+        <h2>Twoje dane (RODO)</h2>
+        <p style="color:#6b7280;font-size:.9rem;margin-top:0;">
+            Zgodnie z art. 20 RODO masz prawo do otrzymania kopii swoich danych. Eksport zawiera Twoje konto,
+            wszystkie listy, prezenty (również usunięte) i faktury. <strong>Nie zawiera</strong> adresów e-mail
+            gości, którzy rezerwowali Twoje prezenty — DajPrezent.pl jest dla tych danych osobnym administratorem.
+        </p>
+        <a href="{{ route('owner.rodo.export') }}" class="btn">⬇ Pobierz moje dane (JSON)</a>
+    </div>
+
+    <div class="card">
         <h2>Hasło</h2>
         <form method="POST" action="{{ route('owner.account.password.update') }}">
             @csrf

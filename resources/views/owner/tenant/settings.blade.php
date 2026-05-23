@@ -44,4 +44,25 @@
             </div>
         </form>
     </div>
+
+    <div class="card" style="border:1px solid #fecaca;background:#fff5f5;">
+        <h2 style="margin-top:0;color:#991b1b;">Strefa niebezpieczna</h2>
+        <p style="color:#7f1d1d;font-size:.9rem;">
+            Zamknięcie listy <strong>nieodwracalnie usuwa</strong> wszystkie prezenty, ich zdjęcia i rezerwacje gości
+            (e-maile gości — zgodnie z RODO).
+            Faktury zostają zachowane przez 5 lat zgodnie z ustawą o rachunkowości.
+        </p>
+        <form method="POST" action="{{ route('owner.tenant.destroy', $tenant) }}"
+              onsubmit="return confirm('Na pewno zamknąć listę „{{ $tenant->name }}”? Tej operacji NIE da się cofnąć.');">
+            @csrf
+            @method('DELETE')
+            <div class="field">
+                <label for="confirm_slug" style="color:#7f1d1d;">Wpisz adres listy aby potwierdzić: <code>{{ $tenant->slug }}</code></label>
+                <input id="confirm_slug" type="text" name="confirm_slug" required autocomplete="off" placeholder="{{ $tenant->slug }}">
+            </div>
+            <div style="text-align:right;">
+                <button type="submit" class="btn btn-danger">Zamknij listę nieodwracalnie</button>
+            </div>
+        </form>
+    </div>
 @endsection

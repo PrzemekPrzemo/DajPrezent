@@ -138,7 +138,7 @@ return [
         'new', 'oauth', 'pakiety', 'panel', 'password', 'pay', 'payment',
         'payments', 'payu', 'pl', 'en', 'plan', 'pliki', 'pomoc',
         'polityka-prywatnosci', 'pricing', 'private', 'profile', 'public',
-        'r', 'rabat', 'regulamin', 'register', 'rejestracja', 'rsvp',
+        'r', 'rabat', 'regulamin', 'register', 'rejestracja', 'rodo', 'rsvp',
         'settings', 'shop', 'sklep', 'static', 'storage', 'support',
         'konto', 'system', 'tenant', 'tenants', 'terms', 'test', 'u', 'user',
         'users', 'web', 'webhook', 'webhooks', 'wedding', 'wesele',
