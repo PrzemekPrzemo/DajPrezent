@@ -12,7 +12,15 @@
         </p>
 
         <h2>1. Administrator danych</h2>
-        <p>Administratorem Twoich danych osobowych jest <strong>Sendormeco Holding</strong>, NIP: 525-28-66-457, prowadzący serwis dajprezent.pl. W sprawach związanych z ochroną danych skontaktuj się z nami pod adresem <a href="mailto:rodo@dajprezent.pl">rodo@dajprezent.pl</a>.</p>
+        <p>
+            Administratorem Twoich danych osobowych jest
+            <strong>Sendormeco Holding sp. z o.o.</strong> z siedzibą w Warszawie
+            (ul. Złota 75A/7, 00-819 Warszawa), wpisana do KRS pod numerem
+            0000906110, NIP 5252866457, REGON 389194801. Serwis dajprezent.pl
+            jest prowadzony przez tę spółkę. W sprawach ochrony danych
+            skontaktuj się z nami pod adresem
+            <a href="mailto:rodo@dajprezent.pl">rodo@dajprezent.pl</a>.
+        </p>
 
         <h2>2. Jakie dane zbieramy</h2>
         <ul>

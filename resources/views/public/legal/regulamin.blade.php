@@ -13,7 +13,7 @@
 
         <h2>§ 1. Definicje</h2>
         <p>
-            <strong>Usługodawca</strong> — Sendormeco Holding, NIP 525-28-66-457, prowadzący serwis DajPrezent.pl.<br>
+            <strong>Usługodawca</strong> — <strong>Sendormeco Holding sp. z o.o.</strong> z siedzibą w Warszawie przy ul. Złotej 75A/7, 00-819 Warszawa, wpisana do rejestru przedsiębiorców prowadzonego przez Sąd Rejonowy dla m.st. Warszawy w Warszawie, XII Wydział Gospodarczy KRS pod numerem KRS <strong>0000906110</strong>, NIP <strong>5252866457</strong>, REGON <strong>389194801</strong>, kapitał zakładowy 5&nbsp;000&nbsp;zł, prowadząca serwis DajPrezent.pl.<br>
             <strong>Użytkownik</strong> — pełnoletnia osoba fizyczna lub przedsiębiorca korzystający z serwisu.<br>
             <strong>Pakiet</strong> — wykupiona przez Użytkownika opcja korzystania z funkcjonalności serwisu w określonym zakresie i czasie.<br>
             <strong>Lista</strong> — utworzona przez Użytkownika lista prezentów / strona ślubna dostępna pod indywidualnym adresem `dajprezent.pl/&lt;slug&gt;`.

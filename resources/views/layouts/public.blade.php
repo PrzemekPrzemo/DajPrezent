@@ -50,7 +50,8 @@
             <a href="{{ route('public.legal.terms') }}" style="color:#9ca3af;">Regulamin</a>
             <a href="{{ route('public.legal.privacy') }}" style="color:#9ca3af;">Polityka prywatności</a>
         </div>
-        © {{ date('Y') }} DajPrezent.pl · Sendormeco Holding, NIP 525-28-66-457
+        © {{ date('Y') }} DajPrezent.pl · Sendormeco Holding sp. z o.o.<br>
+        ul. Złota 75A/7, 00-819 Warszawa · KRS 0000906110 · NIP 5252866457 · REGON 389194801
     </footer>
     @include('partials.cookie-banner')
 </body>

@@ -5,7 +5,7 @@ declare(strict_types=1);
 it('renders /regulamin', function (): void {
     $this->get('/regulamin')->assertOk()
         ->assertSee('Regulamin serwisu DajPrezent.pl')
-        ->assertSee('525-28-66-457')
+        ->assertSee('5252866457')
         ->assertSee('prawo odstąpienia', false);
 });
 

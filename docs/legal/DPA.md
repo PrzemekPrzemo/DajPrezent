@@ -23,9 +23,13 @@ DajPrezent.pl, w których Klient zbiera od swoich gości dane osobowe
    DajPrezent.pl i samodzielnie decyduje o celach i sposobach
    przetwarzania danych swoich gości weselnych.
 
-2. **Procesor** — Sendormeco Holding, NIP: 525-28-66-457, świadczący
-   usługę DajPrezent.pl, który w ramach tej usługi przetwarza dane
-   osobowe gości w imieniu i na rzecz Administratora.
+2. **Procesor** — **Sendormeco Holding sp. z o.o.** z siedzibą w Warszawie
+   (ul. Złota 75A/7, 00-819 Warszawa), wpisana do rejestru przedsiębiorców
+   KRS pod numerem **0000906110**, NIP **5252866457**, REGON **389194801**,
+   kapitał zakładowy 5 000 zł, sąd rejestrowy: Sąd Rejonowy dla m.st.
+   Warszawy w Warszawie, XII Wydział Gospodarczy KRS — świadcząca usługę
+   DajPrezent.pl, która w ramach tej usługi przetwarza dane osobowe gości
+   w imieniu i na rzecz Administratora.
 
 3. **RODO** — Rozporządzenie Parlamentu Europejskiego i Rady (UE)
    2016/679 z dnia 27 kwietnia 2016 r. (ogólne rozporządzenie o
@@ -245,8 +249,8 @@ E-mail: rodo@dajprezent.pl
 > „Wyrażam zgodę na przetwarzanie moich danych osobowych podanych w
 > formularzu RSVP w celu organizacji uroczystości weselnej {imie_1} i
 > {imie_2}. Administratorem moich danych są ww. osoby. Mam świadomość
-> że strona prowadzona jest przez DajPrezent.pl (Sendormeco Holding,
-> NIP 525-28-66-457) jako podmiot przetwarzający na podstawie umowy
+> że strona prowadzona jest przez DajPrezent.pl (Sendormeco Holding
+> sp. z o.o., KRS 0000906110, NIP 5252866457) jako podmiot przetwarzający na podstawie umowy
 > powierzenia. Przysługują mi prawa wynikające z RODO — w celu ich
 > realizacji mogę skontaktować się z Administratorem lub z DajPrezent.pl
 > pod adresem rodo@dajprezent.pl."

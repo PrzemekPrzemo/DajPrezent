@@ -12,8 +12,13 @@ Repo jest puste — projekt greenfield.
 
 ## Ustalenia operacyjne (2026-05-22)
 
-- **Sprzedawca / wystawca FV:** Sendormeco Holding, NIP **525-28-66-457**.
-  Dane scentralizowane w `config/seller.php`, KSeF używa NIP-u sprzedawcy.
+- **Sprzedawca / wystawca FV:** **Sendormeco Holding sp. z o.o.**,
+  ul. Złota 75A/7, 00-819 Warszawa, KRS **0000906110**, NIP **5252866457**,
+  REGON **389194801**, kapitał zakładowy 5 000 zł. Sąd rejestrowy: Sąd
+  Rejonowy dla m.st. Warszawy w Warszawie, XII Wydział Gospodarczy KRS.
+  Dane potwierdzone publicznie w KRS, scentralizowane w
+  `config/seller.php`. Numer konta bankowego — do uzupełnienia w `.env`
+  produkcyjnym.
 - **Hosting:** własny VPS z panelem **Plesk Obsidian**. Layout
   releasów + cron + queue worker udokumentowane w
   [`docs/DEPLOY-PLESK.md`](docs/DEPLOY-PLESK.md).
@@ -223,9 +228,11 @@ lang/{pl,en}/
 
 1. ✅ **Hosting docelowy** — własny VPS z Plesk, instrukcja w
    `docs/DEPLOY-PLESK.md`.
-2. ✅ **Sprzedawca FV** — Sendormeco Holding, NIP 525-28-66-457 w
-   `config/seller.php`. Adres, REGON, KRS, konto bankowe i telefon
-   uzupełnimy w `.env` produkcyjnym (placeholdery są w `.env.example`).
+2. ✅ **Sprzedawca FV** — Sendormeco Holding sp. z o.o., KRS 0000906110,
+   NIP 5252866457, REGON 389194801, siedziba ul. Złota 75A/7 Warszawa.
+   Wszystkie dane potwierdzone w publicznym KRS i wpisane w
+   `config/seller.php` + `.env.example`. Do uzupełnienia w `.env`
+   produkcyjnym pozostaje numer konta bankowego i telefon kontaktowy.
 3. 🟡 **Logo / brand book** — w przygotowaniu. Do czasu otrzymania
    plików używamy wordmarku tekstowego.
 4. ✅ **DPA dla pakietów weselnych** — szablon w `docs/legal/DPA.md`.

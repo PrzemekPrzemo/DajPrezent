@@ -19,8 +19,11 @@
 
         <h2>Operator</h2>
         <p>
-            Sendormeco Holding<br>
-            NIP: 525-28-66-457
+            <strong>Sendormeco Holding sp. z o.o.</strong><br>
+            ul. Złota 75A/7, 00-819 Warszawa<br>
+            KRS 0000906110 · NIP 5252866457 · REGON 389194801<br>
+            kapitał zakładowy 5 000 zł<br>
+            Sąd Rejonowy dla m.st. Warszawy w Warszawie, XII Wydział Gospodarczy KRS
         </p>
     </article>
 @endsection
