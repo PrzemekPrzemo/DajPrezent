@@ -13,6 +13,7 @@ use App\Http\Controllers\Owner\BookmarkletController;
 use App\Http\Controllers\Owner\DashboardController;
 use App\Http\Controllers\Owner\GiftController;
 use App\Http\Controllers\Owner\GiftExportController;
+use App\Http\Controllers\Owner\GiftImportController;
 use App\Http\Controllers\Owner\GiftPreviewController;
 use App\Http\Controllers\Owner\InvoiceController;
 use App\Http\Controllers\Owner\RodoExportController;
@@ -113,6 +114,8 @@ Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): v
         Route::delete('gifts/{gift}', [GiftController::class, 'destroy'])->name('gifts.destroy');
         Route::post('gifts/{gift}/received', [GiftController::class, 'markReceived'])->name('gifts.received');
         Route::get('gifts/export.csv', [GiftExportController::class, 'csv'])->name('gifts.export.csv');
+        Route::get('gifts/import', [GiftImportController::class, 'show'])->name('gifts.import.show');
+        Route::post('gifts/import', [GiftImportController::class, 'store'])->name('gifts.import.store');
         Route::get('qr.svg', TenantQrController::class)->name('qr');
 
         Route::get('settings', [TenantSettingsController::class, 'edit'])->name('tenant.settings.edit');

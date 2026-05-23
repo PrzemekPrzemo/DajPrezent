@@ -33,9 +33,12 @@
     <div class="dp-card">
         <div class="flex items-center justify-between gap-3 flex-wrap mb-4">
             <h2 class="font-display font-semibold text-lg m-0">Prezenty ({{ $gifts->count() }})</h2>
-            @if ($canExport)
-                <a href="{{ route('owner.gifts.export.csv', $tenant) }}" class="dp-btn-secondary">⬇ Eksport CSV</a>
-            @endif
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ route('owner.gifts.import.show', $tenant) }}" class="dp-btn-secondary">⬆ Import CSV</a>
+                @if ($canExport)
+                    <a href="{{ route('owner.gifts.export.csv', $tenant) }}" class="dp-btn-secondary">⬇ Eksport CSV</a>
+                @endif
+            </div>
         </div>
 
         @if ($gifts->isEmpty())
