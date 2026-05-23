@@ -35,9 +35,6 @@
     </nav>
 
     <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-6">
-        @if (session('status'))
-            <div class="dp-flash-ok mb-4">{{ session('status') }}</div>
-        @endif
         @if ($errors->any())
             <div class="dp-flash-err mb-4">
                 @foreach ($errors->all() as $err)<div>{{ $err }}</div>@endforeach
@@ -45,6 +42,8 @@
         @endif
         @yield('content')
     </main>
+
+    <x-dp.toast/>
 
     <footer class="text-center text-xs text-dp-muted py-5 border-t border-dp-purple-50 bg-white">
         <a href="{{ route('public.legal.terms') }}" class="hover:text-dp-purple-700">Regulamin</a> ·

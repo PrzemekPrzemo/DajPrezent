@@ -102,6 +102,28 @@
         50%      { transform: scale(1.12) translate(2%, -2%); opacity: 0.9; }
     }
     .dp-bloom { animation: dp-bloom 14s ease-in-out infinite; }
+
+    /* Heart pulse — used when a gift is marked received. */
+    @keyframes dp-heart {
+        0%   { transform: scale(0.3); opacity: 0; }
+        30%  { transform: scale(1.4); opacity: 1; }
+        60%  { transform: scale(0.95); opacity: 1; }
+        100% { transform: scale(1); opacity: 0; }
+    }
+    .dp-heart-pulse { animation: dp-heart 1100ms cubic-bezier(.34, 1.56, .64, 1) both; }
+
+    /* Skeleton shimmer for async lists. */
+    @keyframes dp-shimmer {
+        0%   { background-position: -200px 0; }
+        100% { background-position: calc(200px + 100%) 0; }
+    }
+    .dp-skeleton {
+        @apply rounded-dp bg-slate-100;
+        background-image: linear-gradient(90deg, transparent 0, rgba(255, 255, 255, 0.65) 50%, transparent 100%);
+        background-size: 200px 100%;
+        background-repeat: no-repeat;
+        animation: dp-shimmer 1.4s ease-in-out infinite;
+    }
 }
 
 @layer utilities {

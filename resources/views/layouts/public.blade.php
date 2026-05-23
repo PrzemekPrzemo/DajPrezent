@@ -36,11 +36,6 @@
     </nav>
 
     <main class="flex-1">
-        @if (session('status'))
-            <div class="max-w-3xl mx-auto px-4 mt-4">
-                <div class="dp-flash-ok">{{ session('status') }}</div>
-            </div>
-        @endif
         @if ($errors->any())
             <div class="max-w-3xl mx-auto px-4 mt-4">
                 <div class="dp-flash-err">
@@ -50,6 +45,8 @@
         @endif
         @yield('content')
     </main>
+
+    <x-dp.toast/>
 
     <footer class="border-t border-dp-purple-50 bg-dp-purple-50/30 mt-16">
         <div class="max-w-6xl mx-auto px-4 py-10 grid gap-8 sm:grid-cols-4 text-sm">

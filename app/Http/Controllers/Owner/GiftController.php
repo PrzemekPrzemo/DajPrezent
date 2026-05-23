@@ -51,6 +51,8 @@ final class GiftController extends Controller
             return back()->withErrors(['limit' => $this->limit->errorFor($tenant)])->withInput();
         }
 
+        $isFirstGift = Gift::query()->count() === 0;
+
         Gift::create([
             'title' => $data['title'],
             'description' => $data['description'] ?? null,
@@ -62,9 +64,12 @@ final class GiftController extends Controller
             'image_path' => $this->storeImageIfPresent($request, $tenant),
         ]);
 
-        return redirect()
+        $redirect = redirect()
             ->route('owner.gifts.index', $tenant)
             ->with('status', 'Prezent dodany do listy.');
+
+        // Tiny dopamine hit: confetti only on the first gift on this list.
+        return $isFirstGift ? $redirect->with('dp_confetti', 'first-gift') : $redirect;
     }
 
     public function update(Request $request, Tenant $tenant, int $gift): RedirectResponse
@@ -166,7 +171,9 @@ final class GiftController extends Controller
         $giftModel = Gift::query()->findOrFail($gift);
         $giftModel->update(['status' => Gift::STATUS_RECEIVED]);
 
-        return back()->with('status', 'Oznaczono prezent jako otrzymany.');
+        return back()
+            ->with('status', 'Oznaczono prezent jako otrzymany.')
+            ->with('dp_heart', $giftModel->id);
     }
 
     private function authorizeTenant(Request $request, Tenant $tenant): void

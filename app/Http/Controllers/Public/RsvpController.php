@@ -45,6 +45,8 @@ final class RsvpController extends Controller
             'message' => ['nullable', 'string', 'max:1000'],
         ]);
 
+        $isFirstRsvp = Rsvp::query()->where('tenant_id', $tenant->id)->count() === 0;
+
         Rsvp::create([
             'tenant_id' => $tenant->id,
             'guest_name' => $data['guest_name'],
@@ -58,6 +60,8 @@ final class RsvpController extends Controller
             'ip' => $request->ip(),
         ]);
 
-        return back()->with('rsvp_status', 'Dziękujemy! Twoje potwierdzenie zostało zapisane.');
+        $redirect = back()->with('rsvp_status', 'Dziękujemy! Twoje potwierdzenie zostało zapisane.');
+
+        return $isFirstRsvp ? $redirect->with('dp_confetti', 'first-rsvp') : $redirect;
     }
 }

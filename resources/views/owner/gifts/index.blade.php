@@ -110,7 +110,12 @@
                                         <span class="dp-chip dp-chip-reserved">zarezerwowany</span>
                                         @break
                                     @case(\App\Domain\Wishlist\Models\Gift::STATUS_RECEIVED)
-                                        <span class="dp-chip dp-chip-received">otrzymany</span>
+                                        <span class="dp-chip dp-chip-received inline-flex items-center gap-1">
+                                            @if (session('dp_heart') === $gift->id)
+                                                <span class="text-dp-pink inline-block dp-heart-pulse" aria-hidden="true">♥</span>
+                                            @endif
+                                            otrzymany
+                                        </span>
                                         @break
                                 @endswitch
                             </td>
