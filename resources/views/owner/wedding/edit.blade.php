@@ -12,6 +12,8 @@
             </p>
         </div>
         <div class="flex flex-wrap gap-2">
+            <a href="{{ route('owner.wedding.rsvps.index', $tenant) }}" class="dp-btn-secondary">💌 RSVP gości</a>
+            <a href="{{ route('owner.wedding.exports.invitation-pdf', $tenant) }}" class="dp-btn-secondary">📄 Zaproszenie PDF</a>
             <a href="{{ route('owner.gifts.index', $tenant) }}" class="dp-btn-secondary">Prezenty →</a>
             <a href="{{ route('owner.dashboard') }}" class="dp-btn-ghost">← Panel</a>
         </div>

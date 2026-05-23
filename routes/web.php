@@ -18,6 +18,8 @@ use App\Http\Controllers\Owner\RodoExportController;
 use App\Http\Controllers\Owner\TenantQrController;
 use App\Http\Controllers\Owner\TenantSettingsController;
 use App\Http\Controllers\Owner\WeddingController;
+use App\Http\Controllers\Owner\WeddingExportController;
+use App\Http\Controllers\Owner\WeddingRsvpsController;
 use App\Http\Controllers\Public\CheckoutController;
 use App\Http\Controllers\Public\LandingController;
 use App\Http\Controllers\Public\PricingController;
@@ -99,6 +101,9 @@ Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): v
 
         Route::get('wedding', [WeddingController::class, 'edit'])->name('wedding.edit');
         Route::patch('wedding', [WeddingController::class, 'update'])->name('wedding.update');
+        Route::get('rsvps', [WeddingRsvpsController::class, 'index'])->name('wedding.rsvps.index');
+        Route::get('rsvps/export.csv', [WeddingExportController::class, 'rsvpsCsv'])->name('wedding.exports.rsvps-csv');
+        Route::get('zaproszenie.pdf', [WeddingExportController::class, 'invitationPdf'])->name('wedding.exports.invitation-pdf');
     });
 
     Route::get('rodo/eksport', RodoExportController::class)->name('rodo.export');
