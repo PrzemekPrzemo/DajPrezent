@@ -17,6 +17,7 @@ use App\Http\Controllers\Owner\InvoiceController;
 use App\Http\Controllers\Owner\RodoExportController;
 use App\Http\Controllers\Owner\TenantQrController;
 use App\Http\Controllers\Owner\TenantSettingsController;
+use App\Http\Controllers\Owner\WeddingController;
 use App\Http\Controllers\Public\CheckoutController;
 use App\Http\Controllers\Public\LandingController;
 use App\Http\Controllers\Public\PricingController;
@@ -94,6 +95,9 @@ Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): v
         Route::get('settings', [TenantSettingsController::class, 'edit'])->name('tenant.settings.edit');
         Route::patch('settings', [TenantSettingsController::class, 'update'])->name('tenant.settings.update');
         Route::delete('/', [TenantSettingsController::class, 'destroy'])->name('tenant.destroy');
+
+        Route::get('wedding', [WeddingController::class, 'edit'])->name('wedding.edit');
+        Route::patch('wedding', [WeddingController::class, 'update'])->name('wedding.update');
     });
 
     Route::get('rodo/eksport', RodoExportController::class)->name('rodo.export');

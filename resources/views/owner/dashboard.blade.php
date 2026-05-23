@@ -92,6 +92,9 @@
 
                     <div class="flex flex-col gap-2">
                         <a href="{{ route('owner.gifts.index', $tenant) }}" class="dp-btn-primary text-center">Zarządzaj prezentami</a>
+                        @if (in_array($tenant->kind, ['wedding_basic', 'wedding_premium'], true))
+                            <a href="{{ route('owner.wedding.edit', $tenant) }}" class="dp-btn-secondary text-center">💍 Strona ślubna</a>
+                        @endif
                         <button type="button" @click="$dispatch('open-share-' + {{ $tenant->id }})"
                                 class="dp-btn-secondary">Udostępnij listę</button>
                         <a href="{{ route('owner.tenant.settings.edit', $tenant) }}" class="dp-btn-ghost text-center">Ustawienia</a>
