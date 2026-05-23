@@ -44,7 +44,7 @@ it('shows the "add list" CTA on dashboard when slots are free', function (): voi
         ->assertSee('2/3 wolne', false);
 });
 
-it('creates a sibling tenant inheriting expires_at + kind', function (): void {
+it('creates a sibling tenant inheriting expires_at + kind, private by default', function (): void {
     $this->actingAs($this->owner)
         ->post('/panel/lists', [
             'name' => 'Ania — święta',
@@ -56,7 +56,9 @@ it('creates a sibling tenant inheriting expires_at + kind', function (): void {
     expect($sibling->parent_subscription_id)->toBe($this->sub->id)
         ->and($sibling->kind)->toBe('wishlist')
         ->and($sibling->expires_at?->toDateString())->toBe($this->sub->expires_at->toDateString())
-        ->and((bool) $sibling->is_public)->toBeTrue();
+        // Privacy default — matches CheckoutService primary tenants.
+        // Owner publishes via /panel/lists/{tenant}/settings.
+        ->and((bool) $sibling->is_public)->toBeFalse();
 });
 
 it('rejects a 4th list when Plus limit (3) is exhausted', function (): void {

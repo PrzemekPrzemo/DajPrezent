@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Owner;
 
 use App\Domain\Tenancy\CurrentTenant;
 use App\Domain\Tenancy\Models\Tenant;
+use App\Domain\Wishlist\CsvCell;
 use App\Domain\Wishlist\GiftLimitGuard;
 use App\Domain\Wishlist\Models\Gift;
 use App\Http\Controllers\Controller;
@@ -68,10 +69,15 @@ final class GiftImportController extends Controller
 
         $imported = 0;
         $skipped = 0;
-        $startPos = (int) Gift::query()->where('tenant_id', $tenant->id)->max('position');
 
-        DB::transaction(function () use ($rows, $tenant, $remaining, $startPos, &$imported, &$skipped): void {
-            foreach ($rows as $i => $row) {
+        DB::transaction(function () use ($rows, $tenant, $remaining, &$imported, &$skipped): void {
+            // Re-read max(position) INSIDE the tx so a concurrent
+            // GiftController::store can't write a colliding position.
+            // Pos counter advances only for rows we actually insert so
+            // no holes are left when the limit cuts the import short.
+            $nextPos = (int) Gift::query()->where('tenant_id', $tenant->id)->max('position') + 1;
+
+            foreach ($rows as $row) {
                 if ($imported >= $remaining) {
                     $skipped++;
 
@@ -79,15 +85,15 @@ final class GiftImportController extends Controller
                 }
                 Gift::create([
                     'tenant_id' => $tenant->id,
-                    'title' => mb_substr($row['title'], 0, 120),
+                    'title' => mb_substr(CsvCell::sanitiseImport($row['title']) ?? '', 0, 120),
                     'description' => $row['description'] === null
                         ? null
-                        : mb_substr($row['description'], 0, 2000),
+                        : mb_substr(CsvCell::sanitiseImport($row['description']) ?? '', 0, 2000),
                     'url' => $this->safeUrl($row['url']),
                     'price_pln_gr' => $row['price_gr'],
                     'priority' => $row['priority'],
                     'status' => Gift::STATUS_AVAILABLE,
-                    'position' => $startPos + $i + 1,
+                    'position' => $nextPos++,
                 ]);
                 $imported++;
             }
@@ -207,11 +213,19 @@ final class GiftImportController extends Controller
 
     private function parsePriority(?string $raw): int
     {
-        $raw = strtolower((string) $raw);
-        if (str_contains($raw, '1') || str_contains($raw, 'muszę') || str_contains($raw, 'musze') || str_contains($raw, 'high')) {
+        $raw = trim(strtolower((string) $raw));
+        if ($raw === '') {
+            return 2;
+        }
+        // Exact digit match wins — handles plain "1"/"2"/"3" without
+        // accidentally promoting "13" to priority 1.
+        if (preg_match('/^[123]$/', $raw) === 1) {
+            return (int) $raw;
+        }
+        if (str_contains($raw, 'muszę') || str_contains($raw, 'musze') || str_contains($raw, 'high')) {
             return 1;
         }
-        if (str_contains($raw, '3') || str_contains($raw, 'fajnie') || str_contains($raw, 'low')) {
+        if (str_contains($raw, 'fajnie') || str_contains($raw, 'low')) {
             return 3;
         }
 

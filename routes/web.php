@@ -104,18 +104,24 @@ Route::middleware('auth')->group(function (): void {
 /* Owner panel */
 Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): void {
     Route::get('/', DashboardController::class)->name('dashboard');
-    Route::post('lists', [AddListController::class, 'store'])->name('lists.store');
+    Route::post('lists', [AddListController::class, 'store'])
+        ->middleware('throttle:10,60') // 10 sibling-list creations per hour
+        ->name('lists.store');
 
     Route::prefix('lists/{tenant}')->group(function (): void {
         Route::get('gifts', [GiftController::class, 'index'])->name('gifts.index');
         Route::post('gifts', [GiftController::class, 'store'])->name('gifts.store');
-        Route::post('gifts/reorder', [GiftController::class, 'reorder'])->name('gifts.reorder');
+        Route::post('gifts/reorder', [GiftController::class, 'reorder'])
+            ->middleware('throttle:60,1') // 60 reorders/min — generous for fast dragging
+            ->name('gifts.reorder');
         Route::patch('gifts/{gift}', [GiftController::class, 'update'])->name('gifts.update');
         Route::delete('gifts/{gift}', [GiftController::class, 'destroy'])->name('gifts.destroy');
         Route::post('gifts/{gift}/received', [GiftController::class, 'markReceived'])->name('gifts.received');
         Route::get('gifts/export.csv', [GiftExportController::class, 'csv'])->name('gifts.export.csv');
         Route::get('gifts/import', [GiftImportController::class, 'show'])->name('gifts.import.show');
-        Route::post('gifts/import', [GiftImportController::class, 'store'])->name('gifts.import.store');
+        Route::post('gifts/import', [GiftImportController::class, 'store'])
+            ->middleware('throttle:5,60') // 5 imports/hour — each can be up to 500 rows
+            ->name('gifts.import.store');
         Route::get('qr.svg', TenantQrController::class)->name('qr');
 
         Route::get('settings', [TenantSettingsController::class, 'edit'])->name('tenant.settings.edit');

@@ -194,13 +194,29 @@ final class GiftController extends Controller
             'ids.*' => ['integer', 'min:1'],
         ]);
 
-        $ids = collect($data['ids'])->map(fn ($n) => (int) $n)->all();
-        $ownIds = Gift::query()->whereIn('id', $ids)->pluck('id')->all();
+        // Drop duplicates (a buggy or malicious client could send the same
+        // id twice, which would otherwise cause one gift to land at two
+        // positions, leaving a hole). array_values + array_unique keeps
+        // first-seen ordering.
+        $ids = array_values(array_unique(array_map(static fn ($n) => (int) $n, $data['ids'])));
+
+        // Explicit tenant scoping (defense-in-depth — TenantScope handles
+        // this too, but a missing CurrentTenant binding would silently
+        // accept foreign ids without it).
+        $ownIds = Gift::query()
+            ->where('tenant_id', $tenant->id)
+            ->whereIn('id', $ids)
+            ->pluck('id')
+            ->all();
         $clean = array_values(array_intersect($ids, $ownIds));
 
-        \DB::transaction(function () use ($clean): void {
+        \DB::transaction(function () use ($clean, $tenant): void {
             foreach ($clean as $position => $id) {
-                Gift::query()->whereKey($id)->update(['position' => $position + 1]);
+                // Re-assert tenant on UPDATE in case TenantScope is bypassed.
+                Gift::query()
+                    ->where('tenant_id', $tenant->id)
+                    ->whereKey($id)
+                    ->update(['position' => $position + 1]);
             }
         });
 

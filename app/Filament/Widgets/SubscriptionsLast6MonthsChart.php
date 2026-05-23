@@ -30,8 +30,12 @@ final class SubscriptionsLast6MonthsChart extends ChartWidget
             $labels = [];
             for ($i = 5; $i >= 0; $i--) {
                 $m = now()->startOfMonth()->subMonths($i);
+                // Don't filter by status='active' — that would let
+                // historical sales bars shrink as users let subscriptions
+                // expire/cancel, silently rewriting the past. A "what
+                // was actually paid in month X" chart must be immutable
+                // once the month is closed.
                 $count = Subscription::query()
-                    ->where('status', 'active')
                     ->whereNotNull('paid_at')
                     ->whereBetween('paid_at', [$m->copy()->startOfMonth(), $m->copy()->endOfMonth()])
                     ->count();

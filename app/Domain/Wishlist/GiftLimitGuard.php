@@ -56,17 +56,10 @@ final class GiftLimitGuard
 
     public function activePackage(Tenant $tenant): ?Package
     {
-        // Sibling tenants (multi-list pakiety) wskazują na rodzicielską
-        // subskrypcję — gift limit dziedziczą z jej pakietu (per-tenant,
-        // nie współdzielony pomiędzy rodzeństwem).
-        if ($tenant->parent_subscription_id !== null) {
-            $parent = $tenant->parentSubscription()->with('package')->first();
-            if ($parent !== null && $parent->status === 'active'
-                && ($parent->expires_at === null || $parent->expires_at->isFuture())) {
-                return $parent->package;
-            }
-        }
-
+        // Primary tenants own their subscription rows — pick the
+        // latest active one. This wins over parent_subscription_id so
+        // renewals/upgrades (a newer active sub on the same primary
+        // tenant) are honored instead of a stale backfill.
         $sub = $tenant->subscriptions()
             ->where('status', 'active')
             ->where(function (Builder $q): void {
@@ -76,6 +69,22 @@ final class GiftLimitGuard
             ->orderByDesc('paid_at')
             ->first();
 
-        return $sub?->package;
+        if ($sub !== null) {
+            return $sub->package;
+        }
+
+        // Sibling tenants (created via AddSiblingListService) have no
+        // subscriptions of their own — inherit the package from their
+        // parent_subscription, but only if that subscription is still
+        // active and unexpired.
+        if ($tenant->parent_subscription_id !== null) {
+            $parent = $tenant->parentSubscription()->with('package')->first();
+            if ($parent !== null && $parent->status === 'active'
+                && ($parent->expires_at === null || $parent->expires_at->isFuture())) {
+                return $parent->package;
+            }
+        }
+
+        return null;
     }
 }

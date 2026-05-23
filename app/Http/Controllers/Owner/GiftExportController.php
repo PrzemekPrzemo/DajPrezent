@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Owner;
 
 use App\Domain\Tenancy\CurrentTenant;
 use App\Domain\Tenancy\Models\Tenant;
+use App\Domain\Wishlist\CsvCell;
 use App\Domain\Wishlist\Models\Gift;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -57,10 +58,13 @@ final class GiftExportController extends Controller
                 ->orderByDesc('id')
                 ->chunk(200, function ($chunk) use ($out): void {
                     foreach ($chunk as $gift) {
+                        // CsvCell::sanitiseExport neutralises any pre-existing
+                        // formula-injection payloads (rows that slipped in before
+                        // the import-side sanitisation, or via bookmarklet).
                         fputcsv($out, [
-                            $gift->title,
-                            $gift->description ?? '',
-                            $gift->url ?? '',
+                            CsvCell::sanitiseExport($gift->title),
+                            CsvCell::sanitiseExport($gift->description ?? ''),
+                            CsvCell::sanitiseExport($gift->url ?? ''),
                             $gift->price_pln_gr !== null ? number_format($gift->price_pln_gr / 100, 2, ',', '') : '',
                             match ($gift->priority) {
                                 1 => 'muszę mieć',
@@ -74,7 +78,7 @@ final class GiftExportController extends Controller
                                 Gift::STATUS_RECEIVED => 'otrzymany',
                                 default => $gift->status,
                             },
-                            $gift->category ?? '',
+                            CsvCell::sanitiseExport($gift->category ?? ''),
                             $gift->created_at?->format('Y-m-d') ?? '',
                         ], ';');
                     }

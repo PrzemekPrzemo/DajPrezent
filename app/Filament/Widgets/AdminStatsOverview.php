@@ -38,11 +38,10 @@ final class AdminStatsOverview extends BaseWidget
 
     private function mrrStat(): Stat
     {
-        // Best-effort MRR: sum of paid sub amounts in the last 30 days,
-        // amortised over the period. KISS — replace with proper accrual
-        // calc when needed.
+        // Sum of amounts actually paid in the last 30 days. Don't filter
+        // by status='active' — a sub the user later cancelled still
+        // counted as sales revenue when the money came in.
         $sumGr = (int) Subscription::query()
-            ->where('status', 'active')
             ->whereNotNull('paid_at')
             ->where('paid_at', '>=', now()->subDays(30))
             ->sum('amount_pln_gr');
@@ -79,12 +78,25 @@ final class AdminStatsOverview extends BaseWidget
             ->whereBetween('created_at', [now()->subMonth()->startOfMonth(), now()->subMonth()->endOfMonth()])
             ->count();
 
-        $delta = $lastMonth > 0 ? (int) round(($thisMonth - $lastMonth) * 100 / $lastMonth) : null;
+        // Three-way branch — when last month had 0, growth from 0→N
+        // should NOT render as a red downward trend. Treat 0-baseline +
+        // any current activity as a success ("pierwsze sygnały").
+        if ($lastMonth === 0) {
+            $isGrowth = $thisMonth > 0;
+            $description = $isGrowth ? 'pierwszy miesiąc z aktywnością' : 'brak listy w tym mc';
+            $icon = $isGrowth ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-minus';
+            $color = $isGrowth ? 'success' : 'gray';
+        } else {
+            $delta = (int) round(($thisMonth - $lastMonth) * 100 / $lastMonth);
+            $description = $delta >= 0 ? "+$delta% vs poprzedni" : "$delta% vs poprzedni";
+            $icon = $delta >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down';
+            $color = $delta >= 0 ? 'success' : 'danger';
+        }
 
         return Stat::make('Nowe listy w tym mc', (string) $thisMonth)
-            ->description($delta === null ? 'brak danych z porównawczego miesiąca' : ($delta >= 0 ? "+$delta% vs poprzedni" : "$delta% vs poprzedni"))
-            ->descriptionIcon($delta !== null && $delta >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
-            ->color($delta !== null && $delta >= 0 ? 'success' : 'danger');
+            ->description($description)
+            ->descriptionIcon($icon)
+            ->color($color);
     }
 
     private function giftsStat(): Stat
