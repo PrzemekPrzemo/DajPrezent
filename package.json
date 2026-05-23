@@ -20,7 +20,6 @@
         "@fontsource/inter": "^5.1.0",
         "@fontsource/poppins": "^5.1.0",
         "alpinejs": "^3.14.1",
-        "canvas-confetti": "^1.9.3",
-        "lottie-web": "^5.12.2"
+        "canvas-confetti": "^1.9.3"
     }
 }

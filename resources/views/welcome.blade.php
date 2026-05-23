@@ -39,7 +39,8 @@
                     Bliscy zarezerwują anonimowo — dowiesz się dopiero przy rozpakowywaniu.
                 </p>
                 <div class="mt-8 flex flex-wrap items-center gap-3">
-                    <a href="{{ route('public.pricing') }}" class="dp-btn-primary px-7 py-3 text-base">
+                    <a href="{{ route('public.pricing') }}" data-dp-magnet
+                       class="dp-btn-primary px-7 py-3 text-base transition-transform">
                         Wybierz pakiet →
                     </a>
                     <a href="{{ route('login') }}" class="dp-btn-ghost px-4 py-3">Mam już konto</a>
@@ -52,14 +53,20 @@
             </div>
 
             <div class="lg:col-span-5 relative">
-                {{-- Floating Lottie gift bubble (lazy via dpLottie helper). --}}
-                <div id="dp-hero-lottie"
-                     x-data
-                     x-init="window.dpLottie && window.dpLottie('#dp-hero-lottie', '/brand/lottie/gift-float.json')"
-                     class="absolute -top-10 -right-2 w-24 h-24 z-10 pointer-events-none"
-                     aria-hidden="true"></div>
+                {{-- Floating SVG hero illustration — pure CSS animation,
+                     no external lib. Sits above the mock card. --}}
+                <div class="absolute -top-14 -right-4 w-36 sm:w-44 z-10 pointer-events-none">
+                    <x-brand.hero-illustration/>
+                </div>
 
-                <div class="dp-card shadow-dp-card-lg rotate-1 hover:rotate-0 transition-transform duration-700 ease-dp">
+                <div class="dp-card shadow-dp-card-lg rotate-1 hover:rotate-0 transition-transform duration-700 ease-dp dp-tilt"
+                     x-data="{ tilt(e) {
+                            const r = this.$el.getBoundingClientRect();
+                            const x = (e.clientX - r.left) / r.width  - 0.5;
+                            const y = (e.clientY - r.top)  / r.height - 0.5;
+                            this.$el.style.transform = `perspective(900px) rotateX(${-y * 4}deg) rotateY(${x * 6}deg)`;
+                        }, reset() { this.$el.style.transform = ''; } }"
+                     @mousemove="tilt($event)" @mouseleave="reset()">
                     <div class="flex items-center gap-2 pb-3 border-b border-dp-purple-50">
                         <x-brand.logo size="sm"/>
                     </div>
@@ -99,19 +106,19 @@
         <div class="bg-white rounded-dp shadow-dp-card border border-dp-purple-50 px-6 py-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
             <div>
                 <div class="font-display text-3xl sm:text-4xl font-bold bg-dp-gradient bg-clip-text text-transparent">
-                    {{ number_format($stats['lists'], 0, ',', ' ') }}+
+                    <span data-dp-countup="{{ $stats['lists'] }}">{{ number_format($stats['lists'], 0, ',', ' ') }}</span>+
                 </div>
                 <div class="text-sm text-dp-muted mt-1">aktywnych list</div>
             </div>
             <div class="sm:border-x sm:border-dp-purple-50">
                 <div class="font-display text-3xl sm:text-4xl font-bold bg-dp-gradient bg-clip-text text-transparent">
-                    {{ number_format($stats['gifts'], 0, ',', ' ') }}+
+                    <span data-dp-countup="{{ $stats['gifts'] }}">{{ number_format($stats['gifts'], 0, ',', ' ') }}</span>+
                 </div>
                 <div class="text-sm text-dp-muted mt-1">prezentów na listach</div>
             </div>
             <div>
                 <div class="font-display text-3xl sm:text-4xl font-bold bg-dp-gradient bg-clip-text text-transparent">
-                    {{ number_format($stats['reservations'], 0, ',', ' ') }}+
+                    <span data-dp-countup="{{ $stats['reservations'] }}">{{ number_format($stats['reservations'], 0, ',', ' ') }}</span>+
                 </div>
                 <div class="text-sm text-dp-muted mt-1">rezerwacji od bliskich</div>
             </div>
@@ -119,7 +126,7 @@
     </section>
 
     {{-- 3 KROKI --}}
-    <section class="max-w-6xl mx-auto px-4 py-16">
+    <section class="max-w-6xl mx-auto px-4 py-16 dp-reveal">
         <h2 class="text-center font-display text-3xl font-bold mb-3">Jak to działa?</h2>
         <p class="text-center text-dp-muted max-w-xl mx-auto mb-12">Od pierwszego kliknięcia do listy gotowej do wysłania — średnio 3 minuty.</p>
         <div class="grid sm:grid-cols-3 gap-8">
@@ -142,7 +149,7 @@
     </section>
 
     {{-- TESTIMONIALS --}}
-    <section class="bg-dp-purple-50/40 py-16">
+    <section class="bg-dp-purple-50/40 py-16 dp-reveal">
         <div class="max-w-6xl mx-auto px-4">
             <p class="text-center text-xs uppercase tracking-wider text-dp-muted mb-3">Co mówią użytkownicy</p>
             <h2 class="text-center font-display text-3xl font-bold mb-10">Bo prawdziwa wartość prezentu to to, że trafia.</h2>
@@ -167,7 +174,7 @@
     </section>
 
     {{-- FEATURE GRID --}}
-    <section class="max-w-6xl mx-auto px-4 py-16">
+    <section class="max-w-6xl mx-auto px-4 py-16 dp-reveal">
         <h2 class="text-center font-display text-3xl font-bold mb-3">Co dostajesz w pakiecie?</h2>
         <p class="text-center text-dp-muted max-w-xl mx-auto mb-12">Wszystko czego potrzeba, aby zorganizować idealną listę — i nic więcej.</p>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -189,7 +196,7 @@
     </section>
 
     {{-- PRICING TEASER + CTA BOTTOM --}}
-    <section class="bg-dp-gradient text-white py-16">
+    <section class="bg-dp-gradient text-white py-16 dp-reveal">
         <div class="max-w-4xl mx-auto px-4 text-center">
             <h2 class="font-display text-3xl sm:text-4xl font-bold">Zacznij od 19 zł albo wypróbuj za darmo.</h2>
             <p class="mt-3 text-white/85 max-w-xl mx-auto">5 pakietów standardowych (9 miesięcy ważności) oraz pakiet ślubny (12 miesięcy, przedłużalny). Bez automatycznych odnowień, bez ukrytych kosztów.</p>

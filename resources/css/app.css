@@ -112,6 +112,19 @@
     }
     .dp-heart-pulse { animation: dp-heart 1100ms cubic-bezier(.34, 1.56, .64, 1) both; }
 
+    /* Reveal-on-scroll — sections fade + slide up when entering viewport.
+       JS adds .dp-revealed via IntersectionObserver. */
+    .dp-reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 700ms ease-out, transform 700ms ease-out;
+        will-change: opacity, transform;
+    }
+    .dp-revealed { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) {
+        .dp-reveal { opacity: 1; transform: none; transition: none; }
+    }
+
     /* Skeleton shimmer for async lists. */
     @keyframes dp-shimmer {
         0%   { background-position: -200px 0; }
