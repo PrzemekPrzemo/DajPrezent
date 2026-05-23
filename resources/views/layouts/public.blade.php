@@ -23,13 +23,28 @@
         <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
             <x-brand.logo size="sm"/>
             <div class="flex items-center gap-2 text-sm">
-                <a href="{{ route('public.pricing') }}" class="dp-btn-ghost px-3 py-1.5">Pakiety</a>
-                <a href="{{ route('public.faq') }}" class="dp-btn-ghost px-3 py-1.5 hidden sm:inline-flex">FAQ</a>
+                <span class="hidden sm:flex items-center gap-0.5 text-xs mr-1">
+                    @foreach (\App\Http\Middleware\SetLocale::SUPPORTED as $loc)
+                        <form method="POST" action="{{ route('locale.switch', ['locale' => $loc]) }}" class="m-0">
+                            @csrf
+                            <button type="submit"
+                                    class="px-1.5 py-0.5 rounded transition
+                                           {{ app()->getLocale() === $loc
+                                              ? 'font-bold text-dp-purple-700'
+                                              : 'font-normal text-dp-muted hover:text-dp-purple-700' }}">
+                                {{ strtoupper($loc) }}
+                            </button>
+                        </form>
+                        @if (! $loop->last)<span class="text-gray-300">·</span>@endif
+                    @endforeach
+                </span>
+                <a href="{{ route('public.pricing') }}" class="dp-btn-ghost px-3 py-1.5">{{ __('messages.nav.pricing') }}</a>
+                <a href="{{ route('public.faq') }}" class="dp-btn-ghost px-3 py-1.5 hidden sm:inline-flex">{{ __('messages.nav.faq') }}</a>
                 @auth
-                    <a href="{{ route('owner.dashboard') }}" class="dp-btn-secondary px-3 py-1.5">Panel</a>
+                    <a href="{{ route('owner.dashboard') }}" class="dp-btn-secondary px-3 py-1.5">{{ __('messages.nav.panel') }}</a>
                 @else
-                    <a href="{{ route('login') }}" class="dp-btn-ghost px-3 py-1.5 hidden sm:inline-flex">Zaloguj</a>
-                    <a href="{{ route('public.pricing') }}" class="dp-btn-primary px-3 py-1.5">Załóż listę</a>
+                    <a href="{{ route('login') }}" class="dp-btn-ghost px-3 py-1.5 hidden sm:inline-flex">{{ __('messages.nav.login') }}</a>
+                    <a href="{{ route('public.pricing') }}" class="dp-btn-primary px-3 py-1.5">{{ __('messages.nav.create_list') }}</a>
                 @endauth
             </div>
         </div>
@@ -53,24 +68,23 @@
             <div class="sm:col-span-2">
                 <x-brand.logo :tagline="true"/>
                 <p class="text-dp-muted mt-3 text-xs leading-relaxed max-w-xs">
-                    Stwórz wymarzoną listę prezentów lub stronę ślubną z RSVP.
-                    Bliscy zarezerwują anonimowo.
+                    {{ __('messages.footer.description') }}
                 </p>
             </div>
             <div>
-                <div class="font-semibold text-dp-navy mb-2">Produkt</div>
+                <div class="font-semibold text-dp-navy mb-2">{{ __('messages.footer.product') }}</div>
                 <ul class="space-y-1.5 text-dp-muted">
-                    <li><a href="{{ route('public.pricing') }}" class="hover:text-dp-purple-700">Pakiety</a></li>
-                    <li><a href="{{ route('public.faq') }}" class="hover:text-dp-purple-700">FAQ</a></li>
-                    <li><a href="{{ route('public.help.index') }}" class="hover:text-dp-purple-700">Pomoc</a></li>
-                    <li><a href="{{ route('public.contact') }}" class="hover:text-dp-purple-700">Kontakt</a></li>
+                    <li><a href="{{ route('public.pricing') }}" class="hover:text-dp-purple-700">{{ __('messages.nav.pricing') }}</a></li>
+                    <li><a href="{{ route('public.faq') }}" class="hover:text-dp-purple-700">{{ __('messages.nav.faq') }}</a></li>
+                    <li><a href="{{ route('public.help.index') }}" class="hover:text-dp-purple-700">{{ __('messages.nav.help') }}</a></li>
+                    <li><a href="{{ route('public.contact') }}" class="hover:text-dp-purple-700">{{ __('messages.nav.contact') }}</a></li>
                 </ul>
             </div>
             <div>
-                <div class="font-semibold text-dp-navy mb-2">Prawo</div>
+                <div class="font-semibold text-dp-navy mb-2">{{ __('messages.footer.legal') }}</div>
                 <ul class="space-y-1.5 text-dp-muted">
-                    <li><a href="{{ route('public.legal.terms') }}" class="hover:text-dp-purple-700">Regulamin</a></li>
-                    <li><a href="{{ route('public.legal.privacy') }}" class="hover:text-dp-purple-700">Polityka prywatności</a></li>
+                    <li><a href="{{ route('public.legal.terms') }}" class="hover:text-dp-purple-700">{{ __('messages.footer.terms') }}</a></li>
+                    <li><a href="{{ route('public.legal.privacy') }}" class="hover:text-dp-purple-700">{{ __('messages.footer.privacy') }}</a></li>
                 </ul>
             </div>
         </div>

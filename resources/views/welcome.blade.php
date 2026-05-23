@@ -1,7 +1,7 @@
 @extends('layouts.public')
 
-@section('title', 'Prezenty od serca, bez stresu')
-@section('meta_description', 'Stwórz wymarzoną listę prezentów lub stronę ślubną z RSVP. Bliscy zarezerwują anonimowo, Ty zobaczysz tylko status — kto, dowiesz się dopiero przy rozpakowywaniu.')
+@section('title', __('messages.landing.tagline'))
+@section('meta_description', __('messages.landing.hero_lead'))
 @section('og_image', route('public.og'))
 
 @push('head_extra')
@@ -17,7 +17,7 @@
          class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 max-w-md w-[calc(100%-2rem)]">
         <a href="{{ route('public.pricing') }}"
            class="dp-btn-primary w-full justify-center shadow-dp-card-lg py-3">
-            Wybierz pakiet i załóż listę →
+            {{ __('messages.landing.hero_cta_primary') }}
         </a>
     </div>
 
@@ -28,27 +28,26 @@
 
         <div class="relative max-w-6xl mx-auto px-4 py-20 sm:py-28 grid lg:grid-cols-12 gap-10 items-center">
             <div class="lg:col-span-7">
-                <span class="dp-chip dp-chip-pink mb-4">⚡ Nowość — KSeF FV w cenie</span>
+                <span class="dp-chip dp-chip-pink mb-4">{{ __('messages.landing.hero_chip') }}</span>
                 <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-                    Prezenty
-                    <span class="bg-dp-gradient bg-clip-text text-transparent">od serca</span>,
-                    bez stresu.
+                    {{ __('messages.landing.hero_h1_pre') }}
+                    <span class="bg-dp-gradient bg-clip-text text-transparent">{{ __('messages.landing.hero_h1_emph') }}</span>,
+                    {{ __('messages.landing.hero_h1_post') }}
                 </h1>
                 <p class="mt-5 text-lg text-dp-muted max-w-xl">
-                    Stwórz wymarzoną listę prezentów lub stronę ślubną z RSVP w 3 minuty.
-                    Bliscy zarezerwują anonimowo — dowiesz się dopiero przy rozpakowywaniu.
+                    {{ __('messages.landing.hero_lead') }}
                 </p>
                 <div class="mt-8 flex flex-wrap items-center gap-3">
                     <a href="{{ route('public.pricing') }}" data-dp-magnet
                        class="dp-btn-primary px-7 py-3 text-base transition-transform">
-                        Wybierz pakiet →
+                        {{ __('messages.landing.hero_cta_primary') }}
                     </a>
-                    <a href="{{ route('login') }}" class="dp-btn-ghost px-4 py-3">Mam już konto</a>
+                    <a href="{{ route('login') }}" class="dp-btn-ghost px-4 py-3">{{ __('messages.nav.have_account') }}</a>
                 </div>
                 <div class="mt-6 flex items-center gap-6 text-sm text-dp-muted">
-                    <span class="flex items-center gap-1.5">✓ Bez reklam</span>
-                    <span class="flex items-center gap-1.5">✓ Faktura VAT</span>
-                    <span class="flex items-center gap-1.5">✓ Gość bez konta</span>
+                    <span class="flex items-center gap-1.5">{{ __('messages.landing.hero_feature_no_ads') }}</span>
+                    <span class="flex items-center gap-1.5">{{ __('messages.landing.hero_feature_invoice') }}</span>
+                    <span class="flex items-center gap-1.5">{{ __('messages.landing.hero_feature_no_account') }}</span>
                 </div>
             </div>
 
@@ -108,42 +107,44 @@
                 <div class="font-display text-3xl sm:text-4xl font-bold bg-dp-gradient bg-clip-text text-transparent">
                     <span data-dp-countup="{{ $stats['lists'] }}">{{ number_format($stats['lists'], 0, ',', ' ') }}</span>+
                 </div>
-                <div class="text-sm text-dp-muted mt-1">aktywnych list</div>
+                <div class="text-sm text-dp-muted mt-1">{{ __('messages.landing.stats_lists') }}</div>
             </div>
             <div class="sm:border-x sm:border-dp-purple-50">
                 <div class="font-display text-3xl sm:text-4xl font-bold bg-dp-gradient bg-clip-text text-transparent">
                     <span data-dp-countup="{{ $stats['gifts'] }}">{{ number_format($stats['gifts'], 0, ',', ' ') }}</span>+
                 </div>
-                <div class="text-sm text-dp-muted mt-1">prezentów na listach</div>
+                <div class="text-sm text-dp-muted mt-1">{{ __('messages.landing.stats_gifts') }}</div>
             </div>
             <div>
                 <div class="font-display text-3xl sm:text-4xl font-bold bg-dp-gradient bg-clip-text text-transparent">
                     <span data-dp-countup="{{ $stats['reservations'] }}">{{ number_format($stats['reservations'], 0, ',', ' ') }}</span>+
                 </div>
-                <div class="text-sm text-dp-muted mt-1">rezerwacji od bliskich</div>
+                <div class="text-sm text-dp-muted mt-1">{{ __('messages.landing.stats_reservations') }}</div>
             </div>
         </div>
     </section>
 
     {{-- 3 KROKI --}}
     <section class="max-w-6xl mx-auto px-4 py-16 dp-reveal">
-        <h2 class="text-center font-display text-3xl font-bold mb-3">Jak to działa?</h2>
-        <p class="text-center text-dp-muted max-w-xl mx-auto mb-12">Od pierwszego kliknięcia do listy gotowej do wysłania — średnio 3 minuty.</p>
+        <h2 class="text-center font-display text-3xl font-bold mb-3">{{ __('messages.landing.how_h2') }}</h2>
+        <p class="text-center text-dp-muted max-w-xl mx-auto mb-12">{{ __('messages.landing.how_lead') }}</p>
         <div class="grid sm:grid-cols-3 gap-8">
             <div class="text-center">
                 <div class="w-14 h-14 mx-auto rounded-dp bg-dp-gradient text-white flex items-center justify-center font-bold text-xl mb-4 shadow-dp-card">1</div>
-                <h3 class="font-display font-semibold text-lg">Stwórz listę</h3>
-                <p class="text-sm text-dp-muted mt-2">Wybierz pakiet, własny adres <span class="text-dp-purple-700 font-medium">dajprezent.pl/{ty}</span>, dodaj prezenty ze zdjęciami albo bookmarkletem z dowolnego sklepu.</p>
+                <h3 class="font-display font-semibold text-lg">{{ __('messages.landing.how_step1_title') }}</h3>
+                <p class="text-sm text-dp-muted mt-2">
+                    {!! __('messages.landing.how_step1_body', ['brandSlug' => '<span class="text-dp-purple-700 font-medium">dajprezent.pl/{you}</span>']) !!}
+                </p>
             </div>
             <div class="text-center">
                 <div class="w-14 h-14 mx-auto rounded-dp bg-dp-gradient text-white flex items-center justify-center font-bold text-xl mb-4 shadow-dp-card">2</div>
-                <h3 class="font-display font-semibold text-lg">Udostępnij</h3>
-                <p class="text-sm text-dp-muted mt-2">Wyślij link albo QR przez Messenger, WhatsApp, mailem. Bliscy widzą prezenty, ale nie siebie nawzajem.</p>
+                <h3 class="font-display font-semibold text-lg">{{ __('messages.landing.how_step2_title') }}</h3>
+                <p class="text-sm text-dp-muted mt-2">{{ __('messages.landing.how_step2_body') }}</p>
             </div>
             <div class="text-center">
                 <div class="w-14 h-14 mx-auto rounded-dp bg-dp-gradient text-white flex items-center justify-center font-bold text-xl mb-4 shadow-dp-card">3</div>
-                <h3 class="font-display font-semibold text-lg">Świętuj</h3>
-                <p class="text-sm text-dp-muted mt-2">Każdy prezent trafia raz — bez duplikatów, bez stresu. Wiesz tylko że jest „zarezerwowany", kto kupił dowiesz się przy rozpakowywaniu.</p>
+                <h3 class="font-display font-semibold text-lg">{{ __('messages.landing.how_step3_title') }}</h3>
+                <p class="text-sm text-dp-muted mt-2">{{ __('messages.landing.how_step3_body') }}</p>
             </div>
         </div>
     </section>
@@ -151,8 +152,8 @@
     {{-- TESTIMONIALS --}}
     <section class="bg-dp-purple-50/40 py-16 dp-reveal">
         <div class="max-w-6xl mx-auto px-4">
-            <p class="text-center text-xs uppercase tracking-wider text-dp-muted mb-3">Co mówią użytkownicy</p>
-            <h2 class="text-center font-display text-3xl font-bold mb-10">Bo prawdziwa wartość prezentu to to, że trafia.</h2>
+            <p class="text-center text-xs uppercase tracking-wider text-dp-muted mb-3">{{ __('messages.landing.testi_kicker') }}</p>
+            <h2 class="text-center font-display text-3xl font-bold mb-10">{{ __('messages.landing.testi_h2') }}</h2>
             <div class="grid md:grid-cols-3 gap-6">
                 @foreach ([
                     ['quote' => 'W końcu nie dostałam trzech identycznych ekspresów do kawy. Zrobiłam listę raz, podzieliłam się i było po sprawie.', 'who' => 'Marta, 32 lata', 'tag' => 'lista urodzinowa'],
@@ -169,14 +170,14 @@
                     </figure>
                 @endforeach
             </div>
-            <p class="text-center text-xs text-dp-muted mt-6">Przykładowe opinie (placeholder do podmiany prawdziwymi po pierwszych klientach).</p>
+            <p class="text-center text-xs text-dp-muted mt-6">{{ __('messages.landing.testi_disclaimer') }}</p>
         </div>
     </section>
 
     {{-- FEATURE GRID --}}
     <section class="max-w-6xl mx-auto px-4 py-16 dp-reveal">
-        <h2 class="text-center font-display text-3xl font-bold mb-3">Co dostajesz w pakiecie?</h2>
-        <p class="text-center text-dp-muted max-w-xl mx-auto mb-12">Wszystko czego potrzeba, aby zorganizować idealną listę — i nic więcej.</p>
+        <h2 class="text-center font-display text-3xl font-bold mb-3">{{ __('messages.landing.features_h2') }}</h2>
+        <p class="text-center text-dp-muted max-w-xl mx-auto mb-12">{{ __('messages.landing.features_lead') }}</p>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             @foreach ([
                 ['icon' => '🛡', 'title' => 'Anonimowe rezerwacje', 'body' => 'Bliscy potwierdzają mailem, ale Ty nigdy nie widzisz kto. Tożsamość poznasz przy rozpakowaniu.'],
@@ -198,20 +199,20 @@
     {{-- PRICING TEASER + CTA BOTTOM --}}
     <section class="bg-dp-gradient text-white py-16 dp-reveal">
         <div class="max-w-4xl mx-auto px-4 text-center">
-            <h2 class="font-display text-3xl sm:text-4xl font-bold">Zacznij od 19 zł albo wypróbuj za darmo.</h2>
-            <p class="mt-3 text-white/85 max-w-xl mx-auto">5 pakietów standardowych (9 miesięcy ważności) oraz pakiet ślubny (12 miesięcy, przedłużalny). Bez automatycznych odnowień, bez ukrytych kosztów.</p>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold">{{ __('messages.landing.cta_bottom_h2') }}</h2>
+            <p class="mt-3 text-white/85 max-w-xl mx-auto">{{ __('messages.landing.cta_bottom_lead') }}</p>
             <div class="mt-7 flex flex-wrap justify-center gap-3">
                 <a href="{{ route('public.pricing') }}" class="dp-btn px-7 py-3 bg-white text-dp-purple-700 hover:shadow-dp-card-lg hover:-translate-y-0.5 transition">
-                    Zobacz wszystkie pakiety →
+                    {{ __('messages.landing.cta_bottom_primary') }}
                 </a>
-                <a href="{{ route('public.faq') }}" class="dp-btn px-4 py-3 ring-1 ring-white/40 text-white hover:bg-white/10">FAQ</a>
+                <a href="{{ route('public.faq') }}" class="dp-btn px-4 py-3 ring-1 ring-white/40 text-white hover:bg-white/10">{{ __('messages.nav.faq') }}</a>
             </div>
         </div>
     </section>
 
     {{-- FAQ teaser --}}
     <section class="max-w-3xl mx-auto px-4 py-16" x-data="{ open: null }">
-        <h2 class="text-center font-display text-3xl font-bold mb-10">Najczęstsze pytania</h2>
+        <h2 class="text-center font-display text-3xl font-bold mb-10">{{ __('messages.landing.faq_h2') }}</h2>
         <div class="space-y-3">
             @foreach ($faqItems as $i => $item)
                 <div class="dp-card !p-0 overflow-hidden">
@@ -227,7 +228,7 @@
             @endforeach
         </div>
         <p class="text-center mt-8">
-            <a href="{{ route('public.faq') }}" class="text-dp-purple-700 font-semibold hover:underline">Wszystkie pytania →</a>
+            <a href="{{ route('public.faq') }}" class="text-dp-purple-700 font-semibold hover:underline">{{ __('messages.landing.faq_more') }}</a>
         </p>
     </section>
 @endsection

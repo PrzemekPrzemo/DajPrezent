@@ -33,6 +33,15 @@ final class LandingController extends Controller
         ['q' => 'Pakiet ślubny — co dostaję dodatkowo?', 'a' => 'Stronę ślubną z RSVP (z preferencjami dietetycznymi w Premium), galerię po-ślubną, mapę dojazdu, ochronę hasłem oraz generator zaproszeń PDF z QR.'],
     ];
 
+    /** EN mirror of FAQ_ITEMS — used when locale=en. */
+    public const FAQ_ITEMS_EN = [
+        ['q' => 'Will the guest who reserves a gift be visible to me?', 'a' => 'No — that\'s the core promise of DajPrezent.pl. You only see the status ("reserved", "received"). The guest\'s email is only used to verify they\'re not spam — it never reaches you.'],
+        ['q' => 'What happens when my plan expires?', 'a' => 'The list goes private. Your data stays for 30 days — you can renew without losing anything.'],
+        ['q' => 'Will I get a VAT invoice?', 'a' => 'Yes — automatically, through the Polish KSeF system. The invoice is available in your panel under "Invoices". B2B invoices with company tax ID are also supported.'],
+        ['q' => 'Can I add a gift from any shop?', 'a' => 'Yes — the bookmarklet in your panel reads title, price and link from any open shop tab. Works on Allegro, Empik, Zalando, Amazon and every shop with proper OpenGraph meta tags.'],
+        ['q' => 'Wedding plan — what extras do I get?', 'a' => 'A wedding page with RSVP (with dietary preferences on Premium), post-wedding gallery, venue map, password protection, and a PDF invitation generator with QR code.'],
+    ];
+
     public function __invoke(): View
     {
         $stats = Cache::remember('landing.stats', now()->addMinutes(5), function (): array {
@@ -54,7 +63,7 @@ final class LandingController extends Controller
 
         return view('welcome', [
             'stats' => $stats,
-            'faqItems' => self::FAQ_ITEMS,
+            'faqItems' => app()->getLocale() === 'en' ? self::FAQ_ITEMS_EN : self::FAQ_ITEMS,
         ]);
     }
 }
