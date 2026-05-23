@@ -91,6 +91,7 @@ Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): v
     });
 
     Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
 
     Route::get('konto', [AccountController::class, 'edit'])->name('account.edit');
     Route::patch('konto/profil', [AccountController::class, 'updateProfile'])->name('account.profile.update');

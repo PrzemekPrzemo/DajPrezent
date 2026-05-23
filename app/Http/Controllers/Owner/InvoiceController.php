@@ -28,4 +28,23 @@ final class InvoiceController extends Controller
 
         return view('owner.invoices.index', ['invoices' => $invoices]);
     }
+
+    public function show(Request $request, int $invoice): View
+    {
+        $user = $request->user();
+        assert($user !== null);
+
+        $tenantIds = $user->tenants()->pluck('id');
+
+        $model = Invoice::query()
+            ->withoutGlobalScope(TenantScope::class)
+            ->whereIn('tenant_id', $tenantIds)
+            ->with('tenant:id,slug,name')
+            ->findOrFail($invoice);
+
+        return view('owner.invoices.show', [
+            'invoice' => $model,
+            'seller' => (array) config('seller'),
+        ]);
+    }
 }

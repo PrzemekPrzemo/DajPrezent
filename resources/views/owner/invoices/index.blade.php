@@ -26,7 +26,11 @@
                 <tbody>
                 @foreach ($invoices as $inv)
                     <tr>
-                        <td><strong>{{ $inv->number }}</strong></td>
+                        <td>
+                            <a href="{{ route('owner.invoices.show', $inv->id) }}">
+                                <strong>{{ $inv->number }}</strong>
+                            </a>
+                        </td>
                         <td>
                             <a href="/{{ $inv->tenant?->slug }}" target="_blank">
                                 {{ $inv->tenant?->name ?? '—' }}
