@@ -51,5 +51,9 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('reservation', fn (Request $r) => Limit::perMinute(5)->by(
             ($r->ip() ?? 'unknown').':'.($r->route('slug') ?? '')
         ));
+        // RSVP throttle — niech jedna rodzina nie wpisze 200 razy.
+        RateLimiter::for('rsvp', fn (Request $r) => Limit::perHour(20)->by(
+            ($r->ip() ?? 'unknown').':'.($r->route('slug') ?? '')
+        ));
     }
 }

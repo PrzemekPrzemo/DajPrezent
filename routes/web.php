@@ -22,6 +22,7 @@ use App\Http\Controllers\Public\CheckoutController;
 use App\Http\Controllers\Public\LandingController;
 use App\Http\Controllers\Public\PricingController;
 use App\Http\Controllers\Public\ReservationController;
+use App\Http\Controllers\Public\RsvpController;
 use App\Http\Controllers\Public\UnlockController;
 use App\Http\Controllers\Public\WishlistController;
 use App\Http\Controllers\SitemapController;
@@ -140,4 +141,7 @@ Route::middleware(ResolveTenantFromSlug::class)
         Route::post('gifts/{gift}/reserve', [ReservationController::class, 'store'])
             ->middleware('throttle:reservation')
             ->name('public.reservations.store');
+        Route::post('rsvp', [RsvpController::class, 'store'])
+            ->middleware('throttle:rsvp')
+            ->name('public.rsvp.store');
     });

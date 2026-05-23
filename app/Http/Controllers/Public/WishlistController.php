@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Public;
 
 use App\Domain\Tenancy\Models\Tenant;
+use App\Domain\Wedding\Models\WeddingEvent;
 use App\Domain\Wishlist\Models\Gift;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
@@ -27,6 +28,19 @@ final class WishlistController extends Controller
             ->orderBy('priority')
             ->orderByDesc('id')
             ->get();
+
+        // Wedding tier renders the full ceremony micro-site (story,
+        // venue, RSVP form, gifts at the bottom) instead of the plain
+        // wishlist grid.
+        if (in_array($tenant->kind, ['wedding_basic', 'wedding_premium'], true)) {
+            $event = WeddingEvent::query()->where('tenant_id', $tenant->id)->first();
+
+            return view('public.wedding.show', [
+                'tenant' => $tenant,
+                'event' => $event,
+                'gifts' => $gifts,
+            ]);
+        }
 
         return view('public.wishlist.show', [
             'tenant' => $tenant,
