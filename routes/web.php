@@ -15,6 +15,7 @@ use App\Http\Controllers\Owner\GiftExportController;
 use App\Http\Controllers\Owner\GiftPreviewController;
 use App\Http\Controllers\Owner\InvoiceController;
 use App\Http\Controllers\Owner\RodoExportController;
+use App\Http\Controllers\Owner\TenantQrController;
 use App\Http\Controllers\Owner\TenantSettingsController;
 use App\Http\Controllers\Public\CheckoutController;
 use App\Http\Controllers\Public\LandingController;
@@ -88,6 +89,7 @@ Route::middleware('auth')->prefix('panel')->name('owner.')->group(function (): v
         Route::delete('gifts/{gift}', [GiftController::class, 'destroy'])->name('gifts.destroy');
         Route::post('gifts/{gift}/received', [GiftController::class, 'markReceived'])->name('gifts.received');
         Route::get('gifts/export.csv', [GiftExportController::class, 'csv'])->name('gifts.export.csv');
+        Route::get('qr.svg', TenantQrController::class)->name('qr');
 
         Route::get('settings', [TenantSettingsController::class, 'edit'])->name('tenant.settings.edit');
         Route::patch('settings', [TenantSettingsController::class, 'update'])->name('tenant.settings.update');

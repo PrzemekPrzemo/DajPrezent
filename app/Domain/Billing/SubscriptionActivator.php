@@ -7,6 +7,7 @@ namespace App\Domain\Billing;
 use App\Domain\Billing\Models\Subscription;
 use App\Domain\Tenancy\Models\Tenant;
 use App\Jobs\IssueInvoiceJob;
+use App\Notifications\WelcomeOwnerNotification;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -51,11 +52,17 @@ final class SubscriptionActivator
             return true;
         });
 
-        // Only queue the invoice job for paid subscriptions whose first
-        // transition we actually performed — keeps idempotent webhook
-        // replays from spawning duplicate invoices.
-        if ($changed && $subscription->fresh()->amount_pln_gr > 0) {
-            IssueInvoiceJob::dispatch($subscription->fresh());
+        // Side effects only after a *first* activation. Idempotent
+        // replays of the same IPN never re-dispatch.
+        if ($changed) {
+            $fresh = $subscription->fresh();
+            if ($fresh->amount_pln_gr > 0) {
+                IssueInvoiceJob::dispatch($fresh);
+            }
+            $tenant = $fresh->tenant;
+            if ($tenant !== null && $tenant->owner !== null) {
+                $tenant->owner->notify(new WelcomeOwnerNotification($tenant));
+            }
         }
 
         return $changed;

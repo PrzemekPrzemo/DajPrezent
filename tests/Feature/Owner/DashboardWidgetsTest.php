@@ -21,7 +21,7 @@ it('shows a red "wygasa za" chip when the list expires soon', function (): void 
         ->get('/panel')
         ->assertOk()
         ->assertSee('wygasa za 5 dni')
-        ->assertSee('expiry-soon', false);
+        ->assertSee('bg-red-50 text-red-700', false);
 });
 
 it('shows an amber "wygasa za" chip when the list expires in 14-29 days', function (): void {
@@ -33,7 +33,7 @@ it('shows an amber "wygasa za" chip when the list expires in 14-29 days', functi
     $this->actingAs($this->owner)
         ->get('/panel')
         ->assertOk()
-        ->assertSee('expiry-warning', false);
+        ->assertSee('bg-amber-50 text-amber-800', false);
 });
 
 it('shows the regular "ważna do" line when there is plenty of time', function (): void {
@@ -46,7 +46,7 @@ it('shows the regular "ważna do" line when there is plenty of time', function (
         ->get('/panel')
         ->assertOk()
         ->assertSee('ważna do')
-        ->assertSee('expiry-ok', false);
+        ->assertSee('bg-emerald-50 text-emerald-700', false);
 });
 
 it('shows progress when gifts have receivers', function (): void {
@@ -59,7 +59,7 @@ it('shows progress when gifts have receivers', function (): void {
     $this->actingAs($this->owner)
         ->get('/panel')
         ->assertOk()
-        ->assertSee('width:80%', false)
+        ->assertSee('width: 80%', false)
         ->assertSee('80% prezentów ma odbiorcę');
 });
 
