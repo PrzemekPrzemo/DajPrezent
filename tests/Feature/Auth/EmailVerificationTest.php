@@ -30,7 +30,7 @@ it('redirects unverified users to the verify-email notice page', function (): vo
     $this->actingAs($user)
         ->get('/email/verify')
         ->assertOk()
-        ->assertSee('Potwierdź swój adres e-mail');
+        ->assertSee('Potwierdź adres e-mail');
 });
 
 it('marks the user as verified when the signed URL is hit', function (): void {
