@@ -55,6 +55,8 @@ final class PayUServiceProvider extends ServiceProvider
             $certPath = (string) $s->get('ksef.cert_path', '');
             $certPassword = (string) $s->get('ksef.cert_password', '');
             $token = (string) $s->get('ksef.token', '');
+            $keyPath = (string) $s->get('ksef.key_path', '');
+            $keyPassword = (string) $s->get('ksef.key_password', '');
 
             return new KsefClient(
                 env: (string) $s->get('ksef.env', 'test'),
@@ -62,6 +64,8 @@ final class PayUServiceProvider extends ServiceProvider
                 token: $token === '' ? null : $token,
                 certPath: $certPath === '' ? null : $certPath,
                 certPassword: $certPassword === '' ? null : $certPassword,
+                keyPath: $keyPath === '' ? null : $keyPath,
+                keyPassword: $keyPassword === '' ? null : $keyPassword,
             );
         });
     }

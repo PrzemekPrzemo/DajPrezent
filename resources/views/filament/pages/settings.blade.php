@@ -18,7 +18,18 @@
                 <x-filament::button type="submit" icon="heroicon-o-check">
                     Zapisz sekcję KSeF
                 </x-filament::button>
-                <span class="text-xs text-gray-500">Token i hasło certyfikatu szyfrowane.</span>
+                <span class="text-xs text-gray-500">Token, hasło certyfikatu i klucza prywatnego szyfrowane.</span>
+            </div>
+        </form>
+
+        {{-- SMTP --}}
+        <form wire:submit="saveSmtp">
+            {{ $this->smtpForm }}
+            <div class="mt-4 flex items-center gap-3">
+                <x-filament::button type="submit" icon="heroicon-o-check">
+                    Zapisz sekcję SMTP
+                </x-filament::button>
+                <span class="text-xs text-gray-500">Hasło SMTP szyfrowane. Dotyczy najbliższego wysłanego maila.</span>
             </div>
         </form>
 

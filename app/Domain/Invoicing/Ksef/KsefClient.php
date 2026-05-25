@@ -38,6 +38,13 @@ final class KsefClient
         private readonly ?string $token = null,
         private readonly ?string $certPath = null,
         private readonly ?string $certPassword = null,
+        // Pair for the X.509 path — when cert is .crt/.cer/.pem, the
+        // private key arrives as a separate file. PKCS#12 (.pfx) bundles
+        // both inside one file so these stay null in that mode.
+        // $keyPassword is read by the real adapter (not yet shipped) when
+        // it opens an encrypted PEM key — phpstan-ignore unused warning.
+        private readonly ?string $keyPath = null,
+        private readonly ?string $keyPassword = null, // @phpstan-ignore-line property.unusedType
     ) {}
 
     public function isConfigured(): bool
@@ -46,27 +53,50 @@ final class KsefClient
             return false;
         }
 
-        // Either auth mode is acceptable.
         $hasToken = $this->token !== null && $this->token !== '';
-        $hasCert = $this->certPath !== null && $this->certPath !== ''
-            && $this->certPassword !== null && $this->certPassword !== ''
-            && Storage::disk('local')->exists('ksef/'.$this->certPath);
+        $hasPkcs12 = $this->certIsPkcs12() && $this->certPassword !== null && $this->certPassword !== '';
+        $hasX509Pair = $this->certIsX509() && $this->keyPath !== null && $this->keyPath !== ''
+            && Storage::disk('local')->exists('ksef/'.$this->keyPath);
 
-        return $hasToken || $hasCert;
+        return $hasToken || $hasPkcs12 || $hasX509Pair;
     }
 
     /** For diagnostics in the admin panel — reports which mode is in use. */
     public function authMode(): string
     {
-        if ($this->certPath !== null && $this->certPath !== ''
-            && Storage::disk('local')->exists('ksef/'.$this->certPath)) {
-            return 'certificate';
+        if ($this->certIsPkcs12()) {
+            return 'pkcs12';
+        }
+        if ($this->certIsX509() && $this->keyPath !== null && $this->keyPath !== '') {
+            return 'x509-pair';
         }
         if ($this->token !== null && $this->token !== '') {
             return 'token';
         }
 
         return 'none';
+    }
+
+    private function certIsPkcs12(): bool
+    {
+        if ($this->certPath === null || $this->certPath === ''
+            || ! Storage::disk('local')->exists('ksef/'.$this->certPath)) {
+            return false;
+        }
+        $ext = strtolower(pathinfo($this->certPath, PATHINFO_EXTENSION));
+
+        return in_array($ext, ['pfx', 'p12'], true);
+    }
+
+    private function certIsX509(): bool
+    {
+        if ($this->certPath === null || $this->certPath === ''
+            || ! Storage::disk('local')->exists('ksef/'.$this->certPath)) {
+            return false;
+        }
+        $ext = strtolower(pathinfo($this->certPath, PATHINFO_EXTENSION));
+
+        return in_array($ext, ['crt', 'cer', 'pem'], true);
     }
 
     /**

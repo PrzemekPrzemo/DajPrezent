@@ -53,6 +53,8 @@ final class Settings extends Page implements HasForms
 
     public ?array $invoiceData = [];
 
+    public ?array $smtpData = [];
+
     private const MASK = '•••• set';
 
     public function mount(): void
@@ -61,6 +63,7 @@ final class Settings extends Page implements HasForms
         $this->payuForm->fill($this->payuData);    // @phpstan-ignore-line
         $this->ksefForm->fill($this->ksefData);    // @phpstan-ignore-line
         $this->invoiceForm->fill($this->invoiceData); // @phpstan-ignore-line
+        $this->smtpForm->fill($this->smtpData);    // @phpstan-ignore-line
     }
 
     protected function getForms(): array
@@ -69,6 +72,7 @@ final class Settings extends Page implements HasForms
             'payuForm',
             'ksefForm',
             'invoiceForm',
+            'smtpForm',
         ];
     }
 
@@ -143,23 +147,125 @@ final class Settings extends Page implements HasForms
                             ->columnSpanFull()
                             ->helperText('Najprostsza metoda. Wygenerujesz w panelu KSeF: Mój profil → Tokeny autoryzacyjne. Zostaw puste jeśli używasz certyfikatu.'),
                         FileUpload::make('ksef_cert_path')
-                            ->label('Certyfikat .pfx (opcja 2)')
+                            ->label('Certyfikat (opcja 2)')
                             ->disk('local')
                             ->directory('ksef')
                             ->visibility('private')
-                            ->acceptedFileTypes(['application/x-pkcs12', 'application/pkcs12', 'application/octet-stream'])
+                            // MIME detection przeglądarki na cert-y jest niespójne
+                            // (różne OS-y mapują .crt → text/plain, octet-stream,
+                            // x-x509-ca-cert). Whitelistujemy extension osobno
+                            // przez fileNamesGenerator, a tu jednoznacznie
+                            // dopuszczamy "wszystko co cert-podobne".
+                            ->acceptedFileTypes([
+                                'application/x-pkcs12',
+                                'application/pkcs12',
+                                'application/x-x509-ca-cert',
+                                'application/x-x509-user-cert',
+                                'application/pkix-cert',
+                                'application/pkcs7-mime',
+                                'application/octet-stream',
+                                'text/plain',
+                            ])
                             ->maxSize(2048)
                             ->columnSpanFull()
-                            ->helperText('Plik PKCS#12 (.pfx / .p12) podpisany przez KIR / Sigillum. Trzymany prywatnie, nigdy nie wystawiany publicznie.'),
+                            ->helperText('PKCS#12 (.pfx / .p12) ALBO certyfikat X.509 (.crt / .cer / .pem). Plik trzymany prywatnie w storage/app/private/ksef/.'),
                         TextInput::make('ksef_cert_password')
-                            ->label('Hasło do certyfikatu')
+                            ->label('Hasło do certyfikatu (.pfx / .p12)')
                             ->password()
                             ->revealable()
                             ->columnSpanFull()
-                            ->helperText('Passphrase do pliku .pfx — szyfrowane w bazie.'),
+                            ->helperText('Wymagane tylko dla PKCS#12 (.pfx / .p12). Dla .crt / .cer / .pem zostaw puste i wgraj klucz prywatny niżej.'),
+                        FileUpload::make('ksef_key_path')
+                            ->label('Klucz prywatny (tylko gdy używasz .crt / .cer / .pem)')
+                            ->disk('local')
+                            ->directory('ksef')
+                            ->visibility('private')
+                            ->acceptedFileTypes([
+                                'application/x-pem-file',
+                                'application/pkcs8',
+                                'application/octet-stream',
+                                'text/plain',
+                            ])
+                            ->maxSize(512)
+                            ->columnSpanFull()
+                            ->helperText('Plik klucza prywatnego (.key / .pem). Pomijasz gdy używasz .pfx — PKCS#12 zawiera klucz w środku.'),
+                        TextInput::make('ksef_key_password')
+                            ->label('Hasło klucza prywatnego (opcjonalnie)')
+                            ->password()
+                            ->revealable()
+                            ->columnSpanFull()
+                            ->helperText('Jeśli plik .key jest zaszyfrowany (PEM ENCRYPTED PRIVATE KEY).'),
                     ]),
             ])
             ->statePath('ksefData');
+    }
+
+    public function smtpForm(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Section::make('Wysyłka maili — SMTP')
+                    ->description('Konfiguracja serwera pocztowego dla maili transakcyjnych (verify, reset hasła, faktura, tour, support). Hasło SMTP szyfrowane w bazie.')
+                    ->icon('heroicon-o-envelope')
+                    ->columns(2)
+                    ->schema([
+                        Select::make('mail_driver')
+                            ->label('Driver')
+                            ->options([
+                                'smtp' => 'SMTP (produkcja)',
+                                'log' => 'Log (development — zapis do storage/logs/laravel.log)',
+                                'array' => 'Array (test — wycieka po requeście)',
+                            ])
+                            ->default('smtp')
+                            ->required()
+                            ->live()
+                            ->helperText('Na początek dev: log. Na prod: smtp z danymi providera.'),
+                        TextInput::make('mail_host')
+                            ->label('Host SMTP')
+                            ->placeholder('np. smtp.postmarkapp.com / smtp.mailgun.org / smtp.dajprezent.pl')
+                            ->visible(fn (callable $get): bool => $get('mail_driver') === 'smtp'),
+                        TextInput::make('mail_port')
+                            ->label('Port')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(65535)
+                            ->default(587)
+                            ->placeholder('587 (STARTTLS) / 465 (SSL) / 25')
+                            ->visible(fn (callable $get): bool => $get('mail_driver') === 'smtp'),
+                        Select::make('mail_encryption')
+                            ->label('Szyfrowanie')
+                            ->options([
+                                'tls' => 'TLS (STARTTLS — port 587, zalecane)',
+                                'ssl' => 'SSL (port 465)',
+                                '' => 'Brak (port 25 — odradzane)',
+                            ])
+                            ->default('tls')
+                            ->visible(fn (callable $get): bool => $get('mail_driver') === 'smtp'),
+                        TextInput::make('mail_username')
+                            ->label('Username SMTP')
+                            ->placeholder('np. apikey / postmaster@mg.dajprezent.pl')
+                            ->columnSpanFull()
+                            ->visible(fn (callable $get): bool => $get('mail_driver') === 'smtp'),
+                        TextInput::make('mail_password')
+                            ->label('Password SMTP')
+                            ->password()
+                            ->revealable()
+                            ->columnSpanFull()
+                            ->visible(fn (callable $get): bool => $get('mail_driver') === 'smtp')
+                            ->helperText('Token / hasło z panelu providera. Zostaw puste żeby nie zmieniać („'.self::MASK.'" = sekret zapisany).'),
+                        TextInput::make('mail_from_address')
+                            ->label('Adres From:')
+                            ->email()
+                            ->required()
+                            ->placeholder('noreply@dajprezent.pl')
+                            ->helperText('Domena musi mieć skonfigurowany SPF + DKIM dla danego SMTP providera.'),
+                        TextInput::make('mail_from_name')
+                            ->label('Nazwa From:')
+                            ->required()
+                            ->placeholder('DajPrezent.pl'),
+                    ]),
+            ])
+            ->statePath('smtpData');
     }
 
     public function invoiceForm(Form $form): Form
@@ -220,17 +326,40 @@ final class Settings extends Page implements HasForms
         $s->set('ksef.nip', $state['ksef_nip']);
         $this->saveSecret($s, 'ksef.token', $state['ksef_token'] ?? null);
 
-        $certPath = $state['ksef_cert_path'] ?? null;
-        if (is_array($certPath)) {
-            $certPath = $certPath[array_key_first($certPath)] ?? null;
-        }
-        if (is_string($certPath) && $certPath !== '') {
-            $s->set('ksef.cert_path', basename($certPath));
+        // Certyfikat (PKCS#12 .pfx ALBO .crt / .cer / .pem)
+        $certPath = $this->unwrapUploadedFilename($state['ksef_cert_path'] ?? null);
+        if ($certPath !== null) {
+            $s->set('ksef.cert_path', $certPath);
         }
         $this->saveSecret($s, 'ksef.cert_password', $state['ksef_cert_password'] ?? null);
 
+        // Klucz prywatny (tylko dla par .crt + .key — PKCS#12 zawiera klucz wewnątrz)
+        $keyPath = $this->unwrapUploadedFilename($state['ksef_key_path'] ?? null);
+        if ($keyPath !== null) {
+            $s->set('ksef.key_path', $keyPath);
+        }
+        $this->saveSecret($s, 'ksef.key_password', $state['ksef_key_password'] ?? null);
+
         $this->notifySuccess('Sekcja KSeF zapisana.');
         $this->loadAll();
+    }
+
+    /**
+     * FileUpload state może być stringiem (single) lub tablicą po multiple,
+     * Filament zwraca też zagnieżdżone struktury z metadata. Wyciągamy
+     * sam basename żeby zapisać go w settings — pełna ścieżka rekonstruuje
+     * się jako `storage/app/private/ksef/<basename>`.
+     */
+    private function unwrapUploadedFilename(mixed $raw): ?string
+    {
+        if (is_array($raw)) {
+            $raw = $raw[array_key_first($raw)] ?? null;
+        }
+        if (! is_string($raw) || $raw === '') {
+            return null;
+        }
+
+        return basename($raw);
     }
 
     public function saveInvoice(): void
@@ -243,6 +372,24 @@ final class Settings extends Page implements HasForms
         $s->set('invoice.start_number', (int) $state['invoice_start_number']);
 
         $this->notifySuccess('Sekcja Numeracja FV zapisana.');
+        $this->loadAll();
+    }
+
+    public function saveSmtp(): void
+    {
+        $state = $this->smtpForm->getState(); // @phpstan-ignore-line
+        $s = app(SettingsRepository::class);
+
+        $s->set('mail.driver', $state['mail_driver']);
+        $s->set('mail.host', $state['mail_host'] ?? '');
+        $s->set('mail.port', (int) ($state['mail_port'] ?? 587));
+        $s->set('mail.encryption', $state['mail_encryption'] ?? 'tls');
+        $s->set('mail.username', $state['mail_username'] ?? '');
+        $this->saveSecret($s, 'mail.password', $state['mail_password'] ?? null);
+        $s->set('mail.from_address', $state['mail_from_address']);
+        $s->set('mail.from_name', $state['mail_from_name']);
+
+        $this->notifySuccess('Sekcja SMTP zapisana. Następny wysyłany mail użyje nowych ustawień.');
         $this->loadAll();
     }
 
@@ -272,6 +419,19 @@ final class Settings extends Page implements HasForms
             'ksef_token' => $this->maskSecret($s->get('ksef.token', '')),
             'ksef_cert_path' => $s->get('ksef.cert_path', ''),
             'ksef_cert_password' => $this->maskSecret($s->get('ksef.cert_password', '')),
+            'ksef_key_path' => $s->get('ksef.key_path', ''),
+            'ksef_key_password' => $this->maskSecret($s->get('ksef.key_password', '')),
+        ];
+
+        $this->smtpData = [
+            'mail_driver' => $s->get('mail.driver', 'log'),
+            'mail_host' => $s->get('mail.host', ''),
+            'mail_port' => (int) $s->get('mail.port', 587),
+            'mail_encryption' => $s->get('mail.encryption', 'tls'),
+            'mail_username' => $s->get('mail.username', ''),
+            'mail_password' => $this->maskSecret($s->get('mail.password', '')),
+            'mail_from_address' => $s->get('mail.from_address', 'noreply@dajprezent.pl'),
+            'mail_from_name' => $s->get('mail.from_name', 'DajPrezent.pl'),
         ];
 
         $this->invoiceData = [

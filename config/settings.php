@@ -49,5 +49,17 @@ return [
         'invoice.sequence_reset' => 'monthly',
         // First invoice number after migration / fresh install.
         'invoice.start_number' => 1,
+
+        /* SMTP — outgoing mail ---------------------------------------- */
+        // 'log' for early dev (writes to laravel.log), 'smtp' for prod.
+        'mail.driver' => env('MAIL_MAILER', 'log'),
+        'mail.host' => env('MAIL_HOST', ''),
+        'mail.port' => env('MAIL_PORT', 587),
+        'mail.username' => env('MAIL_USERNAME', ''),
+        'mail.password' => env('MAIL_PASSWORD', ''),
+        // tls | ssl | null (no encryption — STARTTLS upgrade on connect)
+        'mail.encryption' => env('MAIL_ENCRYPTION', 'tls'),
+        'mail.from_address' => env('MAIL_FROM_ADDRESS', 'noreply@dajprezent.pl'),
+        'mail.from_name' => env('MAIL_FROM_NAME', 'DajPrezent.pl'),
     ],
 ];

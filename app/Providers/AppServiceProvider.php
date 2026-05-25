@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Domain\Settings\SettingsRepository;
 use App\Domain\Tenancy\CurrentTenant;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -33,6 +34,41 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->configureRateLimiters();
+        $this->configureMailFromSettings();
+    }
+
+    /**
+     * Override Laravel mail config with values from app_settings table
+     * (set by /admin/settings → SMTP). Falls back to .env when no DB
+     * override is present, so a fresh install still boots.
+     *
+     * Run on every request — cheap (cached in SettingsRepository) and
+     * lets admins rotate the SMTP password without restarting FPM.
+     */
+    private function configureMailFromSettings(): void
+    {
+        // Skip during migrations / fresh installs / test bootstrap when
+        // the app_settings table doesn't exist yet. Querying it would
+        // throw QueryException and crash every test that doesn't seed
+        // the schema.
+        try {
+            $s = $this->app->make(SettingsRepository::class);
+
+            $driver = (string) $s->get('mail.driver', config('mail.default', 'log'));
+            config([
+                'mail.default' => $driver,
+                'mail.mailers.smtp.host' => (string) $s->get('mail.host', config('mail.mailers.smtp.host', '')),
+                'mail.mailers.smtp.port' => (int) $s->get('mail.port', config('mail.mailers.smtp.port', 587)),
+                'mail.mailers.smtp.encryption' => (string) $s->get('mail.encryption', 'tls') ?: null,
+                'mail.mailers.smtp.username' => (string) $s->get('mail.username', config('mail.mailers.smtp.username', '')),
+                'mail.mailers.smtp.password' => (string) $s->get('mail.password', config('mail.mailers.smtp.password', '')),
+                'mail.from.address' => (string) $s->get('mail.from_address', config('mail.from.address', 'noreply@dajprezent.pl')),
+                'mail.from.name' => (string) $s->get('mail.from_name', config('mail.from.name', 'DajPrezent.pl')),
+            ]);
+        } catch (\Throwable) {
+            // Table missing / db unavailable / cache issue — boot anyway
+            // so artisan migrate, factories, and bare tests keep working.
+        }
     }
 
     /**
