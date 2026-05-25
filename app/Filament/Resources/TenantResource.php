@@ -156,44 +156,63 @@ class TenantResource extends Resource
                             ->maxLength(160),
                     ])
                     ->action(function (Tenant $record, array $data): void {
-                        DB::transaction(function () use ($record, $data): void {
-                            /** @var Package $pkg */
-                            $pkg = Package::query()->findOrFail($data['package_id']);
-                            $now = now();
-                            $expiresAt = $now->copy()->addDays((int) $pkg->valid_days);
+                        try {
+                            DB::transaction(function () use ($record, $data): void {
+                                /** @var Package $pkg */
+                                $pkg = Package::query()->findOrFail($data['package_id']);
+                                $now = now();
+                                $expiresAt = $now->copy()->addDays((int) $pkg->valid_days);
 
-                            $sub = Subscription::create([
+                                $sub = Subscription::create([
+                                    'tenant_id' => $record->id,
+                                    'package_id' => $pkg->id,
+                                    'status' => 'active',
+                                    'amount_pln_gr' => 0,
+                                    'paid_at' => $now,
+                                    'expires_at' => $expiresAt,
+                                    'buyer_name' => $data['note'] ?? 'Master admin grant',
+                                    'buyer_country' => 'PL',
+                                ]);
+
+                                // Flip tenant.kind to match the new package — wedding
+                                // packages need wedding kind to render the ceremony
+                                // micro-site, anything else falls back to wishlist.
+                                $patch = [
+                                    'expires_at' => $expiresAt,
+                                    'is_public' => true,
+                                    'kind' => str_starts_with((string) $pkg->code, 'wedding_')
+                                        ? $pkg->code
+                                        : 'wishlist',
+                                ];
+                                // parent_subscription_id requires migration 000500.
+                                // Skip the column gracefully when it doesn't exist
+                                // (fresh deploy without migrate yet). GiftLimitGuard
+                                // falls back to $tenant->subscriptions() anyway.
+                                if (\Schema::hasColumn('tenants', 'parent_subscription_id')) {
+                                    $patch['parent_subscription_id'] = $sub->id;
+                                }
+                                $record->update($patch);
+                            });
+
+                            Notification::make()
+                                ->title('Pakiet przyznany')
+                                ->body('Subskrypcja jest aktywna. Limity i ważność zaktualizowane.')
+                                ->success()
+                                ->send();
+                        } catch (\Throwable $e) {
+                            \Log::error('tenant.assign_package_failed', [
                                 'tenant_id' => $record->id,
-                                'package_id' => $pkg->id,
-                                'status' => 'active',
-                                'amount_pln_gr' => 0,
-                                'paid_at' => $now,
-                                'expires_at' => $expiresAt,
-                                'buyer_name' => $data['note'] ?? 'Master admin grant',
+                                'package_id' => $data['package_id'] ?? null,
+                                'exception' => $e::class,
+                                'message' => $e->getMessage(),
                             ]);
-
-                            // Update primary tenant — kind dla wedding, expiry,
-                            // parent_subscription_id so GiftLimitGuard sees this
-                            // subscription as the active one.
-                            $patch = [
-                                'expires_at' => $expiresAt,
-                                'parent_subscription_id' => $sub->id,
-                                'is_public' => true,
-                            ];
-                            // Flip tenant.kind to match the new package — wedding
-                            // packages need wedding kind to render the ceremony
-                            // micro-site, anything else falls back to wishlist.
-                            $patch['kind'] = str_starts_with((string) $pkg->code, 'wedding_')
-                                ? $pkg->code
-                                : 'wishlist';
-                            $record->update($patch);
-                        });
-
-                        Notification::make()
-                            ->title('Pakiet przyznany')
-                            ->body('Subskrypcja jest aktywna. Limity i ważność zaktualizowane.')
-                            ->success()
-                            ->send();
+                            Notification::make()
+                                ->title('Nie udało się przyznać pakietu')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->persistent()
+                                ->send();
+                        }
                     }),
             ])
             ->bulkActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
