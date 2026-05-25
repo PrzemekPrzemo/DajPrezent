@@ -38,7 +38,7 @@ return [
 
     'landing' => [
         'tagline' => 'Prezenty od serca, bez stresu',
-        'hero_chip' => '⚡ Nowość — KSeF FV w cenie',
+        'hero_chip' => '⚡ Bez konta dla gości',
         'hero_h1_pre' => 'Prezenty',
         'hero_h1_emph' => 'od serca',
         'hero_h1_post' => 'bez stresu.',

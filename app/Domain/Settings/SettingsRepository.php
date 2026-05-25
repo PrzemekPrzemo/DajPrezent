@@ -43,11 +43,26 @@ final class SettingsRepository
     public function get(string $key, mixed $default = null): mixed
     {
         $all = $this->all();
-        if (array_key_exists($key, $all)) {
+        if (array_key_exists($key, $all) && $all[$key] !== null && $all[$key] !== '') {
             return $all[$key];
         }
 
-        return config('settings.defaults.'.$key, $default);
+        // Tier 1 fallback — config/settings.php defaults (env-driven).
+        $configDefault = config('settings.defaults.'.$key);
+        if ($configDefault !== null && $configDefault !== '') {
+            return $configDefault;
+        }
+
+        // Tier 2 fallback — legacy services.* config keys, kept for
+        // backward compatibility with code paths and tests that still
+        // poke values via Config::set('services.payu.md5_key', …).
+        // Mapping is symmetric: `payu.md5_key` ↔ `services.payu.md5_key`.
+        $legacy = config('services.'.$key);
+        if ($legacy !== null && $legacy !== '') {
+            return $legacy;
+        }
+
+        return $default;
     }
 
     public function set(string $key, mixed $value): void

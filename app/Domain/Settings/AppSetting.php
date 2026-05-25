@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Domain\Settings;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property string $key
  * @property ?string $value
  * @property bool $is_encrypted
- * @property ?\Illuminate\Support\Carbon $updated_at
+ * @property ?Carbon $updated_at
  */
 final class AppSetting extends Model
 {

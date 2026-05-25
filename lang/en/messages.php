@@ -38,7 +38,7 @@ return [
 
     'landing' => [
         'tagline' => 'Gifts from the heart, without the stress',
-        'hero_chip' => '⚡ New — VAT invoice included',
+        'hero_chip' => '⚡ Guests reserve without sign-up',
         'hero_h1_pre' => 'Gifts',
         'hero_h1_emph' => 'from the heart',
         'hero_h1_post' => 'without the stress.',
