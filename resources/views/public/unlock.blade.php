@@ -1,25 +1,32 @@
 @extends('layouts.public')
 
-@section('title', 'Lista chroniona hasłem')
+@section('title', $tenant->name.' — '.__('messages.unlock.h1'))
+@section('robots')<meta name="robots" content="noindex,nofollow">@endsection
 
 @section('content')
-    <div style="max-width:420px;margin:3rem auto 0;">
-        <div class="card">
-            <h1>{{ $tenant->name }}</h1>
-            <p style="color:#6b7280;">Ta lista jest chroniona hasłem. Podaj hasło, które otrzymałeś od właściciela.</p>
+    <div class="max-w-md mx-auto mt-12 mb-10 px-4">
+        <div class="dp-card text-center">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-dp-lg bg-dp-gradient flex items-center justify-center text-white text-2xl shadow-dp-card">
+                🔒
+            </div>
+            <h1 class="font-display text-2xl font-bold m-0">{{ $tenant->name }}</h1>
+            <p class="text-sm text-dp-muted mt-2">{{ __('messages.unlock.lead') }}</p>
 
             @if ($errors->any())
-                <div role="alert" style="background:#fee2e2;color:#991b1b;padding:.5rem .75rem;border-radius:.5rem;margin-bottom:1rem;">
+                <div role="alert" class="dp-flash-err mt-4 text-left">
                     {{ $errors->first('password') }}
                 </div>
             @endif
 
-            <form method="POST" action="/{{ $tenant->slug }}/unlock" style="text-align:left;">
+            <form method="POST" action="/{{ $tenant->slug }}/unlock" class="text-left mt-5 space-y-3">
                 @csrf
-                <label for="password" style="display:block;font-weight:600;margin-bottom:.25rem;">Hasło</label>
-                <input id="password" type="password" name="password" required autofocus maxlength="128" style="width:100%;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:.375rem;font-size:1rem;">
-                <button type="submit" style="margin-top:.75rem;width:100%;background:#ec4899;color:#fff;border:0;padding:.6rem 1rem;border-radius:.5rem;font-weight:600;cursor:pointer;">
-                    Odblokuj listę
+                <div class="dp-field">
+                    <label class="dp-label" for="password">{{ __('messages.unlock.password') }}</label>
+                    <input id="password" type="password" name="password" required autofocus maxlength="128"
+                           class="dp-input" autocomplete="current-password">
+                </div>
+                <button type="submit" class="dp-btn-primary w-full py-3">
+                    {{ __('messages.unlock.submit') }} →
                 </button>
             </form>
         </div>

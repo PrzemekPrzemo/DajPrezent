@@ -55,7 +55,7 @@ it('renders the three guest-side states distinctively', function (): void {
 
     // Reserved (przez kogoś innego) → chip „Zarezerwowane 💗".
     expect($body)->toContain('Zarezerwowane');
-    expect($body)->toContain('aria-label="Prezent zarezerwowany"');
+    expect($body)->toContain('aria-label="zarezerwowany"');
 
     // Received → chip „otrzymany".
     expect($body)->toContain('otrzymany');

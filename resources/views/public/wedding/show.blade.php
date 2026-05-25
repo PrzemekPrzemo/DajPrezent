@@ -1,8 +1,8 @@
 @extends('layouts.public')
 
 @section('title', $event?->couple_names ?: $tenant->name)
-@section('meta_description', ($event?->couple_names ?: $tenant->name).' — RSVP, ceremonia i lista prezentów.')
-@section('og_title', ($event?->couple_names ?: $tenant->name).' — strona ślubna')
+@section('meta_description', ($event?->couple_names ?: $tenant->name).' — '.__('messages.wedding_seo.meta'))
+@section('og_title', ($event?->couple_names ?: $tenant->name).' — '.__('messages.wedding_seo.og_suffix'))
 @section('og_image', route('public.og.tenant', ['tenant' => $tenant->slug]))
 @section('robots')<meta name="robots" content="noindex,follow">@endsection
 
@@ -51,7 +51,7 @@
 
     @if ($event?->story_text)
         <section class="dp-card mb-4">
-            <h2 class="font-display font-semibold text-xl m-0 mb-2">Nasza historia</h2>
+            <h2 class="font-display font-semibold text-xl m-0 mb-2">{{ __('messages.wedding.story_h2') }}</h2>
             <p class="text-dp-navy whitespace-pre-line leading-relaxed m-0">{{ $event->story_text }}</p>
         </section>
     @endif
@@ -59,11 +59,11 @@
     {{-- CEREMONY DETAILS + MAP LINK --}}
     @if ($event?->venue_name || $event?->reception_venue_name)
         <section class="dp-card mb-4">
-            <h2 class="font-display font-semibold text-xl m-0 mb-3">Gdzie i kiedy</h2>
+            <h2 class="font-display font-semibold text-xl m-0 mb-3">{{ __('messages.wedding.where_when_h2') }}</h2>
             <div class="grid sm:grid-cols-2 gap-4">
                 @if ($event->venue_name)
                     <div>
-                        <p class="text-xs uppercase tracking-wider text-dp-muted m-0">Ceremonia</p>
+                        <p class="text-xs uppercase tracking-wider text-dp-muted m-0">{{ __('messages.wedding.ceremony') }}</p>
                         <p class="font-semibold m-0 mt-1">{{ $event->venue_name }}</p>
                         @if ($event->venue_address)
                             <p class="text-sm text-dp-muted m-0">{{ $event->venue_address }}</p>
@@ -71,17 +71,17 @@
                         @if ($event->venue_lat && $event->venue_lng)
                             <a href="https://www.google.com/maps?q={{ $event->venue_lat }},{{ $event->venue_lng }}"
                                target="_blank" rel="noopener"
-                               class="text-sm {{ $themeStyle['accent'] }} hover:underline">📍 Otwórz w Google Maps</a>
+                               class="text-sm {{ $themeStyle['accent'] }} hover:underline">{{ __('messages.wedding.open_in_maps') }}</a>
                         @elseif ($event->venue_address)
                             <a href="https://www.google.com/maps?q={{ urlencode($event->venue_address) }}"
                                target="_blank" rel="noopener"
-                               class="text-sm {{ $themeStyle['accent'] }} hover:underline">📍 Otwórz w Google Maps</a>
+                               class="text-sm {{ $themeStyle['accent'] }} hover:underline">{{ __('messages.wedding.open_in_maps') }}</a>
                         @endif
                     </div>
                 @endif
                 @if ($event->reception_venue_name)
                     <div>
-                        <p class="text-xs uppercase tracking-wider text-dp-muted m-0">Wesele</p>
+                        <p class="text-xs uppercase tracking-wider text-dp-muted m-0">{{ __('messages.wedding.reception') }}</p>
                         <p class="font-semibold m-0 mt-1">{{ $event->reception_venue_name }}</p>
                         @if ($event->reception_venue_address)
                             <p class="text-sm text-dp-muted m-0">{{ $event->reception_venue_address }}</p>
@@ -90,33 +90,33 @@
                 @endif
             </div>
             @if ($event->dress_code)
-                <p class="mt-4 text-sm text-dp-muted m-0">Dress code: <strong>{{ $event->dress_code }}</strong></p>
+                <p class="mt-4 text-sm text-dp-muted m-0">{{ __('messages.wedding.dress_code') }}: <strong>{{ $event->dress_code }}</strong></p>
             @endif
         </section>
     @endif
 
     @if ($event?->schedule_text)
         <section class="dp-card mb-4">
-            <h2 class="font-display font-semibold text-xl m-0 mb-2">Harmonogram</h2>
+            <h2 class="font-display font-semibold text-xl m-0 mb-2">{{ __('messages.wedding.schedule_h2') }}</h2>
             <p class="text-dp-navy whitespace-pre-line leading-relaxed m-0">{{ $event->schedule_text }}</p>
         </section>
     @endif
 
     @if ($event?->accommodation_text)
         <section class="dp-card mb-4">
-            <h2 class="font-display font-semibold text-xl m-0 mb-2">Noclegi w okolicy</h2>
+            <h2 class="font-display font-semibold text-xl m-0 mb-2">{{ __('messages.wedding.accommodation_h2') }}</h2>
             <p class="text-dp-navy whitespace-pre-line leading-relaxed m-0">{{ $event->accommodation_text }}</p>
         </section>
     @endif
 
     {{-- RSVP --}}
     <section class="dp-card mb-4" x-data="{ attending: '1', plusOne: false }">
-        <h2 class="font-display font-semibold text-xl m-0 mb-2">Potwierdź obecność (RSVP)</h2>
+        <h2 class="font-display font-semibold text-xl m-0 mb-2">{{ __('messages.wedding.rsvp_h2') }}</h2>
         @if ($event?->rsvp_deadline)
             <p class="text-sm text-dp-muted m-0 mb-4">
-                Prosimy o potwierdzenie do <strong>{{ $event->rsvp_deadline->translatedFormat('j F Y') }}</strong>.
+                {!! __('messages.wedding.rsvp_deadline', ['date' => '<strong>'.e($event->rsvp_deadline->translatedFormat('j F Y')).'</strong>']) !!}
                 @if ($event->rsvp_deadline->isPast())
-                    <span class="text-red-700 font-semibold block mt-1">Termin minął — skontaktuj się bezpośrednio z parą.</span>
+                    <span class="text-red-700 font-semibold block mt-1">{{ __('messages.wedding.rsvp_deadline_past') }}</span>
                 @endif
             </p>
         @endif
@@ -125,22 +125,22 @@
             @csrf
             <div class="dp-field grid sm:grid-cols-2 gap-3">
                 <div>
-                    <label for="rsvp_name" class="dp-label">Imię i nazwisko*</label>
+                    <label for="rsvp_name" class="dp-label">{{ __('messages.wedding.rsvp_name') }}*</label>
                     <input id="rsvp_name" type="text" name="guest_name" required maxlength="120" class="dp-input">
                 </div>
                 <div>
-                    <label for="rsvp_email" class="dp-label">E-mail (opcjonalnie)</label>
+                    <label for="rsvp_email" class="dp-label">{{ __('messages.wedding.rsvp_email') }}</label>
                     <input id="rsvp_email" type="email" name="guest_email" maxlength="255" class="dp-input">
                 </div>
             </div>
 
             <fieldset class="dp-field border-0 p-0">
-                <legend class="dp-label">Czy będziesz?</legend>
+                <legend class="dp-label">{{ __('messages.wedding.rsvp_attending_legend') }}</legend>
                 <label class="inline-flex items-center gap-2 text-sm mr-4">
-                    <input type="radio" name="attending" value="1" x-model="attending" checked> Tak, będę
+                    <input type="radio" name="attending" value="1" x-model="attending" checked> {{ __('messages.wedding.rsvp_attending_yes') }}
                 </label>
                 <label class="inline-flex items-center gap-2 text-sm">
-                    <input type="radio" name="attending" value="0" x-model="attending"> Nie dam rady
+                    <input type="radio" name="attending" value="0" x-model="attending"> {{ __('messages.wedding.rsvp_attending_no') }}
                 </label>
             </fieldset>
 
@@ -148,35 +148,35 @@
                 <div>
                     <div class="dp-field flex items-center gap-2">
                         <input id="rsvp_plusone" type="checkbox" name="plus_one" value="1" x-model="plusOne">
-                        <label for="rsvp_plusone" class="m-0 text-sm">Przyjdę z osobą towarzyszącą</label>
+                        <label for="rsvp_plusone" class="m-0 text-sm">{{ __('messages.wedding.rsvp_plus_one') }}</label>
                     </div>
                     <template x-if="plusOne">
                         <div class="dp-field">
-                            <label for="rsvp_po_name" class="dp-label">Imię osoby towarzyszącej</label>
+                            <label for="rsvp_po_name" class="dp-label">{{ __('messages.wedding.rsvp_plus_one_name') }}</label>
                             <input id="rsvp_po_name" type="text" name="plus_one_name" maxlength="120" class="dp-input">
                         </div>
                     </template>
                     @if ($tenant->kind === 'wedding_premium')
                         <div class="dp-field">
-                            <label for="rsvp_dietary" class="dp-label">Preferencje dietetyczne / alergie</label>
+                            <label for="rsvp_dietary" class="dp-label">{{ __('messages.wedding.rsvp_dietary') }}</label>
                             <input id="rsvp_dietary" type="text" name="dietary" maxlength="200"
-                                   placeholder="np. wegetariańska, bez orzechów" class="dp-input">
+                                   placeholder="{{ __('messages.wedding.rsvp_dietary_placeholder') }}" class="dp-input">
                         </div>
                         <div class="dp-field flex items-center gap-2">
                             <input id="rsvp_transport" type="checkbox" name="transport_needed" value="1">
-                            <label for="rsvp_transport" class="m-0 text-sm">Potrzebuję transportu</label>
+                            <label for="rsvp_transport" class="m-0 text-sm">{{ __('messages.wedding.rsvp_transport') }}</label>
                         </div>
                     @endif
                 </div>
             </template>
 
             <div class="dp-field">
-                <label for="rsvp_message" class="dp-label">Wiadomość dla pary (opcjonalnie)</label>
+                <label for="rsvp_message" class="dp-label">{{ __('messages.wedding.rsvp_message') }}</label>
                 <textarea id="rsvp_message" name="message" rows="3" maxlength="1000" class="dp-input"></textarea>
             </div>
 
             <div class="flex justify-end mt-4">
-                <button type="submit" class="dp-btn-primary px-6">Wyślij RSVP</button>
+                <button type="submit" class="dp-btn-primary px-6">{{ __('messages.wedding.rsvp_submit') }}</button>
             </div>
         </form>
     </section>
@@ -184,10 +184,8 @@
     {{-- GIFTS at the bottom of the wedding page --}}
     @if (! $gifts->isEmpty())
         <section>
-            <h2 class="text-center font-display text-2xl font-bold mb-2">Lista prezentów</h2>
-            <p class="text-center text-dp-muted text-sm mb-6">
-                Jeśli chcesz nam coś podarować, kliknij i zarezerwuj — bliscy nie widzą siebie nawzajem.
-            </p>
+            <h2 class="text-center font-display text-2xl font-bold mb-2">{{ __('messages.wedding.gifts_h2') }}</h2>
+            <p class="text-center text-dp-muted text-sm mb-6">{{ __('messages.wedding.gifts_lead') }}</p>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" x-data="{open:null}">
                 @foreach ($gifts as $gift)

@@ -1,10 +1,11 @@
 @extends('layouts.public')
 
-@section('title', 'Coś poszło nie tak')
+@section('title', __('messages.reservations_status.failed_h1'))
 
 @section('content')
-    <div class="card">
-        <h1>Coś poszło nie tak</h1>
-        <p>{{ $message }}</p>
+    <div class="max-w-md mx-auto mt-20 mb-10 px-4 text-center">
+        <div class="text-7xl mb-4">😕</div>
+        <h1 class="font-display text-3xl sm:text-4xl font-bold m-0">{{ __('messages.reservations_status.failed_h1') }}</h1>
+        <p class="text-dp-muted mt-3">{{ $message }}</p>
     </div>
 @endsection

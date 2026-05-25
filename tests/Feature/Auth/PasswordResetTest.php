@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Password;
 it('shows the forgot-password form', function (): void {
     $this->get('/password/forgot')
         ->assertOk()
-        ->assertSee('Resetowanie hasła');
+        ->assertSee('Reset hasła');
 });
 
 it('sends a Polish-branded reset link to a known email', function (): void {

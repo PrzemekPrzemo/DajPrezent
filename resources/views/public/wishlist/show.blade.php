@@ -1,9 +1,9 @@
 @extends('layouts.public')
 
 @section('title', $tenant->name)
-@section('meta_description', 'Lista prezentów: '.$tenant->name.' — zarezerwuj anonimowo na DajPrezent.pl.')
-@section('og_title', $tenant->name.' — lista prezentów')
-@section('og_description', 'Zarezerwuj prezent dla '.$tenant->name.'. Bez konta, anonimowo.')
+@section('meta_description', __('messages.wishlist_seo.description', ['name' => $tenant->name]))
+@section('og_title', $tenant->name.' — '.__('messages.wishlist_seo.og_title_suffix'))
+@section('og_description', __('messages.wishlist_seo.og_description', ['name' => $tenant->name]))
 @php
     $coverGift = $gifts->whereNotNull('image_path')->first();
 @endphp
@@ -35,7 +35,7 @@
 
     <header class="bg-dp-gradient text-white rounded-dp-lg p-8 sm:p-10 text-center mb-8 shadow-dp-card">
         <h1 class="font-display text-3xl sm:text-4xl font-bold m-0 text-white">{{ $tenant->name }}</h1>
-        <p class="mt-2 text-white/85 m-0">Lista wymarzonych prezentów</p>
+        <p class="mt-2 text-white/85 m-0">{{ __('messages.wishlist.subtitle') }}</p>
     </header>
 
     @if (session('status'))
@@ -53,7 +53,7 @@
     @endif
 
     @if ($gifts->isEmpty())
-        <p class="text-center text-dp-muted">Lista jest jeszcze pusta. Wróć tu wkrótce.</p>
+        <p class="text-center text-dp-muted">{{ __('messages.wishlist.list_empty') }}</p>
     @endif
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" x-data="{open:null}">
@@ -84,34 +84,34 @@
 
                 @if ($received)
                     {{-- Stan: OTRZYMANY (owner oznaczył) --}}
-                    <span class="dp-chip dp-chip-received">otrzymany</span>
+                    <span class="dp-chip dp-chip-received">{{ __('messages.wishlist.received') }}</span>
                 @elseif ($reserved)
                     {{-- Stan: ZAREZERWOWANY przez kogoś (lub przez TEGO gościa) --}}
                     <template x-if="myToken">
                         <div>
                             <span class="dp-chip" style="background:#ecfdf5;color:#065f46;">
-                                ✓ Twoja rezerwacja
+                                ✓ {{ __('messages.wishlist.your_reservation') }}
                             </span>
                             <a href="/r/cancel/{{ '' }}" x-bind:href="'/r/cancel/' + encodeURIComponent(myToken)"
-                               @click="if (! confirm('Cofnąć Twoją rezerwację tego prezentu?')) $event.preventDefault();
+                               @click="if (! confirm({{ Js::from(__('messages.wishlist.cancel_confirm')) }})) $event.preventDefault();
                                        localStorage.removeItem('dp.reserved.{{ $gift->id }}')"
                                class="dp-btn-secondary text-xs px-3 py-1.5 mt-3 inline-flex">
-                                Cofnij rezerwację
+                                {{ __('messages.wishlist.cancel_reservation') }}
                             </a>
                         </div>
                     </template>
                     <template x-if="! myToken">
                         <span class="inline-flex items-center gap-1.5 dp-chip"
                               style="background:#fef3c7;color:#92400e;"
-                              aria-label="Prezent zarezerwowany">
-                            Zarezerwowane <span aria-hidden="true">💗</span>
+                              aria-label="{{ __('messages.wishlist.reserved') }}">
+                            {{ __('messages.wishlist.reserved_label') }} <span aria-hidden="true">💗</span>
                         </span>
                     </template>
                 @else
                     {{-- Stan: WOLNY --}}
                     <button type="button" x-on:click="open = {{ $gift->id }}"
                             class="dp-btn-primary w-full">
-                        Zarezerwuj prezent
+                        {{ __('messages.wishlist.reserve_button') }}
                     </button>
 
                     {{-- Modal rezerwacji --}}
@@ -120,36 +120,34 @@
                          x-on:click.self="open = null"
                          role="dialog" aria-modal="true">
                         <div class="dp-card max-w-md w-full p-6">
-                            <h3 class="font-display font-semibold text-lg m-0 mb-2">Rezerwacja: {{ $gift->title }}</h3>
-                            <p class="text-dp-muted text-sm mb-4">
-                                Podaj swój e-mail — wyślemy link aktywacyjny. Twoja tożsamość pozostanie nieznana właścicielowi listy.
-                            </p>
+                            <h3 class="font-display font-semibold text-lg m-0 mb-2">{{ __('messages.reservation.h1') }}: {{ $gift->title }}</h3>
+                            <p class="text-dp-muted text-sm mb-4">{{ __('messages.reservation.email_hint') }}</p>
                             <form method="POST" action="{{ route('public.reservations.store', ['slug' => $tenant->slug, 'gift' => $gift->id]) }}">
                                 @csrf
                                 <div class="dp-field">
-                                    <label class="dp-label">E-mail<span aria-hidden="true">*</span>
+                                    <label class="dp-label">{{ __('messages.reservation.guest_email') }}<span aria-hidden="true">*</span>
                                         <input type="email" name="email" required class="dp-input mt-1">
                                     </label>
                                 </div>
                                 <div class="dp-field">
-                                    <label class="dp-label">Imię <span class="font-normal text-dp-muted">(opcjonalnie, zobaczy właściciel po Twojej rezerwacji)</span>
+                                    <label class="dp-label">{{ __('messages.reservation.guest_name') }}
                                         <input type="text" name="name" maxlength="80" class="dp-input mt-1">
                                     </label>
                                 </div>
                                 <fieldset class="dp-field border-0 p-0 m-0">
-                                    <legend class="dp-label">Co chcesz zrobić?</legend>
+                                    <legend class="dp-label">{{ __('messages.reservation.intent_legend') }}</legend>
                                     <label class="flex items-center gap-2 text-sm mt-1">
                                         <input type="radio" name="intent" value="reserve" checked>
-                                        Rezerwuję prezent
+                                        {{ __('messages.reservation.intent_reserve') }}
                                     </label>
                                     <label class="flex items-center gap-2 text-sm">
                                         <input type="radio" name="intent" value="give">
-                                        Daję prezent (kupuję już teraz)
+                                        {{ __('messages.reservation.intent_give') }}
                                     </label>
                                 </fieldset>
                                 <div class="flex gap-2 justify-end mt-4">
-                                    <button type="button" x-on:click="open = null" class="dp-btn-secondary">Anuluj</button>
-                                    <button type="submit" class="dp-btn-primary">Wyślij link</button>
+                                    <button type="button" x-on:click="open = null" class="dp-btn-secondary">{{ __('messages.common.cancel') }}</button>
+                                    <button type="submit" class="dp-btn-primary">{{ __('messages.reservation.submit_send_link') }}</button>
                                 </div>
                             </form>
                         </div>
