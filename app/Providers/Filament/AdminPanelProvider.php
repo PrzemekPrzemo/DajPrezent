@@ -29,6 +29,10 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->id('admin')
             ->path('admin')
+            // Force light theme — Filament v3 defaults to following the
+            // OS preference, which can leave admins with dark text on
+            // a dark background while CSS is still loading.
+            ->darkMode(false)
             ->brandName('DajPrezent.pl • Master Admin')
             ->login()
             ->colors([

@@ -30,14 +30,22 @@ final class SecurityHeaders
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), interest-cohort=()');
 
-        // CSP — permissive enough for current inline Blade styles +
-        // Alpine.js CDN. Stricter policy when assets move to Vite.
+        // CSP — Alpine.js (used by both Filament admin and the public
+        // landing) compiles attribute expressions via `new Function`,
+        // which requires `'unsafe-eval'` in script-src. Without it
+        // every interactive widget (modals, dropdowns, password reveal,
+        // count-up) silently breaks with a console CSP violation.
+        //
+        // Filament v3 also fetches Inter from fonts.bunny.net (privacy-
+        // friendly Google Fonts mirror) — whitelist style-src + font-src
+        // for that origin only.
         $response->headers->set('Content-Security-Policy', implode('; ', [
             "default-src 'self'",
             "img-src 'self' data: https:",
-            "style-src 'self' 'unsafe-inline'",
-            "script-src 'self' 'unsafe-inline'",
-            "font-src 'self' data:",
+            "style-src 'self' 'unsafe-inline' https://fonts.bunny.net",
+            "style-src-elem 'self' 'unsafe-inline' https://fonts.bunny.net",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+            "font-src 'self' data: https://fonts.bunny.net",
             "connect-src 'self'",
             "frame-ancestors 'self'",
             "base-uri 'self'",
