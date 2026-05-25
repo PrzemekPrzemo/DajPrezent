@@ -205,10 +205,12 @@ class TenantResource extends Resource
                                 'package_id' => $data['package_id'] ?? null,
                                 'exception' => $e::class,
                                 'message' => $e->getMessage(),
+                                'file' => $e->getFile().':'.$e->getLine(),
+                                'trace_top' => collect(explode("\n", $e->getTraceAsString()))->take(8)->implode("\n"),
                             ]);
                             Notification::make()
                                 ->title('Nie udało się przyznać pakietu')
-                                ->body($e->getMessage())
+                                ->body($e->getMessage().' ['.$e::class.']')
                                 ->danger()
                                 ->persistent()
                                 ->send();
