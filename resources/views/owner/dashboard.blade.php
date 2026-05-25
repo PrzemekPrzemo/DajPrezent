@@ -1,20 +1,20 @@
 @extends('layouts.panel')
 
-@section('title', 'Moje listy')
+@section('title', __('messages.owner.dashboard_h1'))
 
 @section('content')
     <header class="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <h1 class="font-display text-2xl sm:text-3xl font-bold m-0">Moje listy prezentów</h1>
+        <h1 class="font-display text-2xl sm:text-3xl font-bold m-0">{{ __('messages.owner.dashboard_h1') }}</h1>
         <div class="flex flex-wrap gap-2">
             @if ($siblingSlots !== null && $siblingSlots['free'] > 0)
                 <button type="button" @click="$dispatch('open-add-list')"
                         class="dp-btn-primary">
-                    + Dodaj kolejną listę
-                    <span class="ml-1 text-xs opacity-90">({{ $siblingSlots['free'] }}/{{ $siblingSlots['limit'] }} wolne)</span>
+                    {{ __('messages.owner.add_another_list') }}
+                    <span class="ml-1 text-xs opacity-90">{{ __('messages.owner.slots_free', ['free' => $siblingSlots['free'], 'limit' => $siblingSlots['limit']]) }}</span>
                 </button>
             @endif
-            <a href="{{ route('owner.invoices.index') }}" class="dp-btn-secondary">Faktury</a>
-            <a href="{{ route('owner.bookmarklet.show') }}" class="dp-btn-secondary">⚡ Bookmarklet</a>
+            <a href="{{ route('owner.invoices.index') }}" class="dp-btn-secondary">{{ __('messages.owner.invoices') }}</a>
+            <a href="{{ route('owner.bookmarklet.show') }}" class="dp-btn-secondary">{{ __('messages.owner.bookmarklet') }}</a>
         </div>
     </header>
 
@@ -24,28 +24,28 @@
              x-show="open" x-cloak x-transition
              class="dp-card mb-4 ring-2 ring-dp-purple-200">
             <div class="flex items-center justify-between mb-3">
-                <h2 class="font-display font-semibold text-lg m-0">Dodaj kolejną listę w pakiecie {{ $siblingSlots['package'] }}</h2>
-                <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-700" aria-label="Zamknij">✕</button>
+                <h2 class="font-display font-semibold text-lg m-0">{{ __('messages.owner.add_in_package', ['pkg' => $siblingSlots['package']]) }}</h2>
+                <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-700" aria-label="{{ __('messages.common.close') }}">✕</button>
             </div>
             <form method="POST" action="{{ route('owner.lists.store') }}" class="grid sm:grid-cols-[1fr,1fr,auto] gap-3 items-end">
                 @csrf
                 <div class="dp-field">
-                    <label class="dp-label" for="add-list-name">Nazwa listy</label>
+                    <label class="dp-label" for="add-list-name">{{ __('messages.owner.add_list_name') }}</label>
                     <input id="add-list-name" name="name" x-ref="nameField" required maxlength="80"
-                           class="dp-input" placeholder="np. Lista urodzinowa Ani">
+                           class="dp-input" placeholder="{{ __('messages.owner.add_list_name_placeholder') }}">
                 </div>
                 <div class="dp-field">
-                    <label class="dp-label" for="add-list-slug">Adres listy</label>
+                    <label class="dp-label" for="add-list-slug">{{ __('messages.owner.add_list_address') }}</label>
                     <div class="flex items-center gap-1 text-sm">
                         <span class="text-dp-muted">dajprezent.pl/</span>
                         <input id="add-list-slug" name="slug" required maxlength="40" pattern="[a-z0-9][a-z0-9\-]{0,38}[a-z0-9]"
                                class="dp-input" placeholder="ania-urodziny">
                     </div>
                 </div>
-                <button type="submit" class="dp-btn-primary h-fit">Dodaj listę</button>
+                <button type="submit" class="dp-btn-primary h-fit">{{ __('messages.owner.add_list_submit') }}</button>
             </form>
             <p class="text-xs text-dp-muted mt-2">
-                Nowa lista dziedziczy ważność i limit prezentów z pakietu {{ $siblingSlots['package'] }}.
+                {{ __('messages.owner.add_list_inherits', ['pkg' => $siblingSlots['package']]) }}
             </p>
         </div>
     @endif
@@ -57,11 +57,9 @@
     @if ($tenants->isEmpty())
         <div class="dp-card text-center py-10">
             <div class="w-20 h-20 mx-auto mb-4 rounded-dp-lg bg-dp-gradient flex items-center justify-center text-white text-3xl">🎁</div>
-            <h3 class="font-display font-semibold text-lg mb-1">Stwórz swoją pierwszą listę marzeń</h3>
-            <p class="text-sm text-dp-muted max-w-md mx-auto mb-5">
-                Wybierz pakiet i dziel się prezentami z bliskimi w 3 minuty.
-            </p>
-            <a href="{{ route('public.pricing') }}" class="dp-btn-primary px-6 py-3">Wybierz pakiet →</a>
+            <h3 class="font-display font-semibold text-lg mb-1">{{ __('messages.owner.empty_h1') }}</h3>
+            <p class="text-sm text-dp-muted max-w-md mx-auto mb-5">{{ __('messages.owner.empty_lead') }}</p>
+            <a href="{{ route('public.pricing') }}" class="dp-btn-primary px-6 py-3">{{ __('messages.owner.empty_cta') }}</a>
         </div>
     @else
         @foreach ($tenants as $tenant)
@@ -103,20 +101,20 @@
                             @if ($tenant->expires_at)
                                 ·
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold {{ $expiryClass }}">
-                                    @if ($daysLeft === null)         bez terminu
-                                    @elseif ($daysLeft < 0)          wygasła {{ abs($daysLeft) }} dni temu
-                                    @elseif ($daysLeft === 0)        wygasa dziś
-                                    @elseif ($daysLeft < 14)         wygasa za {{ $daysLeft }} dni
-                                    @else                            ważna do {{ $tenant->expires_at->translatedFormat('j F Y') }}
+                                    @if ($daysLeft === null)         {{ __('messages.owner.expiry_no_term') }}
+                                    @elseif ($daysLeft < 0)          {{ __('messages.owner.expiry_past', ['n' => abs($daysLeft)]) }}
+                                    @elseif ($daysLeft === 0)        {{ __('messages.owner.expiry_today') }}
+                                    @elseif ($daysLeft < 14)         {{ __('messages.owner.expiry_soon', ['n' => $daysLeft]) }}
+                                    @else                            {{ __('messages.owner.expiry_valid', ['date' => $tenant->expires_at->translatedFormat('j F Y')]) }}
                                     @endif
                                 </span>
                             @endif
                         </div>
 
                         <div class="mt-3 flex flex-wrap gap-1.5">
-                            <span class="dp-chip dp-chip-available">{{ $total }} prezentów</span>
-                            <span class="dp-chip dp-chip-reserved">{{ $tenant->gifts_reserved }} zarezerwowanych</span>
-                            <span class="dp-chip dp-chip-received">{{ $tenant->gifts_received }} otrzymanych</span>
+                            <span class="dp-chip dp-chip-available">{{ __('messages.owner.gifts_count', ['n' => $total]) }}</span>
+                            <span class="dp-chip dp-chip-reserved">{{ __('messages.owner.gifts_reserved', ['n' => $tenant->gifts_reserved]) }}</span>
+                            <span class="dp-chip dp-chip-received">{{ __('messages.owner.gifts_received', ['n' => $tenant->gifts_received]) }}</span>
                         </div>
 
                         @if ($total > 0)
@@ -124,19 +122,19 @@
                                 <div class="bg-slate-100 rounded-full overflow-hidden h-2">
                                     <div class="h-full bg-dp-gradient transition-all duration-300" style="width: {{ $progress }}%"></div>
                                 </div>
-                                <div class="text-xs text-dp-muted mt-1">{{ $progress }}% prezentów ma odbiorcę</div>
+                                <div class="text-xs text-dp-muted mt-1">{{ __('messages.owner.progress_label', ['n' => $progress]) }}</div>
                             </div>
                         @endif
                     </div>
 
                     <div class="flex flex-col gap-2">
-                        <a href="{{ route('owner.gifts.index', $tenant) }}" class="dp-btn-primary text-center">Zarządzaj prezentami</a>
+                        <a href="{{ route('owner.gifts.index', $tenant) }}" class="dp-btn-primary text-center">{{ __('messages.owner.manage_gifts') }}</a>
                         @if (in_array($tenant->kind, ['wedding_basic', 'wedding_premium'], true))
-                            <a href="{{ route('owner.wedding.edit', $tenant) }}" class="dp-btn-secondary text-center">💍 Strona ślubna</a>
+                            <a href="{{ route('owner.wedding.edit', $tenant) }}" class="dp-btn-secondary text-center">{{ __('messages.owner.manage_wedding') }}</a>
                         @endif
                         <button type="button" @click="$dispatch('open-share-' + {{ $tenant->id }})"
-                                class="dp-btn-secondary">Udostępnij listę</button>
-                        <a href="{{ route('owner.tenant.settings.edit', $tenant) }}" class="dp-btn-ghost text-center">Ustawienia</a>
+                                class="dp-btn-secondary">{{ __('messages.owner.share_list') }}</button>
+                        <a href="{{ route('owner.tenant.settings.edit', $tenant) }}" class="dp-btn-ghost text-center">{{ __('messages.owner.settings') }}</a>
                     </div>
                 </div>
 
@@ -146,27 +144,27 @@
                      x-show="open" x-cloak x-transition
                      class="mt-4 pt-4 border-t border-slate-100 grid sm:grid-cols-[180px,1fr] gap-4 items-start">
                     <img src="{{ route('owner.qr', $tenant) }}"
-                         alt="QR do listy {{ $tenant->name }}"
+                         alt="QR — {{ $tenant->name }}"
                          class="w-44 h-44 rounded-dp border border-slate-100 bg-white p-2">
                     <div class="space-y-3">
-                        <p class="text-sm text-dp-muted m-0">Podziel się listą z bliskimi — wybierz kanał:</p>
+                        <p class="text-sm text-dp-muted m-0">{{ __('messages.share.lead') }}</p>
                         <div class="flex flex-wrap items-center gap-2">
                             <button type="button"
                                     @click="navigator.clipboard.writeText({{ Js::from($publicUrl) }}).then(() => { copied = true; setTimeout(() => copied = false, 2000); })"
                                     class="dp-btn-secondary">
-                                <span x-show="! copied">📋 Kopiuj link</span>
-                                <span x-show="copied" x-cloak class="text-emerald-700">✓ Skopiowano!</span>
+                                <span x-show="! copied">{{ __('messages.share.copy_link') }}</span>
+                                <span x-show="copied" x-cloak class="text-emerald-700">{{ __('messages.share.copied') }}</span>
                             </button>
-                            <a href="https://wa.me/?text={{ rawurlencode('Cześć! Oto moja lista prezentów: '.$publicUrl) }}"
-                               target="_blank" rel="noopener" class="dp-btn-secondary">💬 WhatsApp</a>
+                            <a href="https://wa.me/?text={{ rawurlencode(__('messages.share.share_text').$publicUrl) }}"
+                               target="_blank" rel="noopener" class="dp-btn-secondary">{{ __('messages.share.whatsapp') }}</a>
                             <a href="https://www.facebook.com/sharer/sharer.php?u={{ rawurlencode($publicUrl) }}"
-                               target="_blank" rel="noopener" class="dp-btn-secondary">📨 Messenger</a>
-                            <a href="mailto:?subject={{ rawurlencode('Moja lista prezentów') }}&body={{ rawurlencode('Cześć! Oto moja lista prezentów: '.$publicUrl) }}"
-                               class="dp-btn-secondary">✉️ E-mail</a>
+                               target="_blank" rel="noopener" class="dp-btn-secondary">{{ __('messages.share.messenger') }}</a>
+                            <a href="mailto:?subject={{ rawurlencode(__('messages.share.share_subject')) }}&body={{ rawurlencode(__('messages.share.share_text').$publicUrl) }}"
+                               class="dp-btn-secondary">{{ __('messages.share.email') }}</a>
                             <a href="{{ route('owner.qr', $tenant) }}" download="dajprezent-{{ $tenant->slug }}-qr.svg"
-                               class="dp-btn-ghost">⬇ Pobierz QR (SVG)</a>
+                               class="dp-btn-ghost">{{ __('messages.share.download_qr') }}</a>
                         </div>
-                        <p class="text-xs text-dp-muted m-0">QR możesz wydrukować i wrzucić do zaproszenia albo na lodówkę.</p>
+                        <p class="text-xs text-dp-muted m-0">{{ __('messages.share.qr_hint') }}</p>
                     </div>
                 </div>
 
@@ -184,27 +182,27 @@
                                             <span class="w-2.5 h-2.5 rounded-full" :class="step === i ? 'bg-dp-purple-600' : 'bg-slate-200'"></span>
                                         </template>
                                     </div>
-                                    <button type="button" @click="close()" class="text-slate-400 hover:text-slate-600" aria-label="Zamknij">✕</button>
+                                    <button type="button" @click="close()" class="text-slate-400 hover:text-slate-600" aria-label="{{ __('messages.common.close') }}">✕</button>
                                 </div>
                                 <div x-show="step === 1">
-                                    <h3 class="font-display font-semibold text-lg mb-2">Witaj w {{ $tenant->name }}!</h3>
-                                    <p class="text-sm text-dp-muted">Twoja lista jest aktywna. Pokażemy Ci 3 kroki, żeby zacząć w 60 sekund.</p>
+                                    <h3 class="font-display font-semibold text-lg mb-2">{{ __('messages.tour.step1_h', ['name' => $tenant->name]) }}</h3>
+                                    <p class="text-sm text-dp-muted">{{ __('messages.tour.step1_body') }}</p>
                                 </div>
                                 <div x-show="step === 2" x-cloak>
-                                    <h3 class="font-display font-semibold text-lg mb-2">1. Dodaj prezenty</h3>
-                                    <p class="text-sm text-dp-muted">Wklej link ze sklepu — tytuł, cena i zdjęcie pobiorą się automatycznie (allegro, empik, x-kom, zalando, ikea i więcej).</p>
+                                    <h3 class="font-display font-semibold text-lg mb-2">{{ __('messages.tour.step2_h') }}</h3>
+                                    <p class="text-sm text-dp-muted">{{ __('messages.tour.step2_body') }}</p>
                                 </div>
                                 <div x-show="step === 3" x-cloak>
-                                    <h3 class="font-display font-semibold text-lg mb-2">2. Udostępnij</h3>
-                                    <p class="text-sm text-dp-muted">Kliknij „Udostępnij listę" — wyślij QR albo link Messengerem, WhatsAppem lub mailem. Bliscy nie muszą zakładać konta.</p>
-                                    <p class="text-sm text-dp-muted mt-2">3. Świętuj — każdy prezent trafia tylko raz. <strong>Nigdy nie zobaczysz kto zarezerwował</strong>, dowiesz się dopiero przy rozpakowywaniu.</p>
+                                    <h3 class="font-display font-semibold text-lg mb-2">{{ __('messages.tour.step3_h') }}</h3>
+                                    <p class="text-sm text-dp-muted">{{ __('messages.tour.step3_body') }}</p>
+                                    <p class="text-sm text-dp-muted mt-2">{!! __('messages.tour.step3_promise') !!}</p>
                                 </div>
                                 <div class="flex justify-between mt-5">
-                                    <button type="button" @click="close()" class="dp-btn-ghost">Pomiń</button>
+                                    <button type="button" @click="close()" class="dp-btn-ghost">{{ __('messages.tour.skip') }}</button>
                                     <button type="button"
                                             @click="step < 3 ? step++ : close()"
                                             class="dp-btn-primary px-5">
-                                        <span x-text="step < 3 ? 'Dalej →' : 'Zaczynam! 🎁'"></span>
+                                        <span x-text="step < 3 ? {{ Js::from(__('messages.tour.next')) }} : {{ Js::from(__('messages.tour.start')) }}"></span>
                                     </button>
                                 </div>
                             </div>

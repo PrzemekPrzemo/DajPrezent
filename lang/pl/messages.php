@@ -269,9 +269,12 @@ return [
     ],
 
     'help' => [
-        'h1' => 'Centrum pomocy',
-        'lead' => 'Najczęściej zadawane pytania, jak działa rezerwacja anonimowa, jak ustawić hasło. Coś jeszcze? Napisz na :email.',
+        'h1' => 'Baza wiedzy',
+        'meta_description' => 'Odpowiedzi na najczęstsze pytania o listy prezentów i strony ślubne na DajPrezent.pl.',
+        'lead' => 'Krótkie odpowiedzi na typowe pytania. Nie znajdujesz swojego? Napisz na :email — odpowiemy w 1 dzień roboczy.',
         'back_to_index' => '← Wszystkie artykuły',
+        'read_article' => 'Czytaj artykuł',
+        'didnt_find' => 'Nie znalazłeś odpowiedzi? Napisz do nas na :email (odpowiedź w 1 dniu roboczym).',
     ],
 
     'contact' => [
@@ -296,9 +299,15 @@ return [
 
     'emails' => [
         'reservation_verify_subject' => 'Potwierdź rezerwację prezentu',
-        'reservation_verify_lead' => 'Kliknij w link aby potwierdzić rezerwację — link wygasa za 60 minut.',
-        'reservation_verify_cta' => 'Potwierdź rezerwację',
+        'reservation_verify_h1' => 'Potwierdź swoją rezerwację',
+        'reservation_verify_greeting' => 'Cześć:name!',
+        'reservation_verify_lead' => 'Otrzymaliśmy zgłoszenie rezerwacji prezentu z Twojego adresu e-mail. Aby ją aktywować, kliknij poniższy przycisk w ciągu **:minutes minut**.',
+        'reservation_verify_cta' => 'Potwierdzam rezerwację',
+        'reservation_verify_not_you' => 'Jeśli to nie Ty, **zignoruj tę wiadomość** — rezerwacja wygaśnie automatycznie i nikt nie zobaczy Twojego e-maila.',
+        'reservation_verify_cancel' => 'Jeśli zmienisz zdanie po potwierdzeniu, możesz w każdej chwili [anulować rezerwację](:url).',
+        'reservation_verify_signoff' => 'Dzięki,',
         'reservation_verify_outro' => 'Jeśli to nie Ty rezerwowałeś prezent, zignoruj tego maila.',
+        'signature' => 'Zespół DajPrezent.pl',
     ],
 
     'owner' => [
@@ -307,9 +316,12 @@ return [
         'bookmarklet' => '⚡ Bookmarklet',
         'add_another_list' => '+ Dodaj kolejną listę',
         'slots_free' => '(:free/:limit wolne)',
+        'add_in_package' => 'Dodaj kolejną listę w pakiecie :pkg',
         'add_list_name' => 'Nazwa listy',
+        'add_list_name_placeholder' => 'np. Lista urodzinowa Ani',
         'add_list_address' => 'Adres listy',
         'add_list_submit' => 'Dodaj listę',
+        'add_list_inherits' => 'Nowa lista dziedziczy ważność i limit prezentów z pakietu :pkg.',
         'manage_gifts' => 'Zarządzaj prezentami',
         'manage_wedding' => '💍 Strona ślubna',
         'share_list' => 'Udostępnij listę',
@@ -328,12 +340,26 @@ return [
         'expiry_valid' => 'ważna do :date',
     ],
 
+    'tour' => [
+        'step1_h' => 'Witaj w :name!',
+        'step1_body' => 'Twoja lista jest aktywna. Pokażemy Ci 3 kroki, żeby zacząć w 60 sekund.',
+        'step2_h' => '1. Dodaj prezenty',
+        'step2_body' => 'Wklej link ze sklepu — tytuł, cena i zdjęcie pobiorą się automatycznie (Allegro, Empik, x-kom, Zalando, IKEA i więcej).',
+        'step3_h' => '2. Udostępnij',
+        'step3_body' => 'Kliknij „Udostępnij listę" — wyślij QR albo link Messengerem, WhatsAppem lub mailem. Bliscy nie muszą zakładać konta.',
+        'step3_promise' => '3. Świętuj — każdy prezent trafia tylko raz. <strong>Nigdy nie zobaczysz kto zarezerwował</strong>, dowiesz się dopiero przy rozpakowywaniu.',
+        'skip' => 'Pomiń',
+        'next' => 'Dalej →',
+        'start' => 'Zaczynam! 🎁',
+    ],
+
     'gifts' => [
         'h1' => 'Prezenty (:n)',
         'add_gift' => 'Dodaj prezent',
         'import_csv' => '⬆ Import CSV',
         'export_csv' => '⬇ Eksport CSV',
         'back_to_lists' => '← Listy',
+        'public_address' => 'Publiczny adres',
         'empty_h1' => 'Stwórz swoją pierwszą listę marzeń',
         'empty_lead' => 'Dodaj prezenty wklejając linki ze sklepów — tytuł, cena i zdjęcie pobiorą się automatycznie.',
         'empty_cta' => '+ Dodaj pierwszy prezent',
@@ -342,7 +368,10 @@ return [
         'col_priority' => 'Priorytet',
         'col_status' => 'Status',
         'mark_received' => 'Oznacz otrzymany',
+        'mark_received_short' => 'Otrzymany',
         'delete_confirm' => 'Usunąć prezent „:title"?',
+        'delete_confirm_named' => 'Usunąć prezent „:title"?',
+        'drag_to_reorder' => 'Przeciągnij aby zmienić kolejność',
         'title' => 'Tytuł',
         'description' => 'Opis',
         'url' => 'Link do sklepu',

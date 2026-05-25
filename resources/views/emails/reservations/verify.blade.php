@@ -1,20 +1,18 @@
 <x-mail::message>
-# Potwierdź swoją rezerwację
+# {{ __('messages.emails.reservation_verify_h1') }}
 
-Cześć{{ $reservation->guest_name ? ', '.$reservation->guest_name : '' }}!
+{{ __('messages.emails.reservation_verify_greeting', ['name' => $reservation->guest_name ? ', '.$reservation->guest_name : '']) }}
 
-Otrzymaliśmy zgłoszenie rezerwacji prezentu z Twojego adresu e-mail.
-Aby ją aktywować, kliknij poniższy przycisk w ciągu **{{ $ttlMinutes }} minut**.
+{!! __('messages.emails.reservation_verify_lead', ['minutes' => $ttlMinutes]) !!}
 
 <x-mail::button :url="$verifyUrl">
-Potwierdzam rezerwację
+{{ __('messages.emails.reservation_verify_cta') }}
 </x-mail::button>
 
-Jeśli to nie Ty, **zignoruj tę wiadomość** — rezerwacja wygaśnie automatycznie i nikt nie zobaczy Twojego e-maila.
+{!! __('messages.emails.reservation_verify_not_you') !!}
 
-Jeśli zmienisz zdanie po potwierdzeniu, możesz w każdej chwili
-[anulować rezerwację]({{ $cancelUrl }}).
+{!! __('messages.emails.reservation_verify_cancel', ['url' => $cancelUrl]) !!}
 
-Dzięki,<br>
-Zespół DajPrezent.pl
+{{ __('messages.emails.reservation_verify_signoff') }}<br>
+{{ __('messages.emails.signature') }}
 </x-mail::message>

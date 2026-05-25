@@ -270,8 +270,11 @@ return [
 
     'help' => [
         'h1' => 'Help center',
-        'lead' => 'FAQ, how anonymous reservations work, how to set a password. Need more? Email :email.',
+        'meta_description' => 'Answers to common questions about gift lists and wedding pages on DajPrezent.pl.',
+        'lead' => 'Quick answers to typical questions. Can\'t find yours? Email :email — we reply within 1 business day.',
         'back_to_index' => '← All articles',
+        'read_article' => 'Read article',
+        'didnt_find' => 'Didn\'t find what you need? Email us at :email (response within 1 business day).',
     ],
 
     'contact' => [
@@ -296,9 +299,15 @@ return [
 
     'emails' => [
         'reservation_verify_subject' => 'Confirm your gift reservation',
-        'reservation_verify_lead' => 'Click the link to confirm your reservation — it expires in 60 minutes.',
+        'reservation_verify_h1' => 'Confirm your reservation',
+        'reservation_verify_greeting' => 'Hi:name!',
+        'reservation_verify_lead' => 'We received a reservation request from your email. To activate it, click the button below within **:minutes minutes**.',
         'reservation_verify_cta' => 'Confirm reservation',
+        'reservation_verify_not_you' => 'If it wasn\'t you, **just ignore this message** — the reservation expires automatically and nobody will see your email.',
+        'reservation_verify_cancel' => 'Changed your mind later? You can [cancel the reservation](:url) any time.',
+        'reservation_verify_signoff' => 'Thanks,',
         'reservation_verify_outro' => 'If it wasn\'t you, just ignore this email.',
+        'signature' => 'The DajPrezent.pl team',
     ],
 
     'owner' => [
@@ -307,9 +316,12 @@ return [
         'bookmarklet' => '⚡ Bookmarklet',
         'add_another_list' => '+ Add another list',
         'slots_free' => '(:free/:limit free)',
+        'add_in_package' => 'Add another list in your :pkg plan',
         'add_list_name' => 'List name',
+        'add_list_name_placeholder' => 'e.g. Ania\'s birthday list',
         'add_list_address' => 'List address',
         'add_list_submit' => 'Add list',
+        'add_list_inherits' => 'The new list inherits the validity and gift limit from your :pkg plan.',
         'manage_gifts' => 'Manage gifts',
         'manage_wedding' => '💍 Wedding page',
         'share_list' => 'Share list',
@@ -328,12 +340,26 @@ return [
         'expiry_valid' => 'valid until :date',
     ],
 
+    'tour' => [
+        'step1_h' => 'Welcome to :name!',
+        'step1_body' => 'Your list is live. We\'ll walk you through 3 steps to start in 60 seconds.',
+        'step2_h' => '1. Add gifts',
+        'step2_body' => 'Paste a shop link — title, price and image are pulled automatically (Allegro, Empik, Zalando, IKEA and more).',
+        'step3_h' => '2. Share',
+        'step3_body' => 'Click "Share list" — send a QR code or link via Messenger, WhatsApp or email. Guests don\'t need an account.',
+        'step3_promise' => '3. Celebrate — each gift gets bought only once. <strong>You never see who reserved</strong>, you find out when you unwrap.',
+        'skip' => 'Skip',
+        'next' => 'Next →',
+        'start' => 'Let\'s go! 🎁',
+    ],
+
     'gifts' => [
         'h1' => 'Gifts (:n)',
         'add_gift' => 'Add gift',
         'import_csv' => '⬆ Import CSV',
         'export_csv' => '⬇ Export CSV',
         'back_to_lists' => '← Lists',
+        'public_address' => 'Public address',
         'empty_h1' => 'Create your first dream list',
         'empty_lead' => 'Paste shop links — title, price and image are pulled automatically.',
         'empty_cta' => '+ Add your first gift',
@@ -342,7 +368,10 @@ return [
         'col_priority' => 'Priority',
         'col_status' => 'Status',
         'mark_received' => 'Mark received',
-        'delete_confirm' => 'Delete gift "—title"?',
+        'mark_received_short' => 'Received',
+        'delete_confirm' => 'Delete gift ":title"?',
+        'delete_confirm_named' => 'Delete gift ":title"?',
+        'drag_to_reorder' => 'Drag to reorder',
         'title' => 'Title',
         'description' => 'Description',
         'url' => 'Shop link',
