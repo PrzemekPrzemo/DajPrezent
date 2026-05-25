@@ -67,6 +67,13 @@
                           class="absolute right-2.5 top-2.5 inline-block w-4 h-4 border-2 border-dp-purple-300 border-t-dp-purple-600 rounded-full animate-spin"></span>
                 </div>
                 <p x-show="hint" x-cloak class="text-xs text-dp-muted mt-1" x-text="hint"></p>
+                <p x-show="blocked" x-cloak class="text-xs mt-2 px-3 py-2 rounded-dp bg-amber-50 text-amber-900 border border-amber-200 leading-relaxed">
+                    <strong>Allegro blokuje autodetekcję</strong> (Akamai bot protection).
+                    Najszybciej: użyj
+                    <a href="{{ route('owner.bookmarklet.show') }}" class="font-semibold underline">Bookmarkletu</a> —
+                    klikasz go na karcie Allegro, prezent ląduje na liście jednym kliknięciem.
+                    Albo wpisz tytuł / cenę ręcznie.
+                </p>
             </div>
 
             <div class="dp-field">
@@ -131,6 +138,7 @@
             busy: false,
             loading: false,
             hint: null,
+            blocked: false,
             previewUrl: opts.previewUrl,
             csrf: opts.csrf,
             form: { url: '', title: '', price_pln: '', priority: '2', description: '', image_url: null },
@@ -155,7 +163,7 @@
             async tryPreview() {
                 const url = this.form.url.trim();
                 if (! /^https?:\/\//i.test(url)) { return; }
-                this.loading = true; this.hint = null;
+                this.loading = true; this.hint = null; this.blocked = false;
                 try {
                     const res = await fetch(this.previewUrl, {
                         method: 'POST',
@@ -180,10 +188,15 @@
                         if (data.preview.image_url) this.form.image_url = data.preview.image_url;
                         this.hint = '✓ Pobrano dane z ' + (data.preview.source || 'sklepu') + ' — możesz edytować.';
                     } else if (data.fallback) {
-                        this.hint = 'Ten sklep nie obsługuje autopodglądu — wypełnij dane ręcznie.';
+                        // Server-side scraping blocked by Cloudflare/Akamai on
+                        // Allegro and most major shops nowadays. Bookmarklet is
+                        // the dependable path — flag it visibly.
+                        const isAllegro = /allegro\.pl/i.test(url);
+                        if (isAllegro) { this.blocked = true; }
+                        else { this.hint = 'Ten sklep nie obsługuje autopodglądu — wypełnij dane ręcznie albo użyj bookmarkletu.'; }
                     }
                 } catch (e) {
-                    this.hint = 'Nie udało się pobrać podglądu — wypełnij dane ręcznie.';
+                    this.hint = 'Nie udało się pobrać podglądu — wypełnij dane ręcznie albo użyj bookmarkletu.';
                 } finally {
                     this.loading = false;
                 }
