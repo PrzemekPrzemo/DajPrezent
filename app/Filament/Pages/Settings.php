@@ -9,6 +9,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
@@ -253,6 +254,12 @@ final class Settings extends Page implements HasForms
                             ->columnSpanFull()
                             ->visible(fn (callable $get): bool => $get('mail_driver') === 'smtp')
                             ->helperText('Token / hasło z panelu providera. Zostaw puste żeby nie zmieniać („'.self::MASK.'" = sekret zapisany).'),
+                        Toggle::make('mail_verify_peer')
+                            ->label('Weryfikuj certyfikat SSL serwera SMTP')
+                            ->default(true)
+                            ->columnSpanFull()
+                            ->visible(fn (callable $get): bool => $get('mail_driver') === 'smtp')
+                            ->helperText('Wyłącz tylko gdy SMTP provider używa cert wild-cardowego nie pasującego do hosta (np. LH.pl ma `*.lh.pl` zamiast `smtp.twojadomena.pl`). Wyłączenie obniża bezpieczeństwo — używaj świadomie.'),
                         TextInput::make('mail_from_address')
                             ->label('Adres From:')
                             ->email()
@@ -386,6 +393,7 @@ final class Settings extends Page implements HasForms
         $s->set('mail.encryption', $state['mail_encryption'] ?? 'tls');
         $s->set('mail.username', $state['mail_username'] ?? '');
         $this->saveSecret($s, 'mail.password', $state['mail_password'] ?? null);
+        $s->set('mail.verify_peer', ! empty($state['mail_verify_peer']) ? '1' : '0');
         $s->set('mail.from_address', $state['mail_from_address']);
         $s->set('mail.from_name', $state['mail_from_name']);
 
@@ -430,6 +438,7 @@ final class Settings extends Page implements HasForms
             'mail_encryption' => $s->get('mail.encryption', 'tls'),
             'mail_username' => $s->get('mail.username', ''),
             'mail_password' => $this->maskSecret($s->get('mail.password', '')),
+            'mail_verify_peer' => $s->get('mail.verify_peer', '1') !== '0',
             'mail_from_address' => $s->get('mail.from_address', 'noreply@dajprezent.pl'),
             'mail_from_name' => $s->get('mail.from_name', 'DajPrezent.pl'),
         ];

@@ -10,6 +10,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
 
 final class RegisterController extends Controller
@@ -36,7 +37,18 @@ final class RegisterController extends Controller
             'password' => $data['password'], // hashed via $casts on model
         ]);
 
-        $user->sendEmailVerificationNotification();
+        // Wysyłka maila weryfikacyjnego nie może blokować rejestracji —
+        // gdy SMTP pada (np. wygasły cert, błędne creds), user i tak
+        // zostaje zarejestrowany i może wysłać verify-link z /email/verify.
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            Log::warning('register.verify_mail_failed', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         Auth::login($user, remember: true);
         $request->session()->regenerate();

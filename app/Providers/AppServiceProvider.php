@@ -55,6 +55,8 @@ class AppServiceProvider extends ServiceProvider
             $s = $this->app->make(SettingsRepository::class);
 
             $driver = (string) $s->get('mail.driver', config('mail.default', 'log'));
+            $verifyPeer = (string) $s->get('mail.verify_peer', '1') !== '0';
+
             config([
                 'mail.default' => $driver,
                 'mail.mailers.smtp.host' => (string) $s->get('mail.host', config('mail.mailers.smtp.host', '')),
@@ -62,6 +64,16 @@ class AppServiceProvider extends ServiceProvider
                 'mail.mailers.smtp.encryption' => (string) $s->get('mail.encryption', 'tls') ?: null,
                 'mail.mailers.smtp.username' => (string) $s->get('mail.username', config('mail.mailers.smtp.username', '')),
                 'mail.mailers.smtp.password' => (string) $s->get('mail.password', config('mail.mailers.smtp.password', '')),
+                // Stream context options trafiają do PHP-owego stream_socket_client
+                // przez Symfony Mailer. Wyłączamy verify_peer/verify_peer_name
+                // tylko świadomie przez admin panel — domyślnie pełna weryfikacja.
+                'mail.mailers.smtp.stream' => $verifyPeer ? [] : [
+                    'ssl' => [
+                        'verify_peer' => false,
+                        'verify_peer_name' => false,
+                        'allow_self_signed' => true,
+                    ],
+                ],
                 'mail.from.address' => (string) $s->get('mail.from_address', config('mail.from.address', 'noreply@dajprezent.pl')),
                 'mail.from.name' => (string) $s->get('mail.from_name', config('mail.from.name', 'DajPrezent.pl')),
             ]);

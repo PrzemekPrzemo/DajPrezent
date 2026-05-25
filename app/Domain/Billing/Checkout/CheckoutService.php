@@ -35,6 +35,25 @@ final class CheckoutService
 
     public function start(User $buyer, Package $package, CheckoutOrderData $data): CheckoutResult
     {
+        // Free package limit — one active Free per user. Bez tego użytkownik
+        // mógłby zakładać nielimitowanie kont Free (po 3 prezenty każde, 30
+        // dni ważności) jako tani sposób na zajmowanie slug-ów. Plus/Pro/
+        // Wedding mają faktyczną płatność jako gate.
+        if ($package->code === 'free') {
+            $existingFree = Subscription::query()
+                ->whereHas('tenant', fn ($q) => $q->where('owner_user_id', $buyer->id))
+                ->whereHas('package', fn ($q) => $q->where('code', 'free'))
+                ->whereIn('status', ['pending', 'active'])
+                ->where(fn ($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()))
+                ->exists();
+
+            if ($existingFree) {
+                throw new \DomainException(
+                    'Masz już aktywny pakiet Free. Aby założyć kolejną listę, wybierz pakiet płatny (Mini, Standard, Plus lub Pro).'
+                );
+            }
+        }
+
         [$tenant, $subscription] = DB::transaction(function () use ($buyer, $package, $data): array {
             $tenant = Tenant::create([
                 'owner_user_id' => $buyer->id,

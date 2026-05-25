@@ -60,22 +60,29 @@ final class CheckoutController extends Controller
             'buyer_nip' => [$isCompany ? 'required' : 'nullable', 'string', new ValidNip],
         ]);
 
-        $result = $this->checkout->start(
-            buyer: $user,
-            package: $package,
-            data: new CheckoutOrderData(
-                slug: $data['slug'],
-                tenantName: $data['name'],
-                locale: $data['locale'],
-                customerIp: (string) $request->ip(),
-                buyerName: $data['buyer_name'],
-                buyerCompany: $isCompany ? $data['buyer_company'] : null,
-                buyerNip: $isCompany ? PolishNip::normalize($data['buyer_nip']) : null,
-                buyerStreet: $data['buyer_street'],
-                buyerPostalCode: $data['buyer_postal_code'],
-                buyerCity: $data['buyer_city'],
-            ),
-        );
+        try {
+            $result = $this->checkout->start(
+                buyer: $user,
+                package: $package,
+                data: new CheckoutOrderData(
+                    slug: $data['slug'],
+                    tenantName: $data['name'],
+                    locale: $data['locale'],
+                    customerIp: (string) $request->ip(),
+                    buyerName: $data['buyer_name'],
+                    buyerCompany: $isCompany ? $data['buyer_company'] : null,
+                    buyerNip: $isCompany ? PolishNip::normalize($data['buyer_nip']) : null,
+                    buyerStreet: $data['buyer_street'],
+                    buyerPostalCode: $data['buyer_postal_code'],
+                    buyerCity: $data['buyer_city'],
+                ),
+            );
+        } catch (\DomainException $e) {
+            // CheckoutService rzuca DomainException dla user-facing reguł
+            // (limit Free, etc.) — pokazujemy je jako walidacyjny błąd nad
+            // formularzem, nie 500.
+            return back()->withErrors(['package' => $e->getMessage()])->withInput();
+        }
 
         if ($result->redirectUri !== null) {
             // Out-of-app to PayU checkout.
