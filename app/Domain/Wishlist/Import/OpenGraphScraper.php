@@ -6,6 +6,7 @@ namespace App\Domain\Wishlist\Import;
 
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -26,9 +27,9 @@ use RuntimeException;
  */
 final class OpenGraphScraper
 {
-    private const TIMEOUT_SECONDS = 2.5;
+    private const TIMEOUT_SECONDS = 6.0;
 
-    private const MAX_BODY_BYTES = 384 * 1024;
+    private const MAX_BODY_BYTES = 512 * 1024;
 
     /**
      * Hosts (suffix match) we are willing to fetch from. Keeping the
@@ -90,25 +91,47 @@ final class OpenGraphScraper
 
     private function fetch(string $url, string $host): OpenGraphPreview
     {
+        // Realistic Chrome UA + the sec-ch-ua client hints Allegro / Empik /
+        // any Cloudflare-fronted shop expects. A bare "DajPrezentBot/1.0"
+        // gets an instant 403 challenge. Accept-Encoding: identity skips
+        // gzip — Laravel's HTTP client unzips automatically but we'd rather
+        // not pay the round-trip when we're truncating at 512 KB anyway.
         $response = $this->http
             ->withHeaders([
-                'User-Agent' => 'DajPrezentBot/1.0 (+https://dajprezent.pl/bot)',
-                'Accept' => 'text/html,application/xhtml+xml',
-                'Accept-Language' => 'pl,en;q=0.8',
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '.
+                    '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Accept-Language' => 'pl-PL,pl;q=0.9,en;q=0.8',
+                'Accept-Encoding' => 'identity',
+                'Cache-Control' => 'no-cache',
+                'Pragma' => 'no-cache',
+                'Sec-Ch-Ua' => '"Chromium";v="124", "Google Chrome";v="124", "Not.A/Brand";v="99"',
+                'Sec-Ch-Ua-Mobile' => '?0',
+                'Sec-Ch-Ua-Platform' => '"Windows"',
+                'Sec-Fetch-Dest' => 'document',
+                'Sec-Fetch-Mode' => 'navigate',
+                'Sec-Fetch-Site' => 'none',
+                'Sec-Fetch-User' => '?1',
+                'Upgrade-Insecure-Requests' => '1',
             ])
             ->timeout(self::TIMEOUT_SECONDS)
             ->withOptions([
-                // Refuse redirects to non-allowlisted hosts manually.
                 'allow_redirects' => [
-                    'max' => 3,
+                    'max' => 4,
                     'protocols' => ['https'],
                     'strict' => true,
                 ],
                 'stream' => false,
+                'verify' => true,
             ])
             ->get($url);
 
         if (! $response->successful()) {
+            Log::warning('og.preview.upstream_error', [
+                'host' => $host,
+                'status' => $response->status(),
+                'url' => $url,
+            ]);
             throw new RuntimeException('Nie udało się pobrać podglądu (HTTP '.$response->status().').');
         }
 
