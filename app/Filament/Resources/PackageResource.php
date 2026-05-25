@@ -38,11 +38,18 @@ class PackageResource extends Resource
             TextInput::make('name')->required()->maxLength(80),
             Select::make('kind')->options(['standard' => 'Standard', 'wedding' => 'Wedding'])->required(),
             TextInput::make('price_pln_gr')
-                ->label('Cena (grosze)')
+                ->label('Cena (zł brutto)')
                 ->required()
                 ->numeric()
+                ->step('0.01')
                 ->minValue(0)
-                ->helperText('Wartość brutto w groszach, np. 9900 = 99,00 zł'),
+                ->prefix('zł')
+                // Baza trzyma grosze; wyświetlamy/przyjmujemy złote z dwoma
+                // miejscami po przecinku — admin nigdy nie wpisuje 9900,
+                // wpisuje 99.00 i to konwertujemy.
+                ->formatStateUsing(fn (?int $state): ?string => $state === null ? null : number_format($state / 100, 2, '.', ''))
+                ->dehydrateStateUsing(fn (?string $state): ?int => $state === null || $state === '' ? null : (int) round(((float) $state) * 100))
+                ->helperText('Wartość brutto w złotych, np. 99.00 (zostaje zapisana jako 9900 groszy).'),
             TextInput::make('valid_days')->required()->numeric()->minValue(1)->maxValue(3650),
             TextInput::make('gift_limit')->label('Limit prezentów (puste = bez limitu)')->numeric()->minValue(0),
             Toggle::make('is_active')->default(true),
