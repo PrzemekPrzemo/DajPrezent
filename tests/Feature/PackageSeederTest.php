@@ -8,9 +8,10 @@ use Database\Seeders\PackageSeeder;
 it('seeds all standard and wedding packages', function (): void {
     $this->seed(PackageSeeder::class);
 
-    expect(Package::query()->count())->toBe(7);
+    // 5 standard (free/mini/standard/plus/pro) + 2 wedding + 1 VIP (admin-only).
+    expect(Package::query()->count())->toBe(8);
 
-    foreach (['free', 'mini', 'standard', 'plus', 'pro', 'wedding_basic', 'wedding_premium'] as $code) {
+    foreach (['free', 'mini', 'standard', 'plus', 'pro', 'wedding_basic', 'wedding_premium', 'vip'] as $code) {
         expect(Package::query()->where('code', $code)->exists())
             ->toBeTrue("Expected package {$code} to be seeded.");
     }

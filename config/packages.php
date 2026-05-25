@@ -83,6 +83,25 @@ return [
             'custom_domain' => true,
             'export' => true,
         ],
+
+        // VIP / „full forever" — pakiet przyznawany ręcznie przez master
+        // admina dla wybranych klientów (np. partnerzy, ambasadorzy, beta
+        // testerzy). NIGDY nie pojawia się w /pakiety (is_active=false po
+        // seed, włączasz z /admin/packages). Nie ma nigdy wygasnięcia
+        // (valid_days = 36500 = ~100 lat), bez limitów prezentów ani list.
+        'vip' => [
+            'name' => 'VIP — Full Forever',
+            'kind' => 'standard',
+            'price_pln_gr' => 0,
+            'valid_days' => 36500,
+            'gift_limit' => null,
+            'custom_slug' => true,
+            'password_protect' => true,
+            'multiple_lists' => 99,
+            'remove_branding' => true,
+            'custom_domain' => true,
+            'export' => true,
+        ],
     ],
 
     'wedding' => [

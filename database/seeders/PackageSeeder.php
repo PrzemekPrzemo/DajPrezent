@@ -33,7 +33,9 @@ final class PackageSeeder extends Seeder
                     'valid_days' => $data['valid_days'],
                     'gift_limit' => $data['gift_limit'] ?? null,
                     'features' => $data,
-                    'is_active' => true,
+                    // VIP is admin-only — never shown in /pakiety. The
+                    // pricing controller filters by is_active=true.
+                    'is_active' => $code !== 'vip',
                 ]
             );
         }

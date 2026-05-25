@@ -4,14 +4,20 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
+use App\Domain\Billing\Models\Package;
+use App\Domain\Billing\Models\Subscription;
 use App\Domain\Tenancy\Models\Tenant;
 use App\Filament\Resources\TenantResource\Pages;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
@@ -22,6 +28,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class TenantResource extends Resource
 {
@@ -105,7 +112,90 @@ class TenantResource extends Resource
                     ->label('Wygasłe')
                     ->query(fn (Builder $q) => $q->whereNotNull('expires_at')->where('expires_at', '<', now())),
             ])
-            ->actions([ViewAction::make(), EditAction::make()])
+            ->actions([
+                ViewAction::make(),
+                EditAction::make(),
+
+                // Master-admin: przyznaj pakiet ad hoc — używane głównie
+                // dla VIP / Full Forever, ale też do ręcznej zmiany na
+                // wyższy pakiet bez przepychania user-a przez PayU.
+                // Tworzy aktywną subskrypcję od ręki + ustawia
+                // tenants.expires_at + parent_subscription_id, więc
+                // GiftLimitGuard i AddSiblingListService od razu widzą
+                // nowy pakiet.
+                Action::make('assignPackage')
+                    ->label('Przyznaj pakiet')
+                    ->icon('heroicon-o-gift-top')
+                    ->color('success')
+                    ->modalHeading(fn (Tenant $r): string => 'Przyznaj pakiet: '.$r->name)
+                    ->form([
+                        Select::make('package_id')
+                            ->label('Pakiet')
+                            ->options(fn () => Package::query()
+                                ->orderBy('kind')->orderBy('price_pln_gr')
+                                ->get()
+                                ->mapWithKeys(fn (Package $p): array => [
+                                    $p->id => sprintf(
+                                        '%s — %s zł / %d dni%s',
+                                        $p->name,
+                                        number_format($p->price_pln_gr / 100, 0, ',', ' '),
+                                        $p->valid_days,
+                                        $p->is_active ? '' : ' (ukryty w /pakiety)',
+                                    ),
+                                ])
+                                ->all())
+                            ->required()
+                            ->searchable(),
+                        Placeholder::make('info')
+                            ->label('')
+                            ->content('Pakiet zostanie aktywowany od razu. Nie wystawiamy faktury (przyjęte: VIP/partner/promocyjne).'),
+                        Textarea::make('note')
+                            ->label('Notatka (zapisana w buyer_name subskrypcji)')
+                            ->placeholder('np. VIP — partner medialny, beta tester, prezent dla redakcji')
+                            ->rows(2)
+                            ->maxLength(160),
+                    ])
+                    ->action(function (Tenant $record, array $data): void {
+                        DB::transaction(function () use ($record, $data): void {
+                            /** @var Package $pkg */
+                            $pkg = Package::query()->findOrFail($data['package_id']);
+                            $now = now();
+                            $expiresAt = $now->copy()->addDays((int) $pkg->valid_days);
+
+                            $sub = Subscription::create([
+                                'tenant_id' => $record->id,
+                                'package_id' => $pkg->id,
+                                'status' => 'active',
+                                'amount_pln_gr' => 0,
+                                'paid_at' => $now,
+                                'expires_at' => $expiresAt,
+                                'buyer_name' => $data['note'] ?? 'Master admin grant',
+                            ]);
+
+                            // Update primary tenant — kind dla wedding, expiry,
+                            // parent_subscription_id so GiftLimitGuard sees this
+                            // subscription as the active one.
+                            $patch = [
+                                'expires_at' => $expiresAt,
+                                'parent_subscription_id' => $sub->id,
+                                'is_public' => true,
+                            ];
+                            // Flip tenant.kind to match the new package — wedding
+                            // packages need wedding kind to render the ceremony
+                            // micro-site, anything else falls back to wishlist.
+                            $patch['kind'] = str_starts_with((string) $pkg->code, 'wedding_')
+                                ? $pkg->code
+                                : 'wishlist';
+                            $record->update($patch);
+                        });
+
+                        Notification::make()
+                            ->title('Pakiet przyznany')
+                            ->body('Subskrypcja jest aktywna. Limity i ważność zaktualizowane.')
+                            ->success()
+                            ->send();
+                    }),
+            ])
             ->bulkActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
     }
 
