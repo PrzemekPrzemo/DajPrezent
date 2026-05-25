@@ -3,7 +3,7 @@
 @section('title', __('messages.owner.dashboard_h1'))
 
 @section('content')
-    <header class="flex flex-wrap items-center justify-between gap-3 mb-6">
+    <header x-data="{}" class="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 class="font-display text-2xl sm:text-3xl font-bold m-0">{{ __('messages.owner.dashboard_h1') }}</h1>
         <div class="flex flex-wrap gap-2">
             @if ($siblingSlots !== null && $siblingSlots['free'] > 0)

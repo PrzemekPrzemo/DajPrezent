@@ -9,7 +9,7 @@
 @endphp
 
 @section('content')
-    <header class="flex flex-wrap items-center justify-between gap-3 mb-6">
+    <header x-data="{}" class="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
             <h1 class="font-display text-2xl sm:text-3xl font-bold m-0">{{ $tenant->name }}</h1>
             <p class="text-sm text-dp-muted mt-1 m-0">
@@ -44,7 +44,7 @@
 
         @if ($gifts->isEmpty())
             {{-- EMPTY STATE z dokumentu UX/UI --}}
-            <div class="text-center py-12 px-4">
+            <div x-data="{}" class="text-center py-12 px-4">
                 <div class="w-20 h-20 mx-auto mb-4 rounded-dp-lg bg-dp-gradient flex items-center justify-center text-white text-3xl shadow-dp-card">
                     🎁
                 </div>
