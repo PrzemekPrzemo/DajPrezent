@@ -33,6 +33,17 @@
             </div>
         </form>
 
+        {{-- Analytics & SEO --}}
+        <form wire:submit="saveSeo">
+            {{ $this->seoForm }}
+            <div class="mt-4 flex items-center gap-3">
+                <x-filament::button type="submit" icon="heroicon-o-check">
+                    Zapisz sekcję Analytics & SEO
+                </x-filament::button>
+                <span class="text-xs text-gray-500">gtag.js, Plausible i meta Search Console dołączane warunkowo do publicznych stron.</span>
+            </div>
+        </form>
+
         {{-- Numeracja FV --}}
         <form wire:submit="saveInvoice">
             {{ $this->invoiceForm }}

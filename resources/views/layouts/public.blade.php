@@ -17,6 +17,7 @@
         :robots="$robots"
     />
     @stack('head_extra')
+    <x-seo.analytics/>
 </head>
 <body class="min-h-screen flex flex-col">
     <nav class="border-b border-dp-purple-50 bg-white/80 backdrop-blur sticky top-0 z-30">

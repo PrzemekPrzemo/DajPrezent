@@ -56,6 +56,8 @@ final class Settings extends Page implements HasForms
 
     public ?array $smtpData = [];
 
+    public ?array $seoData = [];
+
     private const MASK = '•••• set';
 
     public function mount(): void
@@ -65,6 +67,7 @@ final class Settings extends Page implements HasForms
         $this->ksefForm->fill($this->ksefData);    // @phpstan-ignore-line
         $this->invoiceForm->fill($this->invoiceData); // @phpstan-ignore-line
         $this->smtpForm->fill($this->smtpData);    // @phpstan-ignore-line
+        $this->seoForm->fill($this->seoData);    // @phpstan-ignore-line
     }
 
     protected function getForms(): array
@@ -74,6 +77,7 @@ final class Settings extends Page implements HasForms
             'ksefForm',
             'invoiceForm',
             'smtpForm',
+            'seoForm',
         ];
     }
 
@@ -275,6 +279,42 @@ final class Settings extends Page implements HasForms
             ->statePath('smtpData');
     }
 
+    public function seoForm(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Section::make('Analytics & SEO')
+                    ->description('Google Analytics 4, Search Console verification, Google Ads, Plausible. Wszystkie pola opcjonalne — puste = brak skryptu/meta na publicznych stronach.')
+                    ->icon('heroicon-o-chart-bar')
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('seo_ga4_id')
+                            ->label('Google Analytics 4 — Measurement ID')
+                            ->placeholder('G-XXXXXXXXXX')
+                            ->maxLength(20)
+                            ->helperText('Z panelu GA4: Administracja → Strumienie danych → Web → Identyfikator pomiaru. Format: G-XXXXXXXXXX. Po zapisaniu gtag.js ładuje się automatycznie na publicznych stronach.'),
+                        TextInput::make('seo_google_ads_id')
+                            ->label('Google Ads — Conversion ID')
+                            ->placeholder('AW-XXXXXXXXX')
+                            ->maxLength(20)
+                            ->helperText('Z Google Ads: Narzędzia → Konwersje → szczegóły tagu. Format: AW-XXXXXXXXX. Wymagane jeśli prowadzisz SEM.'),
+                        TextInput::make('seo_gsc_verification')
+                            ->label('Google Search Console — kod weryfikacyjny')
+                            ->maxLength(100)
+                            ->columnSpanFull()
+                            ->placeholder('np. uPgaT3kf4N9... (44 znaki)')
+                            ->helperText('Z GSC: Dodaj usługę → Prefiks adresu URL → Recommended: HTML tag → skopiuj treść content="..." (bez całego <meta>).'),
+                        TextInput::make('seo_plausible_domain')
+                            ->label('Plausible Analytics — domena')
+                            ->placeholder('dajprezent.pl')
+                            ->maxLength(120)
+                            ->columnSpanFull()
+                            ->helperText('Privacy-friendly alternatywa GA (bez cookies, bez retencji IP). Zostaw puste jeśli używasz tylko GA4. Wymaga konta na plausible.io.'),
+                    ]),
+            ])
+            ->statePath('seoData');
+    }
+
     public function invoiceForm(Form $form): Form
     {
         return $form
@@ -382,6 +422,20 @@ final class Settings extends Page implements HasForms
         $this->loadAll();
     }
 
+    public function saveSeo(): void
+    {
+        $state = $this->seoForm->getState(); // @phpstan-ignore-line
+        $s = app(SettingsRepository::class);
+
+        $s->set('seo.ga4_id', trim((string) ($state['seo_ga4_id'] ?? '')));
+        $s->set('seo.google_ads_id', trim((string) ($state['seo_google_ads_id'] ?? '')));
+        $s->set('seo.gsc_verification', trim((string) ($state['seo_gsc_verification'] ?? '')));
+        $s->set('seo.plausible_domain', trim((string) ($state['seo_plausible_domain'] ?? '')));
+
+        $this->notifySuccess('Sekcja Analytics & SEO zapisana. Skrypty zaczną się ładować od następnego requesta.');
+        $this->loadAll();
+    }
+
     public function saveSmtp(): void
     {
         $state = $this->smtpForm->getState(); // @phpstan-ignore-line
@@ -441,6 +495,13 @@ final class Settings extends Page implements HasForms
             'mail_verify_peer' => $s->get('mail.verify_peer', '1') !== '0',
             'mail_from_address' => $s->get('mail.from_address', 'noreply@dajprezent.pl'),
             'mail_from_name' => $s->get('mail.from_name', 'DajPrezent.pl'),
+        ];
+
+        $this->seoData = [
+            'seo_ga4_id' => $s->get('seo.ga4_id', ''),
+            'seo_google_ads_id' => $s->get('seo.google_ads_id', ''),
+            'seo_gsc_verification' => $s->get('seo.gsc_verification', ''),
+            'seo_plausible_domain' => $s->get('seo.plausible_domain', ''),
         ];
 
         $this->invoiceData = [

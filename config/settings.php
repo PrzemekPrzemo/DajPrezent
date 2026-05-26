@@ -61,5 +61,19 @@ return [
         'mail.encryption' => env('MAIL_ENCRYPTION', 'tls'),
         'mail.from_address' => env('MAIL_FROM_ADDRESS', 'noreply@dajprezent.pl'),
         'mail.from_name' => env('MAIL_FROM_NAME', 'DajPrezent.pl'),
+
+        /* SEO / SEM tracking ------------------------------------------- */
+        // Google Analytics 4 Measurement ID, e.g. G-MEFY74Q5GK. Empty
+        // means "don't include gtag.js" (Plausible-only / no tracking).
+        'seo.ga4_id' => env('GA4_MEASUREMENT_ID', ''),
+        // Google Search Console HTML meta tag content (the 44-char
+        // string from "Recommended → HTML tag" verification flow).
+        'seo.gsc_verification' => env('GSC_VERIFICATION', ''),
+        // Google Ads Conversion ID (AW-...) for funnel tracking,
+        // optional — empty if no SEM campaigns.
+        'seo.google_ads_id' => env('GOOGLE_ADS_ID', ''),
+        // Privacy-friendly analytics — Plausible domain to track to.
+        // Empty disables.
+        'seo.plausible_domain' => env('PLAUSIBLE_DOMAIN', ''),
     ],
 ];
