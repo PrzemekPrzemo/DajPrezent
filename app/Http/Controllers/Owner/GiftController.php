@@ -30,14 +30,44 @@ final class GiftController extends Controller
         $this->authorizeTenant($request, $tenant);
         $this->current->set($tenant);
 
-        $gifts = Gift::query()
+        $query = Gift::query()
             ->orderBy('position')
-            ->orderByDesc('id')
-            ->get();
+            ->orderByDesc('id');
+
+        // Filters (server-side — gold-plated search works on 1000+ gifts
+        // without paginating the entire list to the browser).
+        $search = trim((string) $request->query('q', ''));
+        if ($search !== '') {
+            $query->where(function ($q) use ($search): void {
+                $q->where('title', 'like', '%'.$search.'%')
+                    ->orWhere('description', 'like', '%'.$search.'%');
+            });
+        }
+        $statusFilter = (string) $request->query('status', '');
+        if (in_array($statusFilter, [
+            Gift::STATUS_AVAILABLE,
+            Gift::STATUS_RESERVED,
+            Gift::STATUS_RECEIVED,
+        ], true)) {
+            $query->where('status', $statusFilter);
+        }
+        $priorityFilter = (string) $request->query('priority', '');
+        if (in_array($priorityFilter, ['1', '2', '3'], true)) {
+            $query->where('priority', (int) $priorityFilter);
+        }
+
+        $totalCount = Gift::query()->count();
+        $gifts = $totalCount > 50
+            ? $query->paginate(50)->withQueryString()
+            : $query->get();
 
         return view('owner.gifts.index', [
             'tenant' => $tenant,
             'gifts' => $gifts,
+            'totalCount' => $totalCount,
+            'search' => $search,
+            'statusFilter' => $statusFilter,
+            'priorityFilter' => $priorityFilter,
         ]);
     }
 

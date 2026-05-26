@@ -33,7 +33,13 @@
 
     <div class="dp-card">
         <div class="flex items-center justify-between gap-3 flex-wrap mb-4">
-            <h2 class="font-display font-semibold text-lg m-0">{{ __('messages.gifts.h1', ['n' => $gifts->count()]) }}</h2>
+            <h2 class="font-display font-semibold text-lg m-0">
+                {{ __('messages.gifts.h1', ['n' => $totalCount]) }}
+                @if (($search ?? '') !== '' || ($statusFilter ?? '') !== '' || ($priorityFilter ?? '') !== '')
+                    @php $shown = method_exists($gifts, 'total') ? $gifts->total() : $gifts->count(); @endphp
+                    <span class="text-sm text-dp-muted font-normal">({{ __('messages.gifts.filtered_shown', ['n' => $shown]) }})</span>
+                @endif
+            </h2>
             <div class="flex flex-wrap gap-2">
                 <a href="{{ route('owner.gifts.import.show', $tenant) }}" class="dp-btn-secondary">{{ __('messages.gifts.import_csv') }}</a>
                 @if ($canExport)
@@ -41,6 +47,36 @@
                 @endif
             </div>
         </div>
+
+        {{-- TOOLBAR — search + status + priority filter. Pojawia się gdy
+             lista ma >5 prezentów (mniejsze listy się ogarniają wzrokiem). --}}
+        @if ($totalCount > 5)
+            <form method="GET" action="{{ route('owner.gifts.index', $tenant) }}"
+                  class="grid sm:grid-cols-[1fr,180px,180px,auto] gap-2 items-center mb-4 pb-4 border-b border-slate-100"
+                  x-data="{ submitSoon() { clearTimeout(this._t); this._t = setTimeout(() => this.$el.requestSubmit(), 350); } }">
+                <input type="search" name="q" value="{{ $search ?? '' }}"
+                       placeholder="{{ __('messages.gifts.search_placeholder') }}"
+                       @input="submitSoon()"
+                       class="dp-input">
+                <select name="status" @change="$el.form.requestSubmit()" class="dp-input">
+                    <option value="">{{ __('messages.gifts.filter_status_all') }}</option>
+                    <option value="{{ \App\Domain\Wishlist\Models\Gift::STATUS_AVAILABLE }}" @selected(($statusFilter ?? '') === \App\Domain\Wishlist\Models\Gift::STATUS_AVAILABLE)>{{ __('messages.wishlist.available') }}</option>
+                    <option value="{{ \App\Domain\Wishlist\Models\Gift::STATUS_RESERVED }}" @selected(($statusFilter ?? '') === \App\Domain\Wishlist\Models\Gift::STATUS_RESERVED)>{{ __('messages.wishlist.reserved') }}</option>
+                    <option value="{{ \App\Domain\Wishlist\Models\Gift::STATUS_RECEIVED }}" @selected(($statusFilter ?? '') === \App\Domain\Wishlist\Models\Gift::STATUS_RECEIVED)>{{ __('messages.wishlist.received') }}</option>
+                </select>
+                <select name="priority" @change="$el.form.requestSubmit()" class="dp-input">
+                    <option value="">{{ __('messages.gifts.filter_priority_all') }}</option>
+                    <option value="1" @selected(($priorityFilter ?? '') === '1')>★★★ {{ __('messages.wishlist.priority_high') }}</option>
+                    <option value="2" @selected(($priorityFilter ?? '') === '2')>★★ {{ __('messages.wishlist.priority_normal') }}</option>
+                    <option value="3" @selected(($priorityFilter ?? '') === '3')>★ {{ __('messages.wishlist.priority_low') }}</option>
+                </select>
+                @if (($search ?? '') !== '' || ($statusFilter ?? '') !== '' || ($priorityFilter ?? '') !== '')
+                    <a href="{{ route('owner.gifts.index', $tenant) }}" class="dp-btn-ghost text-sm">{{ __('messages.gifts.filter_clear') }}</a>
+                @else
+                    <noscript><button type="submit" class="dp-btn-secondary">{{ __('messages.gifts.filter_apply') }}</button></noscript>
+                @endif
+            </form>
+        @endif
 
         @if ($gifts->isEmpty())
             {{-- EMPTY STATE z dokumentu UX/UI --}}
@@ -145,6 +181,13 @@
                     </tbody>
                 </table>
             </div>
+
+            {{-- Pagination when total > 50 (paginator instance, else Collection) --}}
+            @if (method_exists($gifts, 'links'))
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                    {{ $gifts->links() }}
+                </div>
+            @endif
         @endif
     </div>
 

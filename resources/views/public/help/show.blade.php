@@ -13,7 +13,7 @@
             </p>
             <h1 class="font-display text-2xl sm:text-3xl font-bold m-0 mt-2">{{ $title }}</h1>
 
-            @include('public.help.articles.'.$slug)
+            @include($partial ?? 'public.help.articles.'.$slug)
 
             <hr class="my-6 border-slate-100">
             <p class="text-sm text-dp-muted m-0">
