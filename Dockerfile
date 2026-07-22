@@ -22,7 +22,7 @@ RUN npm run build
 ########################################
 # 2. Runtime image
 ########################################
-FROM php:8.3-fpm-alpine AS runtime
+FROM php:8.4-fpm-alpine AS runtime
 
 # Runtime shared libraries (kept in the final image).
 RUN apk add --no-cache \

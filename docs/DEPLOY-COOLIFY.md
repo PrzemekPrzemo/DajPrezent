@@ -4,7 +4,7 @@ Alternatywa dla `docs/DEPLOY-PLESK.md` — zamiast gołego VPS z Pleskiem,
 Coolify (self-hosted PaaS) na Hetzner Cloud, z appką budowaną z repo przez
 dołączony `Dockerfile`. Repo jest już przygotowane pod ten model:
 
-- `Dockerfile` — jeden obraz produkcyjny: nginx + php-fpm 8.3 + queue
+- `Dockerfile` — jeden obraz produkcyjny: nginx + php-fpm 8.4 + queue
   worker (`queue:work redis`) + scheduler (`schedule:run` co minutę),
   wszystko pod `supervisord`. Assety budowane przez Vite w osobnym stage'u.
 - `docker/` — konfiguracja nginx, php-fpm, opcache, supervisor, entrypoint.
@@ -225,5 +225,5 @@ zero-downtime "z pudełka", bez dodatkowej konfiguracji. Rollback: Coolify
 - `APP_DEBUG=false` i `APP_ENV=production` na produkcji — inaczej stack
   trace z danymi wycieka do publicznych odpowiedzi błędów.
 - Aktualizacje Coolify (`coolify update` z dashboardu) i obrazu bazowego
-  (`php:8.3-fpm-alpine` w `Dockerfile`) rób regularnie — Renovate/Dependabot
+  (`php:8.4-fpm-alpine` w `Dockerfile`) rób regularnie — Renovate/Dependabot
   może pilnować wersji w `Dockerfile` tak samo jak `composer.lock`.
