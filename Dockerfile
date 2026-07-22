@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-#
 # Production image for DajPrezent.pl — nginx + php-fpm + queue worker +
 # scheduler in a single container, managed by supervisord. Designed to be
 # built and run as-is by Coolify (Dockerfile build pack) on a Hetzner VPS.
@@ -105,5 +103,5 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD curl -fsS http://127.0.0.1:8080/up || exit 1
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf", "-n"]
