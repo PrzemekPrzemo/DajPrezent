@@ -34,6 +34,14 @@ php artisan serve
 
 Master admin: `/admin` (Filament). Publiczna lista: `/{slug}`.
 
+## Deployment
+
+- **Coolify + Hetzner** (Docker, zalecane): [`docs/DEPLOY-COOLIFY.md`](docs/DEPLOY-COOLIFY.md).
+  Repo zawiera gotowy `Dockerfile` (nginx + php-fpm + queue worker +
+  scheduler pod supervisord) — Coolify buduje go bezpośrednio jako
+  Application resource.
+- **VPS + Plesk**: [`docs/DEPLOY-PLESK.md`](docs/DEPLOY-PLESK.md).
+
 ## Skrypty
 
 ```bash

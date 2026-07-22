@@ -1,0 +1,58 @@
+# Local smoke-test of the production image (docker compose up --build).
+# Coolify does NOT use this file — it builds the Dockerfile directly as a
+# single "Application" resource and MySQL/Redis are added as separate
+# Coolify-managed services. This compose file only lets you sanity-check
+# the exact image Coolify will run, with throwaway local DB/Redis.
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8080
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_DATABASE: dajprezent
+      DB_USERNAME: dajprezent
+      DB_PASSWORD: dajprezent
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      RUN_MIGRATIONS: "true"
+    env_file:
+      - .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - storage_app:/var/www/html/storage/app
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: dajprezent
+      MYSQL_USER: dajprezent
+      MYSQL_PASSWORD: dajprezent
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+
+volumes:
+  mysql_data:
+  storage_app:
