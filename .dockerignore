@@ -11,6 +11,16 @@
 node_modules
 vendor
 
+# Local build artifacts / symlinks — the frontend stage rebuilds public/build
+# fresh and entrypoint.sh re-links storage + republishes Filament assets, so
+# any stale copies from a non-Coolify (local) build context would just be
+# dead weight, or in the storage symlink's case, break the build outright.
+public/build
+public/hot
+public/storage
+public/css/filament
+public/js/filament
+
 storage/app/*
 !storage/app/.gitignore
 storage/framework/cache/*
