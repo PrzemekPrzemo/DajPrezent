@@ -8,7 +8,7 @@ typową instalację Laravel 11 + MySQL + Redis pod Pleskiem.
 - Plesk Obsidian (testowane na 18.0.5x+)
 - Subskrypcja domeny `dajprezent.pl` + subdomeny dla środowisk
   (`stg.dajprezent.pl`, `*.dajprezent.pl` dla custom domains klientów Pro)
-- PHP 8.3 (Plesk → Tools & Settings → PHP) z rozszerzeniami:
+- PHP 8.4 (Plesk → Tools & Settings → PHP) z rozszerzeniami:
   `pdo_mysql`, `mbstring`, `xml`, `ctype`, `curl`, `gd`, `intl`,
   `openssl`, `redis`, `bcmath`, `fileinfo`, `tokenizer`
 - MySQL 8 (Plesk DB management)
@@ -26,7 +26,7 @@ typową instalację Laravel 11 + MySQL + Redis pod Pleskiem.
 1. **Dodaj domenę** `dajprezent.pl`.
 2. **Document root** → `/var/www/vhosts/dajprezent.pl/httpdocs/public`
    (Plesk → Hosting Settings → „Document root").
-3. **PHP Selector** → wybierz PHP 8.3 + włącz `opcache` (Plesk → PHP
+3. **PHP Selector** → wybierz PHP 8.4 + włącz `opcache` (Plesk → PHP
    Settings → `opcache.enable=1`, `opcache.validate_timestamps=0` w
    prodzie).
 4. **HTTPS** → włącz Let's Encrypt (Plesk Extensions) z
@@ -107,7 +107,7 @@ User=dajprezent
 Group=psacln
 Restart=always
 RestartSec=3
-ExecStart=/opt/plesk/php/8.3/bin/php /var/www/vhosts/dajprezent.pl/current/artisan queue:work redis --tries=3 --max-time=3600
+ExecStart=/opt/plesk/php/8.4/bin/php /var/www/vhosts/dajprezent.pl/current/artisan queue:work redis --tries=3 --max-time=3600
 
 [Install]
 WantedBy=multi-user.target

@@ -34,7 +34,7 @@ Repo jest puste — projekt greenfield.
 
 ## Decyzje już zaakceptowane (z dialogu z użytkownikiem)
 
-- **Backend:** Laravel 11 (PHP 8.3) + MySQL 8
+- **Backend:** Laravel 11 (PHP 8.4) + MySQL 8
 - **Frontend:** Blade + Alpine.js + HTMX + Tailwind CSS (SSR, lekko, dobry SEO)
 - **Multi-tenancy:** single DB + kolumna `tenant_id` w każdej tabeli (scope’y Eloquent + global scope)
 - **Integracje MVP:** PayU, KSeF, transactional e-mail (Postmark albo Mailgun)

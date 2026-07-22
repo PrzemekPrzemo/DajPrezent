@@ -5,7 +5,7 @@ Pełne założenia produktowe i pakiety cenowe: [PLAN.md](PLAN.md).
 
 ## Stack
 
-- **Backend:** Laravel 11 (PHP 8.3+)
+- **Backend:** Laravel 11 (PHP 8.4+)
 - **DB:** MySQL 8 + Redis (cache / queue / session)
 - **UI:** Blade + Tailwind + Alpine.js + HTMX (SSR)
 - **Master admin:** Filament v3
@@ -15,7 +15,7 @@ Pełne założenia produktowe i pakiety cenowe: [PLAN.md](PLAN.md).
 
 ## Wymagania lokalne
 
-- PHP ≥ 8.3 z `pdo_mysql`, `mbstring`, `xml`, `curl`, `gd`, `openssl`, `redis`
+- PHP ≥ 8.4 z `pdo_mysql`, `mbstring`, `xml`, `curl`, `gd`, `openssl`, `redis`
 - Composer 2.x
 - Node 20+ / npm
 - MySQL 8 + Redis 7 (lokalnie lub Docker)
@@ -33,6 +33,14 @@ php artisan serve
 ```
 
 Master admin: `/admin` (Filament). Publiczna lista: `/{slug}`.
+
+## Deployment
+
+- **Coolify + Hetzner** (Docker, zalecane): [`docs/DEPLOY-COOLIFY.md`](docs/DEPLOY-COOLIFY.md).
+  Repo zawiera gotowy `Dockerfile` (nginx + php-fpm + queue worker +
+  scheduler pod supervisord) — Coolify buduje go bezpośrednio jako
+  Application resource.
+- **VPS + Plesk**: [`docs/DEPLOY-PLESK.md`](docs/DEPLOY-PLESK.md).
 
 ## Skrypty
 

@@ -15,6 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Behind Coolify's Traefik reverse proxy the app only ever sees the
+        // internal Docker network, not a fixed proxy IP, so trust the
+        // forwarding headers unconditionally (standard for containerized
+        // deployments) — otherwise isSecure()/HSTS and generated URLs break.
+        $middleware->trustProxies(at: '*');
+
         $middleware->validateCsrfTokens(except: [
             'webhooks/*',
         ]);
